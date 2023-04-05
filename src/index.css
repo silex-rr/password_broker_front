@@ -11,3 +11,44 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .tree-container {
+
+  }
+
+  .tree-container .tree-corner {
+    @apply relative
+  }
+
+  /*.tree-container li:not(:last-child) .tree-corner::before {*/
+  /*  @apply border-l-0*/
+  /*}*/
+
+  .tree-container .tree-corner::before {
+    content:'';
+    @apply absolute
+    border-slate-200
+    top-0
+    -left-2
+    border-dotted
+    border-l
+    border-b
+    w-2
+    bottom-1/2
+  }
+
+  .tree-container li:last-child {
+    @apply border-l-0
+  }
+
+  .tree-container>li>.tree-corner::before {
+    @apply border-0
+  }
+}
