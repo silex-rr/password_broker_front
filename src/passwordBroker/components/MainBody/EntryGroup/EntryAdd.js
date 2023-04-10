@@ -28,9 +28,9 @@ const EntryAdd = (props) => {
             return
         }
         setAddingEntryState(ENTRY_ADDING_IN_PROGRESS)
-        axios.defaults.withCredentials = true
-        axios.get(hostName + "/sanctum/csrf-cookie").then(
-            (response) => {
+        // axios.defaults.withCredentials = true
+        // axios.get(hostName + "/sanctum/csrf-cookie").then(
+        //     (response) => {
                 axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/',
                     {
                         'title': entryTitle
@@ -57,12 +57,12 @@ const EntryAdd = (props) => {
                         setAddingEntryState(ENTRY_ADDING_AWAIT)
                     }
                 )
-            },
-            (error) => {
-                setErrorMessage(error.message)
-                setAddingEntryState(ENTRY_ADDING_AWAIT)
-            }
-        )
+        //     },
+        //     (error) => {
+        //         setErrorMessage(error.message)
+        //         setAddingEntryState(ENTRY_ADDING_AWAIT)
+        //     }
+        // )
     }
 
     const changeTitle = (e) => {

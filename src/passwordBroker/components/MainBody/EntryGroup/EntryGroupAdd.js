@@ -33,8 +33,8 @@ const EntryGroupAdd = (props) => {
         }
         setAddingEntryGroupState(ENTRY_GROUP_ADDING_IN_PROGRESS)
         axios.defaults.withCredentials = true
-        axios.get(hostName + "/sanctum/csrf-cookie").then(
-            (response) => {
+        // axios.get(hostName + "/sanctum/csrf-cookie").then(
+        //     (response) => {
                 let data = {'name': entryGroupTitle}
                 if (entryGroupId) {
                     data.parent_entry_group_id = entryGroupId
@@ -67,12 +67,12 @@ const EntryGroupAdd = (props) => {
                         setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
                     }
                 )
-            },
-            (error) => {
-                setErrorMessage(error.message)
-                setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
-            }
-        )
+        //     },
+        //     (error) => {
+        //         setErrorMessage(error.message)
+        //         setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
+        //     }
+        // )
     }
 
     const changeTitle = (e) => {

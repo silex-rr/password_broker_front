@@ -37,9 +37,9 @@ const EntryFieldsAdd = (props) => {
         }
 
         setAddingFieldState(FIELD_ADDING_IN_PROGRESS)
-        axios.defaults.withCredentials = true
-        axios.get(hostName + "/sanctum/csrf-cookie").then(
-            (response) => {
+        // axios.defaults.withCredentials = true
+        // axios.get(hostName + "/sanctum/csrf-cookie").then(
+        //     (response) => {
                 axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields',
                     {
                         'title': fieldTitle,
@@ -81,12 +81,12 @@ const EntryFieldsAdd = (props) => {
                         setAddingFieldState(FIELD_ADDING_AWAIT)
                     }
                 )
-            },
-            (error) => {
-                setErrorMessage(error.message)
-                setAddingFieldState(FIELD_ADDING_AWAIT)
-            }
-        )
+        //     },
+        //     (error) => {
+        //         setErrorMessage(error.message)
+        //         setAddingFieldState(FIELD_ADDING_AWAIT)
+        //     }
+        // )
     }
     const changeType = (e) => {
         setFieldValue('')
