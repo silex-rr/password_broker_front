@@ -49,7 +49,7 @@ const IdentityProvider = (props) => {
         axios.defaults.withCredentials = true;
         // CSRF COOKIE
         axios.get(hostName + "/sanctum/csrf-cookie").then(
-            (response) => {
+            () => {
                 //console.log(response);
                 // SIGNUP / REGISTER
                 axios
@@ -59,7 +59,7 @@ const IdentityProvider = (props) => {
                         password: userPassword,
                     })
                     .then(
-                        (response) => {
+                        () => {
                             //console.log(response);
                             // GET USER
                             axios.get(hostName + "/identity/api/user").then(
@@ -71,7 +71,7 @@ const IdentityProvider = (props) => {
                                     setAuthStatus(LOGGED_IN)
                                 },
                                 // GET USER ERROR
-                                (error) => {
+                                () => {
                                     setErrorMessage("Could not complete the sign up")
                                 }
                             );
@@ -93,7 +93,7 @@ const IdentityProvider = (props) => {
                     );
             },
             // COOKIE ERROR
-            (error) => {
+            () => {
                 setErrorMessage("Could not complete the sign up")
             }
         );
@@ -103,7 +103,7 @@ const IdentityProvider = (props) => {
         axios.defaults.withCredentials = true;
         // CSRF COOKIE
         axios.get(hostName + "/sanctum/csrf-cookie").then(
-            (response) => {
+            () => {
                 //console.log(response);
                 // LOGIN
                 axios
@@ -112,22 +112,8 @@ const IdentityProvider = (props) => {
                         password: userPassword,
                     })
                     .then(
-                        (response) => {
-                            //console.log(response);
-                            // GET USER
-                            axios.get(hostName + "/identity/api/me").then(
-                                (response) => {
-                                    //console.log(response)
-                                    setUserId(response.data.id)
-                                    setUserName(response.data.name)
-                                    setErrorMessage("")
-                                    setAuthStatus(LOGGED_IN)
-                                },
-                                // GET USER ERROR
-                                (error) => {
-                                    setErrorMessage("Could not complete the login")
-                                }
-                            );
+                        () => {
+                            getUser()
                         },
                         // LOGIN ERROR
                         (error) => {
@@ -140,7 +126,7 @@ const IdentityProvider = (props) => {
                     );
             },
             // COOKIE ERROR
-            (error) => {
+            () => {
                 setErrorMessage("Could not complete the login")
             }
         );
@@ -148,7 +134,7 @@ const IdentityProvider = (props) => {
 
     async function logout(navigate) {
         axios.defaults.withCredentials = true;
-        axios.get(hostName + "/identity/api/logout").then((response) => {
+        axios.get(hostName + "/identity/api/logout").then(() => {
             Cookies.remove('XSRF-TOKEN')
             Cookies.remove('laravel_session')
             setUserId("")
@@ -161,7 +147,7 @@ const IdentityProvider = (props) => {
         });
     }
 
-    function getUser(location) {
+    function getUser() {
         changeAuthStatusLoading()
         // setAuthStatus(LOADING)
         axios.defaults.withCredentials = true;

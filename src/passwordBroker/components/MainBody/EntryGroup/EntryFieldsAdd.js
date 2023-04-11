@@ -1,15 +1,20 @@
 import React, {useContext, useRef, useState} from "react";
-import {FIELD_TYPE_LINK, FIELD_TYPE_NOTE, FIELD_TYPE_PASSWORD} from "../../../constants/MainBodyEntryGroupEntryFieldTypes";
+import {
+    FIELD_TYPE_LINK,
+    FIELD_TYPE_NOTE,
+    FIELD_TYPE_PASSWORD
+} from "../../../constants/MainBodyEntryGroupEntryFieldTypes";
 import {Button, Input, Textarea} from "react-daisyui";
 import axios from "axios";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
 import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from "../../../constants/EntryGroupEntryFieldsStatus";
 import {FIELD_ADDING_AWAIT, FIELD_ADDING_IN_PROGRESS} from "../../../constants/EntryGroupEntryFieldAddingStates";
+import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from "../../../constants/MasterPasswordStates";
 
 const EntryFieldsAdd = (props) => {
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
-    const {baseUrl, hostName, masterPassword, setMasterPassword} = passwordBrokerContext
+    const {baseUrl, masterPassword, setMasterPassword, setMasterPasswordState} = passwordBrokerContext
 
     const entryGroupId = props.entryGroupId
     const entryId = props.entryId
@@ -48,12 +53,13 @@ const EntryFieldsAdd = (props) => {
                         'value': fieldValue
                     }
                 ).then(
-                    (response) => {
+                    () => {
                         props.setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING)
                         setAddingFieldState(FIELD_ADDING_AWAIT)
                         const modalVisibilityCheckbox =  modalVisibilityCheckboxRef.current
                         modalVisibilityCheckbox.checked = false
                         setErrorMessage('')
+                        setMasterPasswordState(MASTER_PASSWORD_VALIDATED)
                     },
                     (error) => {
                         let errMsg = []
@@ -64,6 +70,7 @@ const EntryFieldsAdd = (props) => {
                             } else {
                                 errMsg.push(<p key={addFieldErrKey + errMsg.length}>MasterPassword is missing</p>);
                             }
+                            setMasterPasswordState(MASTER_PASSWORD_INVALID)
                             setMasterPassword('')
                         }
                         if (error.response.data.errors.value) {
@@ -120,6 +127,8 @@ const EntryFieldsAdd = (props) => {
     let value = ''
 
     switch (fieldType) {
+        default:
+            break;
         case FIELD_TYPE_PASSWORD:
             value = (
                 <div className="flex flex-row py-1.5 items-center">

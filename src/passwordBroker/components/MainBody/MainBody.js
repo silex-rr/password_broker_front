@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import {PasswordBrokerContext} from "../../contexts/PasswordBrokerContext";
 import {
     ENTRY_GROUP_LOADED,
@@ -8,7 +8,7 @@ import {
 } from "../../constants/EntryGroupStatus";
 import EntryGroup from "./EntryGroup/EntryGroup";
 
-const MainBody = (props) => {
+const MainBody = () => {
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
 
@@ -28,9 +28,11 @@ const MainBody = (props) => {
             setEntryGroupStatus(ENTRY_GROUP_LOADING)
             loadEntryGroup(entryGroupId)
         }
-    }, [entryGroupStatus, entryGroupId])
+    }, [entryGroupStatus, entryGroupId, loadEntryGroup, setEntryGroupStatus])
 
     switch (entryGroupStatus) {
+        default:
+            break;
         case ENTRY_GROUP_LOADING:
         case ENTRY_GROUP_REQUIRED_LOADING:
             head = 'loading'
@@ -41,7 +43,6 @@ const MainBody = (props) => {
             body = ''
             break;
         case ENTRY_GROUP_LOADED:
-            console.log(entryGroupData)
             head = entryGroupData.entryGroup.name
             body = <EntryGroup {...entryGroupData}/>
             break;
