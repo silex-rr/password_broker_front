@@ -1,6 +1,7 @@
 import React, {useContext, useState} from "react"
 import {PasswordBrokerContext} from "../contexts/PasswordBrokerContext";
 import {Button, Input} from "react-daisyui";
+import {MASTER_PASSWORD_FILLED_IN} from "../constants/MasterPasswordStates";
 
 const MasterPasswordModal = () => {
     const passwordBrokerContext = useContext(PasswordBrokerContext)
@@ -9,7 +10,8 @@ const MasterPasswordModal = () => {
         masterPasswordModalVisibilityCheckboxRef,
         masterPasswordModalVisibilityErrorRef,
         masterPasswordCallback,
-        setMasterPasswordCallback
+        setMasterPasswordCallback,
+        setMasterPasswordState,
     } = passwordBrokerContext
 
     const [masterPasswordField, setMasterPasswordField] = useState('')
@@ -28,7 +30,7 @@ const MasterPasswordModal = () => {
         masterPasswordCallback(masterPasswordField)
         setMasterPasswordField('')
         setMasterPasswordCallback(() => () => {})
-
+        setMasterPasswordState(MASTER_PASSWORD_FILLED_IN)
     }
 
     return (

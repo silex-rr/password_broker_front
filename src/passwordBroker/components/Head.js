@@ -13,9 +13,10 @@ const Head = () => {
     const identityContext = useContext(IdentityContext)
     const { userName } = identityContext
     const passwordBrokerContext = useContext(PasswordBrokerContext)
-    const { masterPasswordState } = passwordBrokerContext
+    const { masterPasswordState, showMasterPasswordModal } = passwordBrokerContext
     //MdOutlineKeyOff
     let masterPasswordIcon = (<span></span>);
+    let masterPasswordIconClickHandler = () => {}
     switch (masterPasswordState) {
         default:
         case MASTER_PASSWORD_IS_EMPTY:
@@ -24,6 +25,7 @@ const Head = () => {
                     <MdOutlineKeyOff className="text-3xl mx-auto"/>
                 </span>
             )
+            masterPasswordIconClickHandler = () => {showMasterPasswordModal()}
             break;
         case MASTER_PASSWORD_FILLED_IN:
             masterPasswordIcon = (
@@ -38,6 +40,7 @@ const Head = () => {
                     <MdOutlineKey className="text-error text-3xl mx-auto"/>
                 </span>
             )
+            masterPasswordIconClickHandler = () => {showMasterPasswordModal()}
             break;
         case MASTER_PASSWORD_VALIDATED:
             masterPasswordIcon = (
@@ -55,7 +58,7 @@ const Head = () => {
             </div>
             <nav className="flex justify-end px-5">
                 <ul className="menu menu-horizontal p-0 font-bold align-middle flex self-center">
-                    <li className="">
+                    <li className="" onClick={masterPasswordIconClickHandler}>
                         {masterPasswordIcon}
                     </li>
                     <li className="px-2"><span>{userName}</span></li>
