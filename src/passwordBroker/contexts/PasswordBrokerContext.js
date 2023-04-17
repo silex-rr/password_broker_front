@@ -8,6 +8,7 @@ import {
 } from "../constants/EntryGroupStatus";
 import {useNavigate, useParams} from "react-router-dom";
 import {MASTER_PASSWORD_IS_EMPTY} from "../constants/MasterPasswordStates";
+import {ENTRY_GROUP_MENU_MAIN} from "../constants/EntryGroupMenu";
 
 
 const PasswordBrokerContext = React.createContext()
@@ -27,6 +28,8 @@ const PasswordBrokerProvider = (props) => {
     const [entryGroupData, setEntryGroupData] = useState(null)
     const [entryGroupId, setEntryGroupId] = useState('')
     const [entryGroupStatus, setEntryGroupStatus] = useState(ENTRY_GROUP_NOT_SELECTED)
+
+    const [entryGroupMenu, setEntryGroupMenu] = useState(ENTRY_GROUP_MENU_MAIN)
 
     const [masterPassword, setMasterPassword] = useState('')
     const [masterPasswordState, setMasterPasswordState] = useState(MASTER_PASSWORD_IS_EMPTY)
@@ -131,6 +134,8 @@ const PasswordBrokerProvider = (props) => {
                 entryGroupStatus: entryGroupStatus,
                 setEntryGroupStatus: setEntryGroupStatus,
                 selectEntryGroup: selectEntryGroup,
+                entryGroupMenu: entryGroupMenu,
+                setEntryGroupMenu: setEntryGroupMenu,
                 hostName: hostName,
                 baseUrl: baseUrl,
                 setMasterPassword: setMasterPassword,
