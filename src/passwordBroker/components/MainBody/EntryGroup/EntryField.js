@@ -1,5 +1,5 @@
 import React, {useContext, useState} from "react";
-import {FaRegEye} from "react-icons/fa";
+import {FaRegEye, FaRegEyeSlash} from "react-icons/fa";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
 import axios from "axios";
 import { Buffer } from "buffer";
@@ -19,6 +19,7 @@ const EntryField = (props) => {
     // const initializationVector = props.initialization_vector_base64
 
     const [decryptedValue, setDecryptedValue] = useState('')
+    const [decryptedValueVisible, setDecryptedValueVisible] = useState(false)
 
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
@@ -33,6 +34,11 @@ const EntryField = (props) => {
     } = passwordBrokerContext
 
     const handleValueVisibility = () => {
+        if (decryptedValue !== '') {
+            setDecryptedValueVisible(!decryptedValueVisible)
+            return;
+        }
+
         const getDecryptedValue = (masterPassword) => {
             axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId + '/decrypted', {
                 master_password: masterPassword
@@ -42,6 +48,7 @@ const EntryField = (props) => {
                         Buffer.from(result.data.value_decrypted_base64, 'base64').toString('utf8')
                     )
                     setMasterPasswordState(MASTER_PASSWORD_VALIDATED)
+                    setDecryptedValueVisible(true)
                 },
                 (error) => {
                     if (error.response.data.errors.master_password) {
@@ -68,14 +75,14 @@ const EntryField = (props) => {
             <div className="basis-1/5">{type}</div>
             <div className="basis-3/5 flex flex-row">
                 <div className="basis-4/5">
-                    {decryptedValue}
+                    {decryptedValueVisible ? decryptedValue : ''}
                 </div>
                 <div className="basis-1/5">
                     <button
                         className="text-slate-100 text-3xl focus:outline-none"
                         onClick={handleValueVisibility}
                     >
-                        <FaRegEye/>
+                        {decryptedValueVisible ? <FaRegEyeSlash /> : <FaRegEye/>}
                     </button>
                 </div>
 
