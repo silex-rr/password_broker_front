@@ -7,17 +7,18 @@ import {ROLE_ADMIN, ROLE_GUEST, ROLE_MEMBER, ROLE_MODERATOR} from "../constants/
 const MainLeftMenuTreeNode = (props) => {
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
-    const entryGroupId = props.entry_group_id;
+    const entryGroupIdCurrent = props.entry_group_id;
     const {
         setEntryGroupId,
+        entryGroupId,
         setEntryGroupStatus,
         entryGroupTreesOpened,
         setEntryGroupTreesOpened,
         selectEntryGroup,
     } = passwordBrokerContext
 
-    const [isOpened, setOpened] = useState(entryGroupTreesOpened.includes(entryGroupId))
-    const includes = entryGroupTreesOpened.includes(entryGroupId);
+    const [isOpened, setOpened] = useState(entryGroupTreesOpened.includes(entryGroupIdCurrent))
+    const includes = entryGroupTreesOpened.includes(entryGroupIdCurrent);
 
     if (isOpened !== includes) {
         setOpened(includes)
@@ -32,19 +33,20 @@ const MainLeftMenuTreeNode = (props) => {
     }
 
     const handleOpening = () => {
-        // console.log(entryGroupTreesOpened)
+
+        let entryGroupTreesOpenedNew = entryGroupTreesOpened;
         if (isOpened) {
-            entryGroupTreesOpened.filter(e => e !== entryGroupId)
+            entryGroupTreesOpenedNew = entryGroupTreesOpened.filter(e => e !== entryGroupIdCurrent)
         } else {
-            entryGroupTreesOpened.push(entryGroupId)
+            entryGroupTreesOpenedNew.push(entryGroupIdCurrent)
         }
-        setEntryGroupTreesOpened(entryGroupTreesOpened)
+        setEntryGroupTreesOpened(entryGroupTreesOpenedNew)
         setOpened(!isOpened)
-        // console.log(entryGroupTreesOpened)
+
     }
 
     const handleOpenEntryGroup = () => {
-        selectEntryGroup(entryGroupId)
+        selectEntryGroup(entryGroupIdCurrent)
     }
 
     let groupColor = 'text-slate-200';
@@ -67,7 +69,9 @@ const MainLeftMenuTreeNode = (props) => {
 
 
     return (
-        <li key={entryGroupId} className="pl-2 ml-2 border-slate-200 border-l border-dotted">
+        <li key={entryGroupIdCurrent}
+            className="pl-2 ml-2 border-slate-200 border-l border-dotted"
+        >
             <div className="tree-corner">
                 {hasChildren
                     ?
@@ -83,7 +87,12 @@ const MainLeftMenuTreeNode = (props) => {
                     ? <span className="inline-block align-middle">{props.title}</span>
                     :
                     <span onClick={handleOpenEntryGroup} className="cursor-pointer">
-                        <span className="inline-block align-middle">{props.title}</span>
+                        <span
+                            className={"inline-block align-middle"
+                                + (entryGroupId === entryGroupIdCurrent ? " font-bold text-slate-200": "")}
+                        >
+                            {props.title}
+                        </span>
                     </span>
                 }
             </div>

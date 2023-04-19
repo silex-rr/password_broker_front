@@ -123,7 +123,7 @@ const MainBody = () => {
                     }
                     menu.push(
                         <span id={ENTRY_GROUP_MENU_MAIN} key={ENTRY_GROUP_MENU_MAIN}
-                              onClick={menuClickHandler} className={"tab tab-lifted " + selected}>Entry Group</span>
+                              onClick={menuClickHandler} className={"tab tab-lifted " + selected}>Entries</span>
                     )
             }
             menu.reverse()
