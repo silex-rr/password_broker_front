@@ -9,6 +9,7 @@ import {
 import {useNavigate, useParams} from "react-router-dom";
 import {MASTER_PASSWORD_IS_EMPTY} from "../constants/MasterPasswordStates";
 import {ENTRY_GROUP_MENU_MAIN} from "../constants/EntryGroupMenu";
+import {ENTRY_GROUP_USERS_LOADED, ENTRY_GROUP_USERS_NOT_SELECTED} from "../constants/EntryGroupUsersStatus";
 
 
 const PasswordBrokerContext = React.createContext()
@@ -26,6 +27,8 @@ const PasswordBrokerProvider = (props) => {
 
 
     const [entryGroupData, setEntryGroupData] = useState(null)
+    const [entryGroupUsers, setEntryGroupUsers] = useState([])
+    const [entryGroupUsersStatus, setEntryGroupUsersStatus] = useState(ENTRY_GROUP_USERS_NOT_SELECTED)
     const [entryGroupId, setEntryGroupId] = useState('')
     const [entryGroupStatus, setEntryGroupStatus] = useState(ENTRY_GROUP_NOT_SELECTED)
 
@@ -67,6 +70,7 @@ const PasswordBrokerProvider = (props) => {
 
     const selectEntryGroup = useCallback((entryGroupID) => {
         setEntryGroupId(entryGroupID)
+        setEntryGroupUsers([])
         setEntryGroupStatus(ENTRY_GROUP_REQUIRED_LOADING)
         if (entryGroupIdParam !== entryGroupID) {
             navigate('/entryGroup/' + entryGroupID)
@@ -93,6 +97,19 @@ const PasswordBrokerProvider = (props) => {
                     setEntryGroupTreesOpened(entryGroupTreesOpened)
                 }
                 loadEntryGroupEntries(entryGroupID, response.data)
+            }
+        )
+    }
+
+    const loadEntryGroupUsers = (entryGroupID) => {
+        axios.get(baseUrl + '/entryGroups/' + entryGroupID + '/users/').then(
+            (response) => {
+                setEntryGroupUsers(response.data)
+                // console.log('res', response)
+                setEntryGroupUsersStatus(ENTRY_GROUP_USERS_LOADED)
+            },
+            (error) => {
+                console.log(error)
             }
         )
     }
@@ -133,6 +150,12 @@ const PasswordBrokerProvider = (props) => {
                 entryGroupData: entryGroupData,
                 entryGroupStatus: entryGroupStatus,
                 setEntryGroupStatus: setEntryGroupStatus,
+
+                entryGroupUsers: entryGroupUsers,
+                entryGroupUsersStatus: entryGroupUsersStatus,
+                setEntryGroupUsersStatus: setEntryGroupUsersStatus,
+                loadEntryGroupUsers: loadEntryGroupUsers,
+
                 selectEntryGroup: selectEntryGroup,
                 entryGroupMenu: entryGroupMenu,
                 setEntryGroupMenu: setEntryGroupMenu,
