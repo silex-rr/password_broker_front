@@ -93,6 +93,9 @@ const MainBody = () => {
                     )
                 // eslint-disable-next-line no-fallthrough
                 case ROLE_MODERATOR:
+                // eslint-disable-next-line no-fallthrough
+                default:
+                case ROLE_MEMBER:
                     selected = unSelectedTab
                     if (!menu_selected && entryGroupMenu === ENTRY_GROUP_MENU_USERS) {
                         selected = selectedTab
@@ -102,9 +105,7 @@ const MainBody = () => {
                         <span id={ENTRY_GROUP_MENU_USERS} key={ENTRY_GROUP_MENU_USERS}
                               onClick={menuClickHandler} className={"tab tab-lifted " + selected}>Users</span>
                     )
-                // eslint-disable-next-line no-fallthrough
-                default:
-                case ROLE_MEMBER:
+
                     selected = unSelectedTab
                     if (entryGroupMenu === ENTRY_GROUP_MENU_HISTORY) {
                         selected = selectedTab

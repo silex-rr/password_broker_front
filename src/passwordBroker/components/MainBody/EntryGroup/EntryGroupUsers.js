@@ -21,7 +21,7 @@ const EntryGroupUsers = () => {
                 <tr>
                     <th className="bg-slate-900 text-slate-200">User</th>
                     <th className="bg-slate-900 text-slate-200">Role</th>
-                    <th className="bg-slate-900 text-slate-200">Updated at</th>
+                    <th className="bg-slate-900 text-slate-200">Role set</th>
                 </tr>
                 </thead>
                 <tbody>
