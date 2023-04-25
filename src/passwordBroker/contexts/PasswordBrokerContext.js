@@ -15,6 +15,8 @@ import {ENTRY_GROUP_USERS_LOADED, ENTRY_GROUP_USERS_NOT_SELECTED} from "../const
 const PasswordBrokerContext = React.createContext()
 
 const PasswordBrokerProvider = (props) => {
+    axios.defaults.withCredentials = true
+
     const hostName = process.env.REACT_APP_PASSWORD_BROKER_HOST
     const baseUrl  = hostName + '/passwordBroker/api'
 
@@ -42,6 +44,9 @@ const PasswordBrokerProvider = (props) => {
 
     const navigate = useNavigate();
 
+    let loadEntryGroupAbortController = null
+    let loadEntryGroupUsersAbortController = null;
+
     const showMasterPasswordModal = (errorText = '') => {
         const masterPasswordModalVisibilityCheckbox = masterPasswordModalVisibilityCheckboxRef.current;
         const masterPasswordModalVisibilityError = masterPasswordModalVisibilityErrorRef.current;
@@ -58,7 +63,7 @@ const PasswordBrokerProvider = (props) => {
     }
 
     const loadEntryGroupTrees = () => {
-        axios.defaults.withCredentials = true
+        // axios.defaults.withCredentials = true
 
         axios.get(baseUrl + '/entryGroupsAsTree/').then(
             (response) => {
@@ -69,19 +74,31 @@ const PasswordBrokerProvider = (props) => {
     }
 
     const selectEntryGroup = useCallback((entryGroupID) => {
+        if (loadEntryGroupAbortController) {
+            loadEntryGroupAbortController.abort()
+        }
+        if (loadEntryGroupUsersAbortController) {
+            loadEntryGroupUsersAbortController.abort()
+        }
         setEntryGroupId(entryGroupID)
         setEntryGroupUsers([])
         setEntryGroupStatus(ENTRY_GROUP_REQUIRED_LOADING)
         if (entryGroupIdParam !== entryGroupID) {
             navigate('/entryGroup/' + entryGroupID)
         }
-    }, [setEntryGroupId, setEntryGroupStatus, entryGroupIdParam, navigate])
+    }, [setEntryGroupId, setEntryGroupStatus, entryGroupIdParam, navigate,
+        loadEntryGroupUsersAbortController, loadEntryGroupAbortController])
 
-    const loadEntryGroup = (entryGroupID) => {
-        axios.defaults.withCredentials = true
+    const loadEntryGroup = (entryGroupIdForLoading) => {
+        loadEntryGroupAbortController = new AbortController()
 
-        axios.get(baseUrl + '/entryGroups/' + entryGroupID).then(
+        axios.get(baseUrl + '/entryGroups/' + entryGroupIdForLoading,
+            {
+                signal: loadEntryGroupAbortController.signal
+            }
+        ).then(
             (response) => {
+                loadEntryGroupAbortController = null
                 const materialized_path = response.data.entryGroup.materialized_path
                 const path_list = materialized_path.split('.');
                 let changed = false
@@ -96,32 +113,49 @@ const PasswordBrokerProvider = (props) => {
                 if (changed) {
                     setEntryGroupTreesOpened(entryGroupTreesOpened)
                 }
-                loadEntryGroupEntries(entryGroupID, response.data)
+                loadEntryGroupEntries(entryGroupIdForLoading, response.data)
+            },
+            (error) => {
+                console.log(error)
+                loadEntryGroupAbortController = null
             }
         )
     }
-
-    const loadEntryGroupUsers = (entryGroupID) => {
-        axios.get(baseUrl + '/entryGroups/' + entryGroupID + '/users/').then(
+    const loadEntryGroupUsers = (entryGroupIdForLoading) => {
+        loadEntryGroupUsersAbortController = new AbortController();
+        axios.get(baseUrl + '/entryGroups/' + entryGroupIdForLoading + '/users/',
+            {signal: loadEntryGroupUsersAbortController.signal}
+            ).then(
             (response) => {
+                loadEntryGroupUsersAbortController = null
                 setEntryGroupUsers(response.data)
                 // console.log('res', response)
                 setEntryGroupUsersStatus(ENTRY_GROUP_USERS_LOADED)
             },
             (error) => {
+                loadEntryGroupUsersAbortController = null
                 console.log(error)
             }
         )
     }
 
     const loadEntryGroupEntries = (entryGroupID, data) => {
-        axios.defaults.withCredentials = true
+        // axios.defaults.withCredentials = true
 
         axios.get(baseUrl + '/entryGroups/' + entryGroupID + '/entries').then(
             (response) => {
                 data.entries = response.data
                 setEntryGroupData(data)
                 setEntryGroupStatus(ENTRY_GROUP_LOADED)
+            }
+        )
+    }
+
+    const removeUserFromGroup = (entryGroupID, userId, callback) => {
+        ///entryGroups/{entryGroup:entry_group_id}/users/{user:user_id}
+        axios.delete(baseUrl + `/entryGroups/${entryGroupID}/users/${userId}`).then(
+            () => {
+                callback()
             }
         )
     }
@@ -152,6 +186,7 @@ const PasswordBrokerProvider = (props) => {
                 setEntryGroupStatus: setEntryGroupStatus,
 
                 entryGroupUsers: entryGroupUsers,
+                setEntryGroupUsers: setEntryGroupUsers,
                 entryGroupUsersStatus: entryGroupUsersStatus,
                 setEntryGroupUsersStatus: setEntryGroupUsersStatus,
                 loadEntryGroupUsers: loadEntryGroupUsers,
@@ -170,7 +205,8 @@ const PasswordBrokerProvider = (props) => {
                 setMasterPasswordCallback: setMasterPasswordCallback,
                 showMasterPasswordModal: showMasterPasswordModal,
                 masterPasswordState: masterPasswordState,
-                setMasterPasswordState: setMasterPasswordState
+                setMasterPasswordState: setMasterPasswordState,
+                removeUserFromGroup: removeUserFromGroup
             }}
         >
             {props.children}
