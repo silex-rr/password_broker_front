@@ -80,8 +80,6 @@ const EntryGroupUsers = () => {
                                   onClick={onClick}>add as Admin</span>)
                 }
             )
-        // eslint-disable-next-line no-fallthrough
-        case ROLE_MODERATOR:
             buttons.push( (user_id) => {
                     const onClick = () => {
                         addUserToGroup(user_id, ROLE_MODERATOR)
@@ -101,12 +99,19 @@ const EntryGroupUsers = () => {
     }
 
     let remove_th = ''
-
-    if (entryGroupData.role.role === ROLE_ADMIN
-        || entryGroupData.role.role === ROLE_MODERATOR
-    ) {
+    let add_user = ''
+    if (entryGroupData.role.role === ROLE_ADMIN) {
         remove_th = <th className="bg-slate-900 text-slate-200">Remove user</th>
+        add_user = (
+            <div className="mt-5 p-2">
+                <h3 children='mb-2'>Add new user: </h3>
+                <UserSearch buttons={buttons}/>
+            </div>
+        )
     }
+
+
+
 
     return (
         <div className="overflow-x-auto">
@@ -123,10 +128,7 @@ const EntryGroupUsers = () => {
                     {users}
                 </tbody>
             </table>
-            <div className="mt-5 p-2">
-                <h3 children='mb-2'>Add new user: </h3>
-                <UserSearch buttons={buttons}/>
-            </div>
+            {add_user}
         </div>
     )
 }

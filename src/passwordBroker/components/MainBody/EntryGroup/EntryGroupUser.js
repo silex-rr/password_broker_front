@@ -33,9 +33,7 @@ const EntryGroupUser = (props) => {
     }
 
     let remove_td = ''
-    if (role === ROLE_ADMIN
-        || role === ROLE_MODERATOR
-    ) {
+    if (role === ROLE_ADMIN) {
         if (user.user_id !== userId
             && user.role !== ROLE_ADMIN
         ) {

@@ -82,7 +82,10 @@ const PasswordBrokerProvider = (props) => {
         }
         setEntryGroupId(entryGroupID)
         setEntryGroupUsers([])
+        setEntryGroupUsersStatus(ENTRY_GROUP_USERS_NOT_SELECTED)
         setEntryGroupStatus(ENTRY_GROUP_REQUIRED_LOADING)
+        setEntryGroupMenu(ENTRY_GROUP_MENU_MAIN)
+        setEntryGroupData(null)
         if (entryGroupIdParam !== entryGroupID) {
             navigate('/entryGroup/' + entryGroupID)
         }
