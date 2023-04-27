@@ -4,6 +4,16 @@ import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
 import axios from "axios";
 import { Buffer } from "buffer";
 import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from "../../../constants/MasterPasswordStates";
+import {
+    FIELD_TYPE_FILE,
+    FIELD_TYPE_LINK,
+    FIELD_TYPE_NOTE,
+    FIELD_TYPE_PASSWORD
+} from "../../../constants/MainBodyEntryGroupEntryFieldTypes";
+import Link from "./EntryFieldTypes/Link";
+import Password from "./EntryFieldTypes/Password";
+import Note from "./EntryFieldTypes/Note";
+import File from "./EntryFieldTypes/File";
 
 const EntryField = (props) => {
 
@@ -44,8 +54,31 @@ const EntryField = (props) => {
                 master_password: masterPassword
             }).then(
                 (result) => {
+                    const decoded = Buffer.from(result.data.value_decrypted_base64, 'base64').toString('utf8');
+                    let wrapped = '';
+                    switch (type) {
+                        default:
+                            wrapped = decoded
+                            break
+
+                        case FIELD_TYPE_LINK:
+                            wrapped = <Link value={decoded} />
+                            break
+
+                        case FIELD_TYPE_PASSWORD:
+                            wrapped = <Password value={decoded} />
+                            break
+
+                        case FIELD_TYPE_NOTE:
+                            wrapped = <Note value={decoded} />
+                            break
+
+                        case FIELD_TYPE_FILE:
+                            wrapped = <File value={decoded} />
+                            break
+                    }
                     setDecryptedValue(
-                        Buffer.from(result.data.value_decrypted_base64, 'base64').toString('utf8')
+                        wrapped
                     )
                     setMasterPasswordState(MASTER_PASSWORD_VALIDATED)
                     setDecryptedValueVisible(true)
@@ -73,11 +106,11 @@ const EntryField = (props) => {
         <div key={fieldId} className="flex flex-row w-full px-2 bg-slate-500">
             <div className="basis-2/5">{title}</div>
             <div className="basis-1/5">{type}</div>
-            <div className="basis-3/5 flex flex-row">
-                <div className="basis-4/5">
+            <div className="basis-3/5 flex justify-between">
+                <div className="">
                     {decryptedValueVisible ? decryptedValue : ''}
                 </div>
-                <div className="basis-1/5">
+                <div className="mx-2">
                     <button
                         className="text-slate-100 text-3xl focus:outline-none"
                         onClick={handleValueVisibility}

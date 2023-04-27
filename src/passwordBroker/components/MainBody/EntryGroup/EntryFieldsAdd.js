@@ -1,5 +1,6 @@
 import React, {useContext, useRef, useState} from "react";
 import {
+    FIELD_TYPE_FILE,
     FIELD_TYPE_LINK,
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD
@@ -24,6 +25,7 @@ const EntryFieldsAdd = (props) => {
 
     const [fieldType, setFieldType] = useState(FIELD_TYPE_PASSWORD)
     const [fieldValue, setFieldValue] = useState('')
+    const [fieldFile, setFieldFile] = useState(null)
     const [fieldTitle, setFieldTitle] = useState('')
     const [masterPasswordInput, setMasterPasswordInput] = useState('')
     const [errorMessage, setErrorMessage] = useState("")
@@ -42,16 +44,28 @@ const EntryFieldsAdd = (props) => {
         }
 
         setAddingFieldState(FIELD_ADDING_IN_PROGRESS)
-        // axios.defaults.withCredentials = true
-        // axios.get(hostName + "/sanctum/csrf-cookie").then(
-        //     (response) => {
-                axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields',
-                    {
-                        'title': fieldTitle,
-                        'type': fieldType,
-                        'master_password': masterPasswordForm,
-                        'value': fieldValue
-                    }
+
+        const data = new FormData();
+        data.append('title', fieldTitle)
+        data.append('type', fieldType)
+        data.append('master_password', masterPasswordForm)
+        switch (fieldType) {
+            default:
+                break
+            case FIELD_TYPE_LINK:
+            case FIELD_TYPE_PASSWORD:
+            case FIELD_TYPE_NOTE:
+                data.append('value', fieldValue)
+                break
+
+            case FIELD_TYPE_FILE:
+                data.append('file', fieldFile)
+                break
+
+        }
+
+        axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields',
+                    data
                 ).then(
                     () => {
                         props.setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING)
@@ -97,11 +111,16 @@ const EntryFieldsAdd = (props) => {
     }
     const changeType = (e) => {
         setFieldValue('')
+        setFieldFile(null)
         setFieldType(e.target.value)
     }
 
     const changeValue = (e) => {
         setFieldValue(e.target.value)
+        if (fieldType === FIELD_TYPE_FILE) {
+            setFieldFile(e.target.files[0])
+        }
+
     }
 
     const changeTitle = (e) => {
@@ -173,6 +192,25 @@ const EntryFieldsAdd = (props) => {
                 </div>
             )
             break;
+        case FIELD_TYPE_FILE:
+            value = (
+                <div className="flex flex-row py-1.5 items-center">
+                    <label htmlFor={"add-field-for-" + entryId + "-value"}
+                           className="inline-block basis-1/3 text-lg"
+                    >
+                        File:
+                    </label>
+                    <Input
+                        id={"add-field-for-" + entryId + "-value"}
+                        className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
+                        onChange={changeValue}
+                        placeholder="add a file"
+                        type="file"
+                        value={fieldValue}/>
+                </div>
+            )
+            break
+
     }
 
     let masterPasswordField = ''
@@ -239,6 +277,7 @@ const EntryFieldsAdd = (props) => {
                                 <option value={FIELD_TYPE_PASSWORD}>{FIELD_TYPE_PASSWORD}</option>
                                 <option value={FIELD_TYPE_LINK}>{FIELD_TYPE_LINK}</option>
                                 <option value={FIELD_TYPE_NOTE}>{FIELD_TYPE_NOTE}</option>
+                                <option value={FIELD_TYPE_FILE}>{FIELD_TYPE_FILE}</option>
                             </select>
                         </div>
 
