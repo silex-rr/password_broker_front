@@ -1,8 +1,8 @@
 import React, {useContext, useState} from "react";
-import {FaRegEye, FaRegEyeSlash} from "react-icons/fa";
+import {FaCopy, FaDownload, FaRegEye, FaRegEyeSlash, FaTrashAlt} from "react-icons/fa";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
 import axios from "axios";
-import { Buffer } from "buffer";
+import {Buffer} from "buffer";
 import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from "../../../constants/MasterPasswordStates";
 import {
     FIELD_TYPE_FILE,
@@ -14,6 +14,7 @@ import Link from "./EntryFieldTypes/Link";
 import Password from "./EntryFieldTypes/Password";
 import Note from "./EntryFieldTypes/Note";
 import File from "./EntryFieldTypes/File";
+import {stringToBlob} from "../../../../utils/stringToBlob";
 
 const EntryField = (props) => {
 
@@ -21,6 +22,9 @@ const EntryField = (props) => {
     const entryId = props.entry_id
     const type = props.type
     const title = props.title
+    const fileMime = props.file_mime ?? ''
+    const fileName = props.file_name ?? ''
+    const fileSize = props.file_size ? parseInt(props.file_size): 0
     // const createdBy = props.created_by
     // const updateBy = props.update_by
     // const createdAt = props.created_at
@@ -50,37 +54,30 @@ const EntryField = (props) => {
         }
 
         const getDecryptedValue = (masterPassword) => {
-            axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId + '/decrypted', {
-                master_password: masterPassword
-            }).then(
+            axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId + '/decrypted',
+                {
+                    master_password: masterPassword
+                }
+            ).then(
                 (result) => {
-                    const decoded = Buffer.from(result.data.value_decrypted_base64, 'base64').toString('utf8');
-                    let wrapped = '';
-                    switch (type) {
-                        default:
-                            wrapped = decoded
-                            break
-
-                        case FIELD_TYPE_LINK:
-                            wrapped = <Link value={decoded} />
-                            break
-
-                        case FIELD_TYPE_PASSWORD:
-                            wrapped = <Password value={decoded} />
-                            break
-
-                        case FIELD_TYPE_NOTE:
-                            wrapped = <Note value={decoded} />
-                            break
-
-                        case FIELD_TYPE_FILE:
-                            wrapped = <File value={decoded} />
-                            break
-                    }
-                    setDecryptedValue(
-                        wrapped
-                    )
                     setMasterPasswordState(MASTER_PASSWORD_VALIDATED)
+
+                    const decoded = Buffer.from(result.data, 'base64').toString('utf8')
+
+                    if (type === FIELD_TYPE_FILE) {
+                        const blob = stringToBlob(decoded, fileMime)
+                        const href = URL.createObjectURL(blob)
+                        const link = document.createElement('a')
+                        link.href = href
+                        link.setAttribute('download', fileName)
+                        document.body.appendChild(link)
+                        link.click()
+                        document.body.removeChild(link)
+                        URL.revokeObjectURL(href)
+                        return
+                    }
+
+                    setDecryptedValue(decoded)
                     setDecryptedValueVisible(true)
                 },
                 (error) => {
@@ -93,34 +90,65 @@ const EntryField = (props) => {
                 }
             )
         }
+
         if (masterPassword === '') {
             setMasterPasswordCallback((masterPassword) => getDecryptedValue)
             showMasterPasswordModal()
         } else {
             getDecryptedValue(masterPassword)
         }
-
     }
 
-    return (
-        <div key={fieldId} className="flex flex-row w-full px-2 bg-slate-500">
-            <div className="basis-2/5">{title}</div>
-            <div className="basis-1/5">{type}</div>
-            <div className="basis-3/5 flex justify-between">
-                <div className="">
-                    {decryptedValueVisible ? decryptedValue : ''}
-                </div>
-                <div className="mx-2">
-                    <button
-                        className="text-slate-100 text-3xl focus:outline-none"
-                        onClick={handleValueVisibility}
-                    >
-                        {decryptedValueVisible ? <FaRegEyeSlash /> : <FaRegEye/>}
-                    </button>
-                </div>
+    let value = ''
+    let mainButtonIcon = decryptedValueVisible ? <FaRegEyeSlash /> : <FaRegEye/>
 
-                {/*<FaRegEyeSlash />*/}
-                {/*{encryptedValue}*/}
+    switch (type) {
+        default:
+            value = ''
+            break
+
+        case FIELD_TYPE_LINK:
+            value = <Link value={decryptedValueVisible? decryptedValue: ''}/>
+            break
+
+        case FIELD_TYPE_PASSWORD:
+            value = <Password value={decryptedValueVisible? decryptedValue: ''}/>
+            break
+
+        case FIELD_TYPE_NOTE:
+            value = <Note value={decryptedValueVisible? decryptedValue: ''}/>
+            break
+
+        case FIELD_TYPE_FILE:
+            value = <File fileMime={fileMime} fileName={fileName} fileSize={fileSize}/>
+            mainButtonIcon = <FaDownload/>
+            break;
+    }
+//FaBan FaTimesCircle FaTrashAlt FaTrash
+    return (
+        <div key={fieldId} className="flex flex-row w-full px-2 bg-slate-500 hover:bg-slate-600 items-baseline">
+            <div className="px-2 basis-1/6">{title}</div>
+            <div className="px-2 basis-1/6">{type}</div>
+            {value}
+            <div className="px-2 basis-1/6 flex justify-end ">
+                <button
+                    className="text-slate-100 text-2xl focus:outline-none"
+                >
+                    <FaCopy />
+                </button>
+
+                <button
+                    className="text-slate-100 text-2xl focus:outline-none ml-3"
+                    onClick={handleValueVisibility}
+                >
+                    {mainButtonIcon}
+                </button>
+
+                <button
+                    className="text-red-400 text-2xl focus:outline-none ml-3"
+                >
+                    <FaTrashAlt/>
+                </button>
             </div>
         </div>
     )
