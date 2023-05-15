@@ -10,6 +10,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {MASTER_PASSWORD_IS_EMPTY} from "../constants/MasterPasswordStates";
 import {ENTRY_GROUP_MENU_MAIN} from "../constants/EntryGroupMenu";
 import {ENTRY_GROUP_USERS_LOADED, ENTRY_GROUP_USERS_NOT_SELECTED} from "../constants/EntryGroupUsersStatus";
+import {ROLE_GUEST} from "../constants/EntryGroupRole";
 
 
 const PasswordBrokerContext = React.createContext()
@@ -29,6 +30,7 @@ const PasswordBrokerProvider = (props) => {
 
 
     const [entryGroupData, setEntryGroupData] = useState(null)
+    const [entryGroupRole, setEntryGroupRole] = useState(ROLE_GUEST)
     const [entryGroupUsers, setEntryGroupUsers] = useState([])
     const [entryGroupUsersStatus, setEntryGroupUsersStatus] = useState(ENTRY_GROUP_USERS_NOT_SELECTED)
     const [entryGroupId, setEntryGroupId] = useState('')
@@ -48,11 +50,14 @@ const PasswordBrokerProvider = (props) => {
     let loadEntryGroupUsersAbortController = null;
 
     const showMasterPasswordModal = (errorText = '') => {
-        const masterPasswordModalVisibilityCheckbox = masterPasswordModalVisibilityCheckboxRef.current;
-        const masterPasswordModalVisibilityError = masterPasswordModalVisibilityErrorRef.current;
-        masterPasswordModalVisibilityCheckbox.checked = true
+        const masterPasswordModalVisibilityCheckbox = masterPasswordModalVisibilityCheckboxRef.current
+        const masterPasswordModalVisibilityError = masterPasswordModalVisibilityErrorRef.current
+        if (!masterPasswordModalVisibilityCheckbox.checked){
+            masterPasswordModalVisibilityCheckbox.click()
+        }
         masterPasswordModalVisibilityError.textContent = errorText
-        const classList = masterPasswordModalVisibilityError.classList;
+
+        const classList = masterPasswordModalVisibilityError.classList
         if (errorText !== '') {
             classList.add("mt-8")
             classList.add("py-1.5")
@@ -149,6 +154,7 @@ const PasswordBrokerProvider = (props) => {
             (response) => {
                 data.entries = response.data
                 setEntryGroupData(data)
+                setEntryGroupRole(data.role.role)
                 setEntryGroupStatus(ENTRY_GROUP_LOADED)
             }
         )
@@ -186,6 +192,7 @@ const PasswordBrokerProvider = (props) => {
                 setEntryGroupId: setEntryGroupId,
                 entryGroupData: entryGroupData,
                 entryGroupStatus: entryGroupStatus,
+                entryGroupRole: entryGroupRole,
                 setEntryGroupStatus: setEntryGroupStatus,
 
                 entryGroupUsers: entryGroupUsers,

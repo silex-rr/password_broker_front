@@ -202,7 +202,7 @@ const EntryFieldsAdd = (props) => {
                     </label>
                     <Input
                         id={"add-field-for-" + entryId + "-value"}
-                        className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
+                        className="file-input file-input-bordered file-input-sm w-full basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
                         onChange={changeValue}
                         placeholder="add a file"
                         type="file"
