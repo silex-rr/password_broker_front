@@ -68,7 +68,7 @@ const EntryField = (props) => {
                 (result) => {
                     setMasterPasswordState(MASTER_PASSWORD_VALIDATED)
 
-                    const decoded = Buffer.from(result.data, 'base64').toString('utf8')
+                    const decoded = Buffer.from(result.data, 'base64').toString(type === FIELD_TYPE_FILE ? 'binary' : 'utf8')
                     setButtonLoading('')
                     onSucceed(decoded)
 

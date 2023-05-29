@@ -69,7 +69,7 @@ const MasterPasswordModal = () => {
                         <Button
                             className={"btn-success btn-sm basis-1/3"}
                             onClick={handleSaveMasterPassword}
-                        >save</Button>
+                        >remember</Button>
 
                         <label htmlFor="masterPasswordModal"
                                className="btn btn-error btn-sm btn-outline right-0 basis-1/3">close</label>
