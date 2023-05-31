@@ -1,6 +1,7 @@
 import React from "react";
 import EntryFieldsAdd from "./EntryFieldsAdd";
 import EntryField from "./EntryField";
+import EntryFieldsEdit from "./EntryFieldsEdit";
 
 const EntryFields = (props) => {
     const entryGroupId = props.entryGroupId
@@ -27,6 +28,13 @@ const EntryFields = (props) => {
                 {fields}
             </div>
 
+            <EntryFieldsEdit
+                entryGroupId={entryGroupId}
+                entryId={entryId}
+                entryTitle={props.entryTitle}
+                fields={props.fields}
+                setEntryFieldsStatus = {props.setEntryFieldsStatus}
+            />
 
             <EntryFieldsAdd
                 entryGroupId={entryGroupId}

@@ -11,6 +11,7 @@ import {MASTER_PASSWORD_IS_EMPTY} from "../constants/MasterPasswordStates";
 import {ENTRY_GROUP_MENU_MAIN} from "../constants/EntryGroupMenu";
 import {ENTRY_GROUP_USERS_LOADED, ENTRY_GROUP_USERS_NOT_SELECTED} from "../constants/EntryGroupUsersStatus";
 import {ROLE_GUEST} from "../constants/EntryGroupRole";
+import {FIELD_EDITING_AWAIT} from "../constants/EntryGroupEntryFieldEditingStates";
 
 
 const PasswordBrokerContext = React.createContext()
@@ -35,6 +36,10 @@ const PasswordBrokerProvider = (props) => {
     const [entryGroupUsersStatus, setEntryGroupUsersStatus] = useState(ENTRY_GROUP_USERS_NOT_SELECTED)
     const [entryGroupId, setEntryGroupId] = useState('')
     const [entryGroupStatus, setEntryGroupStatus] = useState(ENTRY_GROUP_NOT_SELECTED)
+
+    const [entryGroupFieldForEditId, setEntryGroupFieldForEditId] = useState('')
+    const [entryGroupFieldForEditDecryptedValue, setEntryGroupFieldForEditDecryptedValue] = useState('')
+    const [entryGroupFieldForEditState, setEntryGroupFieldForEditState] = useState(FIELD_EDITING_AWAIT)
 
     const [entryGroupMenu, setEntryGroupMenu] = useState(ENTRY_GROUP_MENU_MAIN)
 
@@ -194,6 +199,13 @@ const PasswordBrokerProvider = (props) => {
                 entryGroupStatus: entryGroupStatus,
                 entryGroupRole: entryGroupRole,
                 setEntryGroupStatus: setEntryGroupStatus,
+
+                entryGroupFieldForEditId: entryGroupFieldForEditId,
+                setEntryGroupFieldForEditId: setEntryGroupFieldForEditId,
+                entryGroupFieldForEditDecryptedValue: entryGroupFieldForEditDecryptedValue,
+                setEntryGroupFieldForEditDecryptedValue: setEntryGroupFieldForEditDecryptedValue,
+                entryGroupFieldForEditState: entryGroupFieldForEditState,
+                setEntryGroupFieldForEditState: setEntryGroupFieldForEditState,
 
                 entryGroupUsers: entryGroupUsers,
                 setEntryGroupUsers: setEntryGroupUsers,

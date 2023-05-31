@@ -18,6 +18,11 @@ import {stringToBlob} from "../../../../utils/stringToBlob";
 import EntryFieldButton from "./EntryFieldButton";
 import {ROLE_CAN_EDIT} from "../../../constants/EntryGroupRole";
 import copy from "copy-to-clipboard";
+import {
+    FIELD_EDITING_AWAIT,
+    FIELD_EDITING_EDITING,
+    FIELD_EDITING_LOADING_DATA
+} from "../../../constants/EntryGroupEntryFieldEditingStates";
 
 const EntryField = (props) => {
 
@@ -49,7 +54,11 @@ const EntryField = (props) => {
         showMasterPasswordModal,
         baseUrl,
         entryGroupId,
-        entryGroupRole
+        entryGroupRole,
+        setEntryGroupFieldForEditId,
+        setEntryGroupFieldForEditDecryptedValue,
+        entryGroupFieldForEditState,
+        setEntryGroupFieldForEditState
     } = passwordBrokerContext
 
     const loadDecryptedValue = (onSucceed, button = '') => {
@@ -186,7 +195,16 @@ const EntryField = (props) => {
 
         }
         const handleEdit = () => {
-
+            if (entryGroupFieldForEditState !== FIELD_EDITING_AWAIT ){
+                return
+            }
+            setEntryGroupFieldForEditState(FIELD_EDITING_LOADING_DATA)
+            loadDecryptedValue((decoded) => {
+                setDecryptedValue(decoded)
+                setEntryGroupFieldForEditId(fieldId)
+                setEntryGroupFieldForEditDecryptedValue(decoded)
+                setEntryGroupFieldForEditState(FIELD_EDITING_EDITING)
+            }, 'edit')
         }
 
         buttons.push(<EntryFieldButton
