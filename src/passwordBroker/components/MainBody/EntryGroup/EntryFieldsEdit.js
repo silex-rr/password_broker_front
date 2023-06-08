@@ -49,9 +49,11 @@ const EntryFieldsEdit = (props) => {
 
     const fieldType =  field === null ? '' : field.type
     const fieldTitleDefault = field === null ? '' : field.title
+    const fieldLoginDefault = field === null || fieldType !== FIELD_TYPE_PASSWORD? '' : field.login
     const fieldValueDefault = entryGroupFieldForEditDecryptedValue
 
     const [fieldValue, setFieldValue] = useState('')
+    const [fieldLogin, setFieldLogin] = useState('')
     const [fieldTitle, setFieldTitle] = useState('')
 
     const [masterPasswordInput, setMasterPasswordInput] = useState('')
@@ -74,10 +76,11 @@ const EntryFieldsEdit = (props) => {
         ) {
             setFieldValue(fieldValueDefault)
             setFieldTitle(fieldTitleDefault)
+            setFieldLogin(fieldLoginDefault)
             modalVisibilityCheckbox.checked = true
         }
 
-    }, [modalVisibilityRef, entryGroupFieldForEditState, fieldValueDefault, fieldTitleDefault])
+    }, [modalVisibilityRef, entryGroupFieldForEditState, fieldValueDefault, fieldTitleDefault, fieldLoginDefault])
     
     const updateField = () => {
         if (entryGroupFieldForEditState !== FIELD_EDITING_EDITING) {
@@ -97,8 +100,9 @@ const EntryFieldsEdit = (props) => {
         switch (fieldType) {
             default:
                 break
-            case FIELD_TYPE_LINK:
             case FIELD_TYPE_PASSWORD:
+                data.append('login', fieldLogin)
+            case FIELD_TYPE_LINK:
             case FIELD_TYPE_NOTE:
                 data.append('value', fieldValue)
                 break
@@ -121,21 +125,21 @@ const EntryFieldsEdit = (props) => {
                     },
                     (error) => {
                         let errMsg = []
-                        const addFieldErrKey = 'editFieldErr_'
+                        const editFieldErrKey = 'editFieldErr_'
                         if (error.response.data.errors.master_password) {
                             if (error.response.data.errors.master_password === 'invalid') {
-                                errMsg.push(<p key={addFieldErrKey + errMsg.length}>MasterPassword is invalid</p>);
+                                errMsg.push(<p key={editFieldErrKey + errMsg.length}>MasterPassword is invalid</p>);
                             } else {
-                                errMsg.push(<p key={addFieldErrKey + errMsg.length}>MasterPassword is missing</p>);
+                                errMsg.push(<p key={editFieldErrKey + errMsg.length}>MasterPassword is missing</p>);
                             }
                             setMasterPasswordState(MASTER_PASSWORD_INVALID)
                             setMasterPassword('')
                         }
                         if (error.response.data.errors.value) {
-                            errMsg.push(<p key={addFieldErrKey + errMsg.length}>Field Value is missing</p>);
+                            errMsg.push(<p key={editFieldErrKey + errMsg.length}>Field Value is missing</p>);
                         }
                         if (error.response.data.errors.title) {
-                            errMsg.push(<p key={addFieldErrKey + errMsg.length}>{error.response.data.errors.title[0]}</p>);
+                            errMsg.push(<p key={editFieldErrKey + errMsg.length}>{error.response.data.errors.title[0]}</p>);
                         }
 
                         if (errMsg.length) {
@@ -161,6 +165,9 @@ const EntryFieldsEdit = (props) => {
     const changeTitle = (e) => {
         setFieldTitle(e.target.value)
     }
+    const changeLogin = (e) => {
+        setFieldLogin(e.target.value)
+    }
 
     const changeMasterPassword = (e) => {
         setMasterPasswordInput(e.target.value)
@@ -181,19 +188,35 @@ const EntryFieldsEdit = (props) => {
             break;
         case FIELD_TYPE_PASSWORD:
             value = (
-                <div className="flex flex-row py-1.5 items-center">
-                    <label htmlFor={"add-field-for-" + entryId + "-value"}
-                           className="inline-block basis-1/3 text-lg"
-                    >
-                        Password:
-                    </label>
-                    <Input
-                        id={"add-field-for-" + entryId + "-value"}
-                        className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
-                        onChange={changeValue}
-                        placeholder="type new password"
-                        type="password"
-                        value={fieldValue}/>
+                <div className="py-1.5 items-center">
+                    <div className="flex flex-row ">
+                        <label htmlFor={"edit-field-for-" + entryId + "-login"}
+                               className="inline-block basis-1/3 text-lg"
+                        >
+                            Login:
+                        </label>
+                        <Input
+                            id={"edit-field-for-" + entryId + "-login"}
+                            className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
+                            onChange={changeLogin}
+                            placeholder="type new login"
+                            type="text"
+                            value={fieldLogin}/>
+                    </div>
+                    <div className="flex flex-row ">
+                        <label htmlFor={"edit-field-for-" + entryId + "-value"}
+                               className="inline-block basis-1/3 text-lg"
+                        >
+                            Password:
+                        </label>
+                        <Input
+                            id={"edit-field-for-" + entryId + "-value"}
+                            className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
+                            onChange={changeValue}
+                            placeholder="type new password"
+                            type="password"
+                            value={fieldValue}/>
+                    </div>
                 </div>
             )
             break;
@@ -208,13 +231,13 @@ const EntryFieldsEdit = (props) => {
         case FIELD_TYPE_LINK:
             value = (
                 <div className="flex flex-row py-1.5 items-center">
-                    <label htmlFor={"add-field-for-" + entryId + "-value"}
+                    <label htmlFor={"edit-field-for-" + entryId + "-value"}
                            className="inline-block basis-1/3 text-lg"
                     >
                         Link:
                     </label>
                     <Input
-                        id={"add-field-for-" + entryId + "-value"}
+                        id={"edit-field-for-" + entryId + "-value"}
                         className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
                         onChange={changeValue}
                         placeholder="put new link"
@@ -233,13 +256,13 @@ const EntryFieldsEdit = (props) => {
     if (masterPassword === '') {
         masterPasswordField = (
             <div className="flex flex-row py-1.5 items-center">
-                <label htmlFor={"add-field-for-" + entryId + "-master-password"}
+                <label htmlFor={"edit-field-for-" + entryId + "-master-password"}
                        className="inline-block basis-1/3 text-xl align-middle text"
                 >
                     MasterPassword:
                 </label>
                 <Input
-                    id={"add-field-for-" + entryId + "-master-password"}
+                    id={"edit-field-for-" + entryId + "-master-password"}
                     type='password'
                     value={masterPasswordInput}
                     onChange={changeMasterPassword}
@@ -252,24 +275,24 @@ const EntryFieldsEdit = (props) => {
 
     return (
         <div className="px-2 pb-2">
-            <label htmlFor={"add-field-for-" + entryId} className="btn btn-sm bg-slate-800">Editing field "{fieldTitleDefault}"</label>
+            {/*<label htmlFor={"edit-field-for-" + entryId} className="btn btn-sm bg-slate-800">Editing field "{fieldTitleDefault}"</label>*/}
 
             <input ref={modalVisibilityRef}
                    type="checkbox"
-                   id={"add-field-for-" + entryId}
+                   id={"edit-field-for-" + entryId}
                    className="modal-toggle"
                    onChange={openModal}/>
-            <label htmlFor={"add-field-for-" + entryId} className="modal cursor-pointer">
+            <label htmlFor={"edit-field-for-" + entryId} className="modal cursor-pointer">
                 <label className="modal-box relative w-1/3 max-w-none bg-slate-700" htmlFor="">
                     <h3 className="text-lg font-bold">Editing field "{fieldTitleDefault}" for entry "{entryTitle}"</h3>
                     <div className="py-4">
                         <div className="flex flex-row py-1.5 items-center">
-                            <label htmlFor={"add-field-for-" + entryId + "-title"}
+                            <label htmlFor={"edit-field-for-" + entryId + "-title"}
                                     className="inline-block basis-1/3 text-lg"
                             >
                                 Field Title:
                             </label>
-                            <Input id={"add-field-for-" + entryId + "-title"}
+                            <Input id={"edit-field-for-" + entryId + "-title"}
                                    type='text'
                                    value={fieldTitle}
                                    onChange={changeTitle}
@@ -288,7 +311,7 @@ const EntryFieldsEdit = (props) => {
                                 {entryGroupFieldForEditState === FIELD_EDITING_EDITING ? 'save changes' : ''}
                             </Button>
 
-                            <label htmlFor={"add-field-for-" + entryId}
+                            <label htmlFor={"edit-field-for-" + entryId}
                                    className="btn btn-error btn-sm btn-outline right-0 basis-1/3">close</label>
                         </div>
                         {errorMessage === ''

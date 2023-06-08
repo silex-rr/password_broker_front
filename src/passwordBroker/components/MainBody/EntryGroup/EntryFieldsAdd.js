@@ -25,6 +25,7 @@ const EntryFieldsAdd = (props) => {
 
     const [fieldType, setFieldType] = useState(FIELD_TYPE_PASSWORD)
     const [fieldValue, setFieldValue] = useState('')
+    const [fieldLogin, setFieldLogin] = useState('')
     const [fieldFile, setFieldFile] = useState(null)
     const [fieldTitle, setFieldTitle] = useState('')
     const [masterPasswordInput, setMasterPasswordInput] = useState('')
@@ -52,8 +53,9 @@ const EntryFieldsAdd = (props) => {
         switch (fieldType) {
             default:
                 break
-            case FIELD_TYPE_LINK:
             case FIELD_TYPE_PASSWORD:
+                data.append('login', fieldLogin)
+            case FIELD_TYPE_LINK:
             case FIELD_TYPE_NOTE:
                 data.append('value', fieldValue)
                 break
@@ -126,6 +128,9 @@ const EntryFieldsAdd = (props) => {
     const changeTitle = (e) => {
         setFieldTitle(e.target.value)
     }
+    const changeLogin = (e) => {
+        setFieldLogin(e.target.value)
+    }
 
     const changeMasterPassword = (e) => {
         setMasterPasswordInput(e.target.value)
@@ -150,19 +155,35 @@ const EntryFieldsAdd = (props) => {
             break;
         case FIELD_TYPE_PASSWORD:
             value = (
-                <div className="flex flex-row py-1.5 items-center">
-                    <label htmlFor={"add-field-for-" + entryId + "-value"}
-                           className="inline-block basis-1/3 text-lg"
-                    >
-                        Password:
-                    </label>
-                    <Input
-                        id={"add-field-for-" + entryId + "-value"}
-                        className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
-                        onChange={changeValue}
-                        placeholder="type new password"
-                        type="password"
-                        value={fieldValue}/>
+                <div className="py-1.5 items-center">
+                    <div className="flex flex-row ">
+                        <label htmlFor={"add-field-for-" + entryId + "-login"}
+                               className="inline-block basis-1/3 text-lg"
+                        >
+                            Login:
+                        </label>
+                        <Input
+                            id={"add-field-for-" + entryId + "-login"}
+                            className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
+                            onChange={changeLogin}
+                            placeholder="type new login"
+                            type="text"
+                            value={fieldLogin}/>
+                    </div>
+                    <div className="flex flex-row ">
+                        <label htmlFor={"add-field-for-" + entryId + "-value"}
+                               className="inline-block basis-1/3 text-lg"
+                        >
+                            Password:
+                        </label>
+                        <Input
+                            id={"add-field-for-" + entryId + "-value"}
+                            className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
+                            onChange={changeValue}
+                            placeholder="type new password"
+                            type="password"
+                            value={fieldValue}/>
+                    </div>
                 </div>
             )
             break;

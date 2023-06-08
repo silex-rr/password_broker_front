@@ -1,4 +1,4 @@
-import {useContext, useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {PasswordBrokerContext} from "../contexts/PasswordBrokerContext";
 import {
     ENTRY_GROUP_TREES_LOADED,
@@ -6,8 +6,11 @@ import {
     ENTRY_GROUP_TREES_REQUIRED_LOADING
 } from "../constants/EntryGroupTreesStatus";
 import MainLeftMenuTreeNode from "./MainLeftMenuTree";
-import {HiFolderAdd} from "react-icons/hi";
+import {HiFolderAdd, HiFolderDownload} from "react-icons/hi";
 import EntryGroupAdd from "./MainBody/EntryGroup/EntryGroupAdd";
+import {Button, Input} from "react-daisyui";
+import {ENTRY_ADDING_AWAIT} from "../constants/EntryGroupEntryAddingStates";
+import MainLeftMenuImport from "./MainLeftMenuImport";
 
 const MainLeftMenu = (props) => {
 
@@ -50,10 +53,11 @@ const MainLeftMenu = (props) => {
                     entryGroupTitle = {null}
                     button = {
                     <div className="tooltip tooltip-right" data-tip="add new tree">
-                        <HiFolderAdd className="inline-block text-2xl cursor-pointer"/>
+                        <HiFolderAdd className="inline-block text-4xl cursor-pointer"/>
                     </div>
                     }
                 />
+                <MainLeftMenuImport />
             </div>
             <div className="py-5 px-2">
                 {trees}

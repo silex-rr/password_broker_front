@@ -32,6 +32,7 @@ const EntryField = (props) => {
     const title = props.title
     const fileMime = props.file_mime ?? ''
     const fileName = props.file_name ?? ''
+    const login = props.login ?? ''
     const fileSize = props.file_size ? parseInt(props.file_size): 0
     // const createdBy = props.created_by
     // const updateBy = props.update_by
@@ -174,7 +175,7 @@ const EntryField = (props) => {
             break
 
         case FIELD_TYPE_PASSWORD:
-            value = <Password value={decryptedValueVisible? decryptedValue: ''}/>
+            value = <Password value={decryptedValueVisible? decryptedValue: ''} login={login}/>
             buttons.push(copyButton)
             buttons.push(visibilityButton)
             break
