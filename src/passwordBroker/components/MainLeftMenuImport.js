@@ -1,14 +1,11 @@
 import React, {useContext, useState} from "react";
 import {Button, Input} from "react-daisyui";
-import {ENTRY_ADDING_AWAIT} from "../constants/EntryGroupEntryAddingStates";
-import {HiFolderDownload} from "react-icons/hi";
-import {FIELD_TYPE_FILE} from "../constants/MainBodyEntryGroupEntryFieldTypes";
 import axios from "axios";
 import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from "../constants/MasterPasswordStates";
-import {Buffer} from "buffer";
 import {PasswordBrokerContext} from "../contexts/PasswordBrokerContext";
 import {ENTRY_GROUP_TREES_REQUIRED_LOADING} from "../constants/EntryGroupTreesStatus";
 import Error from "../../utils/errors/Error";
+import {RiFolderDownloadFill} from "react-icons/ri";
 
 const MainLeftMenuImport = () => {
 
@@ -87,7 +84,7 @@ const MainLeftMenuImport = () => {
     return (
         <React.Fragment>
             <label htmlFor="importData"  className="tooltip tooltip-right" data-tip="import Data">
-                <HiFolderDownload className="inline-block text-4xl cursor-pointer"/>
+                <RiFolderDownloadFill className="inline-block text-4xl cursor-pointer"/>
             </label>
 
             <input

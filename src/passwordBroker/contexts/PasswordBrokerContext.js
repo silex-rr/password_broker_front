@@ -7,11 +7,22 @@ import {
     ENTRY_GROUP_REQUIRED_LOADING
 } from "../constants/EntryGroupStatus";
 import {useNavigate, useParams} from "react-router-dom";
-import {MASTER_PASSWORD_IS_EMPTY} from "../constants/MasterPasswordStates";
+import {
+    MASTER_PASSWORD_INVALID,
+    MASTER_PASSWORD_IS_EMPTY,
+    MASTER_PASSWORD_VALIDATED
+} from "../constants/MasterPasswordStates";
 import {ENTRY_GROUP_MENU_MAIN} from "../constants/EntryGroupMenu";
 import {ENTRY_GROUP_USERS_LOADED, ENTRY_GROUP_USERS_NOT_SELECTED} from "../constants/EntryGroupUsersStatus";
 import {ROLE_GUEST} from "../constants/EntryGroupRole";
 import {FIELD_EDITING_AWAIT} from "../constants/EntryGroupEntryFieldEditingStates";
+import {
+    FIELD_TYPE_FILE,
+    FIELD_TYPE_LINK,
+    FIELD_TYPE_NOTE,
+    FIELD_TYPE_PASSWORD
+} from "../constants/MainBodyEntryGroupEntryFieldTypes";
+import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from "../constants/EntryGroupEntryFieldsStatus";
 
 
 const PasswordBrokerContext = React.createContext()
@@ -48,6 +59,8 @@ const PasswordBrokerProvider = (props) => {
     const [masterPasswordCallback, setMasterPasswordCallback] = useState(() => () => {})
     const masterPasswordModalVisibilityCheckboxRef = useRef()
     const masterPasswordModalVisibilityErrorRef = useRef()
+
+    const [moveEntryGroupMode, setMoveEntryGroupMode] = useState(false)
 
     const navigate = useNavigate();
 
@@ -174,6 +187,35 @@ const PasswordBrokerProvider = (props) => {
         )
     }
 
+    const moveEntryGroup = (item, target) => {
+         // console.log(item, 'dropped to', target)
+
+        if (target.materializedPath.includes(item.entryGroupId)) {
+            console.log('group cannot be moved to their child group')
+            return;
+        }
+        if (target.entryGroupId === item.pid) {
+            console.log('no changes is required')
+            return;
+        }
+
+        const data = new FormData();
+        if (target.entryGroupId !== '') {
+            data.append('entryGroupTarget', target.entryGroupId)
+        }
+        data.append('_method', 'patch');
+        axios.post(baseUrl + '/entryGroups/' + item.entryGroupId,
+            data
+        ).then(
+            () => {
+               setEntryGroupTreesStatus(ENTRY_GROUP_TREES_REQUIRED_LOADING)
+            },
+            (error) => {
+
+            }
+        )
+    }
+
     useEffect(() => {
         if ( typeof entryGroupIdParam === 'string'
             && entryGroupIdParam !== ''
@@ -228,7 +270,11 @@ const PasswordBrokerProvider = (props) => {
                 showMasterPasswordModal: showMasterPasswordModal,
                 masterPasswordState: masterPasswordState,
                 setMasterPasswordState: setMasterPasswordState,
-                removeUserFromGroup: removeUserFromGroup
+                removeUserFromGroup: removeUserFromGroup,
+
+                moveEntryGroup: moveEntryGroup,
+                moveEntryGroupMode: moveEntryGroupMode,
+                setMoveEntryGroupMode: setMoveEntryGroupMode
             }}
         >
             {props.children}
