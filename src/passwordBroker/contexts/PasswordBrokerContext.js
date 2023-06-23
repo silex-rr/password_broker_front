@@ -1,6 +1,10 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react'
 import axios from "axios";
-import {ENTRY_GROUP_TREES_LOADED, ENTRY_GROUP_TREES_REQUIRED_LOADING} from "../constants/EntryGroupTreesStatus";
+import {
+    ENTRY_GROUP_TREES_LOADED,
+    ENTRY_GROUP_TREES_REQUIRED_LOADING,
+    ENTRY_GROUP_TREES_UPDATING
+} from "../constants/EntryGroupTreesStatus";
 import {
     ENTRY_GROUP_LOADED,
     ENTRY_GROUP_NOT_SELECTED,
@@ -198,6 +202,7 @@ const PasswordBrokerProvider = (props) => {
             console.log('no changes is required')
             return;
         }
+        setEntryGroupTreesStatus(ENTRY_GROUP_TREES_UPDATING);
 
         const data = new FormData();
         if (target.entryGroupId !== '') {

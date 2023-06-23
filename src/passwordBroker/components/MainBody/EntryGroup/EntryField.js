@@ -217,8 +217,8 @@ const EntryField = (props) => {
 
         buttons.push(<EntryFieldButton
             key="deleteButton"
-            colour="text-red-400"
             icon={<FaTrashAlt/>}
+            colour="text-red-400"
             onclick={handleDelete}
         />)
     }

@@ -3,15 +3,17 @@ import {PasswordBrokerContext} from "../contexts/PasswordBrokerContext";
 import {
     ENTRY_GROUP_TREES_LOADED,
     ENTRY_GROUP_TREES_LOADING,
-    ENTRY_GROUP_TREES_REQUIRED_LOADING
+    ENTRY_GROUP_TREES_REQUIRED_LOADING, ENTRY_GROUP_TREES_UPDATING
 } from "../constants/EntryGroupTreesStatus";
 import MainLeftMenuTreeNode from "./MainLeftMenuTreeNode";
 import EntryGroupAdd from "./MainBody/EntryGroup/EntryGroupAdd";
 import MainLeftMenuImport from "./MainLeftMenuImport";
-import {DndProvider, useDrop} from "react-dnd";
+import {DndProvider} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {RiFolderAddFill, RiFolderSettingsFill} from "react-icons/ri";
 import MainLeftMenuRootDrop from "./MainLeftMenuRootDrop";
+import {ClockLoader} from "react-spinners";
+
 const MainLeftMenu = (props) => {
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
@@ -33,9 +35,11 @@ const MainLeftMenu = (props) => {
     }, [entryGroupTreesStatus]);
 
 
-    let trees = <div className="px-4">loading...</div>
+    let trees = <div className="px-4"></div>
 
-    if (entryGroupTreesStatus === ENTRY_GROUP_TREES_LOADED) {
+    if (entryGroupTreesStatus === ENTRY_GROUP_TREES_LOADED
+        || entryGroupTreesStatus === ENTRY_GROUP_TREES_UPDATING
+    ) {
         trees = []
         entryGroupTrees.sort((a, b) => {return a.title === b.title ? 0 : a.title > b.title})
         for (let i = 0; i < entryGroupTrees.length; i++) {
@@ -50,7 +54,7 @@ const MainLeftMenu = (props) => {
     const handleMoveEntryGroupMode = () => {
         setMoveEntryGroupMode(!moveEntryGroupMode)
     }
-
+    console.log(entryGroupTreesStatus)
 //RiFolderSettingsFill
     return (
         <div className="basis-1/4 bg-slate-900 text-slate-400 h-full pr-1">
@@ -72,7 +76,25 @@ const MainLeftMenu = (props) => {
                     />
                 </div>
             </div>
-            <div className="py-5 px-2">
+            <div className="py-5 px-2 relative">
+                <div className={"absolute top-0 left-0 w-full h-full bg-transparent/80 bg-slate-900 z-50 text-center flex items-center justify-center "
+                        + ( entryGroupTreesStatus === ENTRY_GROUP_TREES_LOADED ? "hidden" : "")}>
+                    <span className="flex justify-between">
+                        <span className="px-2">
+                            <ClockLoader
+                                color="#e2e8f0"
+                                size={20}
+                                aria-label="Loading Spinner"
+                                data-testid="loader"
+                                speedMultiplier={1}
+                                className="inline-block w-2 inline-block"
+                            />
+                        </span>
+                        <span>
+                            {(entryGroupTreesStatus === ENTRY_GROUP_TREES_UPDATING ? "updating" : "loading")}...
+                        </span>
+                    </span>
+                </div>
                 <DndProvider backend={HTML5Backend}>
                     <MainLeftMenuRootDrop />
                     {trees}
