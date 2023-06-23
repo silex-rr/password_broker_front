@@ -37,7 +37,7 @@ const MainLeftMenuRootDrop = () => {
 
     return (
         <div ref={drop}  className={ 'ml-4 px-8 py-1 bg-yellow-600 text-slate-800 font-semibold' + (moveEntryGroupMode ? '' : ' hidden') }>
-            drop here to move a group to the root
+            drop a group here to move it to the root
         </div>
     )
 }
