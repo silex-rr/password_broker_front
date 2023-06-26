@@ -7,7 +7,7 @@ import {ENTRY_GROUP_TREES_REQUIRED_LOADING} from "../constants/EntryGroupTreesSt
 import Error from "../../utils/errors/Error";
 import {RiFolderDownloadFill} from "react-icons/ri";
 
-const MainLeftMenuImport = () => {
+const MainLeftMenuImport = ({menuButtonSize}) => {
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
@@ -84,7 +84,7 @@ const MainLeftMenuImport = () => {
     return (
         <React.Fragment>
             <label htmlFor="importData"  className="tooltip tooltip-right" data-tip="import Data">
-                <RiFolderDownloadFill className="inline-block text-4xl cursor-pointer"/>
+                <RiFolderDownloadFill className={"inline-block " + menuButtonSize + " cursor-pointer"}/>
             </label>
 
             <input

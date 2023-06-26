@@ -26,6 +26,8 @@ const MainLeftMenu = (props) => {
         setMoveEntryGroupMode,
     } = passwordBrokerContext
 
+    const menuButtonSize = 'text-3xl'
+
 
     useEffect(() => {
         if (entryGroupTreesStatus === ENTRY_GROUP_TREES_REQUIRED_LOADING) {
@@ -54,7 +56,7 @@ const MainLeftMenu = (props) => {
     const handleMoveEntryGroupMode = () => {
         setMoveEntryGroupMode(!moveEntryGroupMode)
     }
-    console.log(entryGroupTreesStatus)
+
 //RiFolderSettingsFill
     return (
         <div className="basis-1/4 bg-slate-900 text-slate-400 h-full pr-1">
@@ -64,14 +66,14 @@ const MainLeftMenu = (props) => {
                     entryGroupTitle = {null}
                     button = {
                     <div className="tooltip tooltip-right" data-tip="add new tree">
-                        <RiFolderAddFill className="inline-block text-4xl cursor-pointer"/>
+                        <RiFolderAddFill className={"inline-block " + menuButtonSize + " cursor-pointer"}/>
                     </div>
                     }
                 />
-                <MainLeftMenuImport />
+                <MainLeftMenuImport menuButtonSize={menuButtonSize}/>
                 <div className="tooltip tooltip-right px-2" data-tip={ (moveEntryGroupMode? "disable " : "enable ") + "Entry Group move mode"}>
                     <RiFolderSettingsFill
-                        className={"inline-block text-4xl cursor-pointer" + (moveEntryGroupMode? " text-yellow-700": "")}
+                        className={"inline-block " + menuButtonSize + " cursor-pointer" + (moveEntryGroupMode? " text-yellow-700": "")}
                         onClick={handleMoveEntryGroupMode}
                     />
                 </div>
