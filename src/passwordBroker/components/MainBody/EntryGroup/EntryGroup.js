@@ -4,6 +4,7 @@ import {ROLE_CAN_EDIT} from "../../../constants/EntryGroupRole";
 import EntryGroupAdd from "./EntryGroupAdd";
 import {useContext} from "react";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
+import {EntryFieldsProvider} from "../../../contexts/EntryFieldsContext";
 
 const EntryGroup = (props) => {
     const passwordBrokerContext = useContext(PasswordBrokerContext)
@@ -32,7 +33,9 @@ const EntryGroup = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {entries}
+                    <EntryFieldsProvider>
+                        {entries}
+                    </EntryFieldsProvider>
                 </tbody>
             </table>
             {ROLE_CAN_EDIT.includes(props.role.role)

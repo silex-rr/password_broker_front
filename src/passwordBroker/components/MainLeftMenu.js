@@ -14,7 +14,7 @@ import {RiFolderAddFill, RiFolderSettingsFill} from "react-icons/ri";
 import MainLeftMenuRootDrop from "./MainLeftMenuRootDrop";
 import {ClockLoader} from "react-spinners";
 
-const MainLeftMenu = (props) => {
+const MainLeftMenu = () => {
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
@@ -34,7 +34,7 @@ const MainLeftMenu = (props) => {
             setEntryGroupTreesStatus(ENTRY_GROUP_TREES_LOADING)
             loadEntryGroupTrees()
         }
-    }, [entryGroupTreesStatus]);
+    }, [entryGroupTreesStatus, setEntryGroupTreesStatus, loadEntryGroupTrees]);
 
 
     let trees = <div className="px-4"></div>
@@ -89,7 +89,7 @@ const MainLeftMenu = (props) => {
                                 aria-label="Loading Spinner"
                                 data-testid="loader"
                                 speedMultiplier={1}
-                                className="inline-block w-2 inline-block"
+                                className="inline-block w-2"
                             />
                         </span>
                         <span>

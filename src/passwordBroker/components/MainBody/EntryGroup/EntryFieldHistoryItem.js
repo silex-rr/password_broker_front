@@ -1,21 +1,19 @@
 import React, {useContext, useState} from "react";
+import Moment from "react-moment";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
-import EntryFieldHistory from "./EntryFieldHistory";
 import {EntryFieldsContext} from "../../../contexts/EntryFieldsContext";
 
-const EntryField = (props) => {
 
-    const fieldId = props.field_id
-    const entryId = props.entry_id
-    const type = props.type
-    const title = props.title
+const EntryFieldHistoryItem = ({fieldProps, data}) => {
+
+    const entryId = fieldProps.entry_id
+    const fieldId = data.field_id
+    const fieldEditLogId = data.field_edit_log_id
 
     const [decryptedValue, setDecryptedValue] = useState('')
     const [decryptedValueVisible, setDecryptedValueVisible] = useState(false)
     const [buttonLoading, setButtonLoading] = useState('')
     const [historyVisible, setHistoryVisible] = useState(false)
-
-//,
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
@@ -28,35 +26,44 @@ const EntryField = (props) => {
         loadEntryFieldValueAndButtons
     } = entryFieldsContext
 
+
     const {
         value,
         buttons
     } = loadEntryFieldValueAndButtons(
-        baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId + '/decrypted',
+        baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId + '/history/' + fieldEditLogId + '/decrypted',
         {
             decryptedValue, setDecryptedValue,
             decryptedValueVisible, setDecryptedValueVisible,
             buttonLoading, setButtonLoading,
             historyVisible, setHistoryVisible
         },
-        props
+        fieldProps,
+        true
     );
 
+
     return (
-        <React.Fragment key={fieldId}>
-            <div className="flex flex-row w-full px-2 bg-slate-500 hover:bg-slate-600 items-baseline">
-                <div className="px-2 basis-1/6">{title}</div>
-                <div className="px-2 basis-1/6">{type}</div>
-                {value}
-                <div className="px-2 basis-1/6 flex justify-end py-1">
-                    {buttons}
-                </div>
+        <div className="flex flex-row w-full">
+            <div className="px-2 basis-1/6">
+                {data.event_type}
             </div>
-            <EntryFieldHistory
-                fieldProps={props}
-                historyVisible={historyVisible}
-            />
-        </React.Fragment>
+            <div className="px-2 basis-1/6">
+                {data.user.name}
+            </div>
+            <div className="px-2 basis-1/6">
+                <Moment format="YYYY.MM.DD HH:mm">
+                    {data.created_at}
+                </Moment>
+            </div>
+            <div className="px-2 basis-2/6">
+                {value}
+            </div>
+            <div className="px-2 basis-1/6 flex justify-end py-1">
+                {buttons}
+            </div>
+        </div>
     )
 }
-export default EntryField
+
+export default EntryFieldHistoryItem
