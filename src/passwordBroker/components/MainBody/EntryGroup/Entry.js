@@ -1,6 +1,6 @@
 import Moment from "react-moment";
 import axios from "axios";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect} from "react";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
 import {
     ENTRY_GROUP_ENTRY_FIELDS_LOADED,
@@ -9,6 +9,7 @@ import {
     ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING
 } from "../../../constants/EntryGroupEntryFieldsStatus";
 import EntryFields from "./EntryFields";
+import {EntryContext} from "../../../contexts/EntryContext";
 
 const Entry = (props) => {
 
@@ -18,9 +19,16 @@ const Entry = (props) => {
     const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {baseUrl} = passwordBrokerContext
 
-    const [entryFieldsStatus, setEntryFieldsStatus] = useState(ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED)
-    const [entryFieldsData, setEntryFieldsData] = useState([])
-    const [entryFieldsIsVisible, setEntryFieldVisible] = useState(false)
+    const entryContext = useContext(EntryContext)
+
+    const {
+        entryFieldsStatus,
+        setEntryFieldsStatus,
+        entryFieldsData,
+        setEntryFieldsData,
+        entryFieldsIsVisible,
+        setEntryFieldVisible
+    } = entryContext
 
     useEffect( () => {
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING) {
@@ -33,7 +41,7 @@ const Entry = (props) => {
                 }
             )
         }
-    }, [entryFieldsStatus]);
+    }, [entryFieldsStatus, baseUrl, entryGroupId, entryId, setEntryFieldsStatus, setEntryFieldsData]);
 
 
     const EntryFieldsVisibility = () => {
@@ -46,6 +54,9 @@ const Entry = (props) => {
     let entryFields = ''
 
     switch (entryFieldsStatus) {
+        default:
+            break
+
         case ENTRY_GROUP_ENTRY_FIELDS_LOADED:
             entryFields = (
                 <EntryFields
@@ -65,7 +76,7 @@ const Entry = (props) => {
     }
 
     return (
-        <React.Fragment key={entryId}>
+        <React.Fragment>
             <tr key={entryId + '_main'}>
                 <td className="cursor-pointer bg-slate-700 text-slate-100" onClick={EntryFieldsVisibility}>
                     {props.title}

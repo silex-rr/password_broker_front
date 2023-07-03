@@ -4,7 +4,7 @@ import {ROLE_CAN_EDIT} from "../../../constants/EntryGroupRole";
 import EntryGroupAdd from "./EntryGroupAdd";
 import {useContext} from "react";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
-import {EntryFieldsProvider} from "../../../contexts/EntryFieldsContext";
+import {EntryProvider} from "../../../contexts/EntryContext";
 
 const EntryGroup = (props) => {
     const passwordBrokerContext = useContext(PasswordBrokerContext)
@@ -14,7 +14,11 @@ const EntryGroup = (props) => {
 
     const entries = []
     for (let i = 0; i < props.entries.length; i++) {
-        entries.push(Entry (props.entries[i]))
+        entries.push(
+            <EntryProvider key={props.entries[i].entry_id}>
+                <Entry {...props.entries[i]} />
+            </EntryProvider>
+        )
     }
     if (entries.length === 0) {
         entries.push(<tr key="empty_group"><td colSpan="3">there are no entries</td></tr>)
@@ -33,9 +37,7 @@ const EntryGroup = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    <EntryFieldsProvider>
-                        {entries}
-                    </EntryFieldsProvider>
+                    {entries}
                 </tbody>
             </table>
             {ROLE_CAN_EDIT.includes(props.role.role)

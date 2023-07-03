@@ -1,7 +1,7 @@
 import React, {useContext, useState} from "react";
 import Moment from "react-moment";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
-import {EntryFieldsContext} from "../../../contexts/EntryFieldsContext";
+import {EntryContext} from "../../../contexts/EntryContext";
 
 
 const EntryFieldHistoryItem = ({fieldProps, data}) => {
@@ -21,17 +21,17 @@ const EntryFieldHistoryItem = ({fieldProps, data}) => {
         entryGroupId,
     } = passwordBrokerContext
 
-    const entryFieldsContext = useContext(EntryFieldsContext)
+    const entryContext = useContext(EntryContext)
     const {
         loadEntryFieldValueAndButtons
-    } = entryFieldsContext
+    } = entryContext
 
 
     const {
         value,
         buttons
     } = loadEntryFieldValueAndButtons(
-        baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId + '/history/' + fieldEditLogId + '/decrypted',
+        baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId + '/history/' + fieldEditLogId,
         {
             decryptedValue, setDecryptedValue,
             decryptedValueVisible, setDecryptedValueVisible,

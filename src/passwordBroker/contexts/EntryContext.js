@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import axios from "axios";
 import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from "../constants/MasterPasswordStates";
 import {Buffer} from "buffer";
@@ -23,10 +23,11 @@ import {
     FIELD_EDITING_EDITING,
     FIELD_EDITING_LOADING_DATA
 } from "../constants/EntryGroupEntryFieldEditingStates";
+import {ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED} from "../constants/EntryGroupEntryFieldsStatus";
 
-const EntryFieldsContext = React.createContext()
+const EntryContext = React.createContext()
 
-const EntryFieldsProvider = (props) => {
+const EntryProvider = (props) => {
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
@@ -39,8 +40,13 @@ const EntryFieldsProvider = (props) => {
         setEntryGroupFieldForEditId,
         setEntryGroupFieldForEditDecryptedValue,
         entryGroupFieldForEditState,
-        setEntryGroupFieldForEditState
+        setEntryGroupFieldForEditState,
     } = passwordBrokerContext
+
+    const [entryFieldsStatus, setEntryFieldsStatus] = useState(ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED)
+    const [entryFieldsData, setEntryFieldsData] = useState([])
+    const [entryFieldsIsVisible, setEntryFieldVisible] = useState(false)
+
 
     const loadEntryFieldValueAndButtons = (
         url,
@@ -58,7 +64,8 @@ const EntryFieldsProvider = (props) => {
             decryptedValue, setDecryptedValue,
             decryptedValueVisible, setDecryptedValueVisible,
             buttonLoading, setButtonLoading,
-            historyVisible, setHistoryVisible
+            historyVisible, setHistoryVisible,
+            trashed, setTrashed
         } = states
 
         const loadDecryptedValue = (onSucceed, button = '') => {
@@ -69,7 +76,7 @@ const EntryFieldsProvider = (props) => {
             const getDecryptedFieldValue = (masterPassword) => {
                 setButtonLoading(button)
 
-                axios.post(url,
+                axios.post(url + '/decrypted',
                     {
                         master_password: masterPassword
                     }
@@ -213,7 +220,46 @@ const EntryFieldsProvider = (props) => {
 
         if (!historyMode && ROLE_CAN_EDIT.includes(entryGroupRole)) {
             const handleDelete = () => {
+                const deleteField = (masterPassword) => {
+                    setButtonLoading('delete')
 
+                    const data = new FormData();
+                    data.append('_method', 'delete');
+                    data.append('master_password', masterPassword)
+
+
+                    axios.post( url, data).then(
+                        () => {
+                            setMasterPasswordState(MASTER_PASSWORD_VALIDATED)
+                            setTrashed(true)
+                            setButtonLoading('')
+                        },
+                        (error) => {
+                            if (error.response.data.errors.master_password) {
+                                setMasterPassword('')
+                                setMasterPasswordState(MASTER_PASSWORD_INVALID)
+                                setMasterPasswordCallback(
+                                    () => (masterPassword) => {
+                                        deleteField(masterPassword)
+                                    }
+                                )
+                                showMasterPasswordModal("MasterPassword is invalid")
+                            }
+                            setButtonLoading('')
+                        }
+                    )
+                }
+
+                if (masterPassword === '') {
+                    setMasterPasswordCallback(
+                        () => (masterPassword) => {
+                            deleteField(masterPassword)
+                        }
+                    )
+                    showMasterPasswordModal()
+                } else {
+                    deleteField(masterPassword)
+                }
             }
             const handleEdit = () => {
                 if (entryGroupFieldForEditState !== FIELD_EDITING_AWAIT ){
@@ -241,6 +287,7 @@ const EntryFieldsProvider = (props) => {
                 icon={<FaTrashAlt/>}
                 colour="text-red-400"
                 onclick={handleDelete}
+                loading={buttonLoading === 'delete'}
                 tip="delete"
             />)
         }
@@ -250,14 +297,21 @@ const EntryFieldsProvider = (props) => {
 
 
     return (
-        <EntryFieldsContext.Provider
+        <EntryContext.Provider
             value={{
-                loadEntryFieldValueAndButtons: loadEntryFieldValueAndButtons
+                loadEntryFieldValueAndButtons: loadEntryFieldValueAndButtons,
+
+                entryFieldsStatus: entryFieldsStatus,
+                setEntryFieldsStatus: setEntryFieldsStatus,
+                entryFieldsData: entryFieldsData,
+                setEntryFieldsData: setEntryFieldsData,
+                entryFieldsIsVisible: entryFieldsIsVisible,
+                setEntryFieldVisible: setEntryFieldVisible
             }}
         >
             {props.children}
-        </EntryFieldsContext.Provider>
+        </EntryContext.Provider>
     )
 }
 
-export {EntryFieldsContext, EntryFieldsProvider}
+export {EntryContext, EntryProvider}
