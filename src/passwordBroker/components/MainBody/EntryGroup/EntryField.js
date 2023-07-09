@@ -1,7 +1,7 @@
 import React, {useContext, useState} from "react";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
 import EntryFieldHistory from "./EntryFieldHistory";
-import {EntryContext} from "../../../contexts/EntryContext";
+import {EntryGroupContext} from "../../../contexts/EntryGroupContext";
 
 const EntryField = (props) => {
 
@@ -24,10 +24,10 @@ const EntryField = (props) => {
         entryGroupId,
     } = passwordBrokerContext
 
-    const entryContext = useContext(EntryContext)
+    const entryGroupContext = useContext(EntryGroupContext)
     const {
         loadEntryFieldValueAndButtons
-    } = entryContext
+    } = entryGroupContext
 
     const {
         value,

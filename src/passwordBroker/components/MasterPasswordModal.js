@@ -60,7 +60,7 @@ const MasterPasswordModal = () => {
                                type='password'
                                value={masterPasswordField}
                                onChange={handleMasterPasswordField}
-                               placeholder="type title for new field"
+                               placeholder="type your MasterPassword"
                                className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300 w-full"
                                onKeyUp={(event)=> {if (event.code==="Enter") {handleSaveMasterPassword()}}}
                         />

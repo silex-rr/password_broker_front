@@ -1,19 +1,23 @@
-import React, {useContext, useState} from "react";
 import Moment from "react-moment";
+import React, {useContext, useState} from "react";
 import {PasswordBrokerContext} from "../../../contexts/PasswordBrokerContext";
 import {EntryGroupContext} from "../../../contexts/EntryGroupContext";
 
+const EntryGroupHistoryItem = (data) => {
 
-const EntryFieldHistoryItem = ({fieldProps, data}) => {
+    const entryId = data.field.entry_id
+    const entryTitle = data.field.entry.title
 
-    const entryId = fieldProps.entry_id
     const fieldId = data.field_id
+    const fieldTitle = data.field.title
+    const fieldType = data.field.type
     const fieldEditLogId = data.field_edit_log_id
 
     const [decryptedValue, setDecryptedValue] = useState('')
     const [decryptedValueVisible, setDecryptedValueVisible] = useState(false)
     const [buttonLoading, setButtonLoading] = useState('')
     const [historyVisible, setHistoryVisible] = useState(false)
+
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
@@ -37,32 +41,40 @@ const EntryFieldHistoryItem = ({fieldProps, data}) => {
             buttonLoading, setButtonLoading,
             historyVisible, setHistoryVisible
         },
-        fieldProps,
+        data.field,
         true
     );
 
-
     return (
-        <div className="flex flex-row w-full">
-            <div className="px-2 basis-1/6">
+        <tr key={fieldEditLogId}>
+            <td className="bg-slate-700 text-slate-100">
+                {entryTitle}
+            </td>
+            <td className="bg-slate-700 text-slate-100">
+                {fieldTitle}
+            </td>
+            <td className="bg-slate-700 text-slate-100">
+                {fieldType}
+            </td>
+            <td className="bg-slate-700 text-slate-100">
                 {data.event_type}
-            </div>
-            <div className="px-2 basis-1/6">
+            </td>
+            <td className="bg-slate-700 text-slate-100">
                 {data.user.name}
-            </div>
-            <div className="px-2 basis-1/6">
+            </td>
+            <td className="bg-slate-700 text-slate-100">
                 <Moment format="YYYY.MM.DD HH:mm">
                     {data.created_at}
                 </Moment>
-            </div>
-            <div className="px-2 basis-2/6">
+            </td>
+            <td className="bg-slate-700 text-slate-100">
                 {value}
-            </div>
-            <div className="px-2 basis-1/6 flex justify-end py-1">
+            </td>
+            <td className="bg-slate-700 text-slate-100">
                 {buttons}
-            </div>
-        </div>
+            </td>
+        </tr>
     )
 }
 
-export default EntryFieldHistoryItem
+export default EntryGroupHistoryItem

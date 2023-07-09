@@ -59,7 +59,7 @@ const MainLeftMenu = () => {
 
 //RiFolderSettingsFill
     return (
-        <div className="basis-1/4 bg-slate-900 text-slate-400 h-full pr-1">
+        <aside className="basis-1/4 bg-slate-900 text-slate-400 pr-1">
             <div className="w-full bg-slate-200 px-3 text-slate-800 py-1">
                 <EntryGroupAdd
                     entryGroupId = {null}
@@ -102,7 +102,7 @@ const MainLeftMenu = () => {
                     {trees}
                 </DndProvider>
             </div>
-        </div>
+        </aside>
     )
 }
 

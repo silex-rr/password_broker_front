@@ -21,6 +21,8 @@ import {
     ENTRY_GROUP_USERS_REQUIRED_LOADING
 } from "../../constants/EntryGroupUsersStatus";
 import EntryGroupUsers from "./EntryGroup/EntryGroupUsers";
+import EntryGroupHistory from "./EntryGroup/EntryGroupHistory";
+import {EntryGroupProvider} from "../../contexts/EntryGroupContext";
 
 const MainBody = () => {
 
@@ -145,7 +147,7 @@ const MainBody = () => {
                     body = <EntryGroup {...entryGroupData}/>
                     break
                 case ENTRY_GROUP_MENU_HISTORY:
-                    body = 'history'
+                    body = <EntryGroupHistory />
                     break
                 case ENTRY_GROUP_MENU_USERS:
                     switch(entryGroupUsersStatus) {
@@ -176,7 +178,9 @@ const MainBody = () => {
             <div className="grid grid-rows-3">
                 <div className="p-0 row-span-3 text-2xl bg-slate-200 text-slate-700">{head}</div>
                 <div className="p-5 row-span-3">
-                    {body}
+                    <EntryGroupProvider>
+                        {body}
+                    </EntryGroupProvider>
                 </div>
             </div>
 

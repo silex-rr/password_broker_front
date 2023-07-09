@@ -3,7 +3,7 @@ import MainBody from "./MainBody/MainBody";
 
 const Main = (props) => {
     return (
-        <main className="mb-auto flex flex-row h-full">
+        <main className="mb-auto flex flex-wrap flex-row flex-grow">
             <MainLeftMenu/>
             <MainBody/>
         </main>
