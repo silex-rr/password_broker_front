@@ -7,7 +7,7 @@ const IdentityContext = React.createContext();
 
 const IdentityProvider = (props) => {
 
-    const hostName = process.env.REACT_APP_PASSWORD_BROKER_HOST
+    const hostName = props.hostName ? props.hostName : process.env.REACT_APP_PASSWORD_BROKER_HOST
 
     const [authStatus, setAuthStatus] = useState("")
 
@@ -30,19 +30,16 @@ const IdentityProvider = (props) => {
         setAuthStatus(SIGN_UP_FORM)
     }
 
-    function handleUserNameInput(changeEvent) {
-        let updatedUserName = changeEvent.target.value
-        setUserNameInput(updatedUserName)
+    function handleUserNameInput(value) {
+        setUserNameInput(value)
     }
 
-    function handleUserEmail(changeEvent) {
-        let updatedUserEmail = changeEvent.target.value
-        setUserEmail(updatedUserEmail)
+    function handleUserEmail(value) {
+        setUserEmail(value)
     }
 
-    function handleUserPassword(changeEvent) {
-        let updatedUserPassword = changeEvent.target.value
-        setUserPassword(updatedUserPassword)
+    function handleUserPassword(value) {
+        setUserPassword(value)
     }
 
     const signup = () => {
@@ -102,9 +99,13 @@ const IdentityProvider = (props) => {
     const login = () => {
         axios.defaults.withCredentials = true;
         // CSRF COOKIE
+        console.log(hostName + "/sanctum/csrf-cookie")
         axios.get(hostName + "/sanctum/csrf-cookie").then(
-            () => {
-                //console.log(response);
+            (response) => {
+                console.log('.login')
+                console.log(response)
+                console.log(userEmail)
+                console.log(userPassword)
                 // LOGIN
                 axios
                     .post(hostName + "/identity/api/login", {
@@ -151,10 +152,10 @@ const IdentityProvider = (props) => {
         changeAuthStatusLoading()
         // setAuthStatus(LOADING)
         axios.defaults.withCredentials = true;
-
+        // console.log(hostName + "/identity/api/me")
         axios.get(hostName + "/identity/api/me").then(
             (response) => {
-                // console.log(response)
+                console.log(response)
                 switch (response.data.message) {
                     default:
                     case 'guest':
@@ -172,6 +173,9 @@ const IdentityProvider = (props) => {
 
                         break;
                 }
+            },
+            (error) => {
+                console.log('identityContext.getUser error', error)
             }
         )
     }

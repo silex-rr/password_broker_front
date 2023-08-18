@@ -4,7 +4,7 @@ import {LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM} from "../constants/AuthStatus";
 import {Navigate, useLocation} from "react-router-dom";
 
 
-const AuthLoading = ({ children }: { children: JSX.Element }) => {
+const AuthLoading = ({ children }) => {
     const location = useLocation()
     const identityContext = useContext(IdentityContext)
 

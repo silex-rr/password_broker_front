@@ -48,7 +48,7 @@ const AuthLogin = () => {
                             type="text"
                             placeholder="Email"
                             value={userEmail}
-                            onChange={handleUserEmail}
+                            onChange={(changeEvent) => handleUserEmail(changeEvent.target.value)}
                         />
                     </div>
                 </div>
@@ -64,7 +64,7 @@ const AuthLogin = () => {
                             type="password"
                             placeholder="Password"
                             value={userPassword}
-                            onChange={handleUserPassword}
+                            onChange={(changeEvent) => handleUserPassword(changeEvent.target.value)}
                         />
                     </div>
                     <div className="col-span-1 bg-slate-300 text-center pt-1">
