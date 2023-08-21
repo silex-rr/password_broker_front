@@ -1,21 +1,23 @@
-import {useNavigate} from "react-router-native";
+import {Navigate, useLocation, useNavigate} from "react-router-dom";
 import React, {useContext, useEffect} from "react";
 import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
-import {Text, View} from "react-native-windows";
-import tw from "twrnc";
 
 const AuthLogout = () => {
     const identityContext = useContext(IdentityContext)
     const navigate = useNavigate();
     const { logout } = identityContext
     useEffect(() => {
-            setTimeout(() =>  logout(navigate), 1000)
+            logout(navigate)
         },
         [navigate])
     return (
-        <View style={tw`mb-8`}>
-            <Text style={tw`text-4xl text-slate-700 text-center`}>Logout</Text>
-        </View>
+        <div className="md:flex w-full rounded ">
+            <div className="bg-white py-24 px-12 rounded-lg">
+                <div className="font-inter_extrabold text-4xl text-blue-500 text-center mb-8">
+                    Logout
+                </div>
+            </div>
+        </div>
     )
 }
 

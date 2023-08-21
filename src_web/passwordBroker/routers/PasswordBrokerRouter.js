@@ -1,4 +1,4 @@
-import {Route, Routes} from "react-router-native";
+import {Route, Routes} from "react-router-dom";
 import PasswordBrokerContainer from "../components/PasswordBrokerContainer";
 import {PasswordBrokerProvider} from "../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 

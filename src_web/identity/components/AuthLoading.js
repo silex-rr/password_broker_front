@@ -1,9 +1,7 @@
 import React, {useContext, useEffect} from "react";
 import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
 import {LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM} from "../../../src_shared/identity/constants/AuthStatus";
-import {Navigate, useLocation} from "react-router-native";
-import {Text, View} from "react-native-windows";
-import tw from "twrnc";
+import {Navigate, useLocation} from "react-router-dom";
 
 
 const AuthLoading = ({ children }) => {
@@ -13,10 +11,13 @@ const AuthLoading = ({ children }) => {
     const { getUser, authStatus} = identityContext
 
     useEffect( () => {
+        // console.log('AuthLoading-useEffect', authStatus, Math.random())
         if (authStatus === "") {
             getUser(location)
         }
     }, [authStatus]);
+
+    // console.log('AuthLoading', authStatus, Math.random())
 
     switch (authStatus) {
         case LOGGED_IN:
@@ -24,6 +25,7 @@ const AuthLoading = ({ children }) => {
             if (location.state.from.pathname) {
                 path = location.state.from.pathname;
             }
+            // console.log(path)
             return (<Navigate to={path} replace={true} />)
         case LOG_IN_FORM:
             return (<Navigate to="/identity/login" replace={true} />)
@@ -32,9 +34,13 @@ const AuthLoading = ({ children }) => {
     }
 
     return (
-        <View style={tw`mb-8`}>
-            <Text style={tw`text-4xl text-slate-700 text-center`}>Loading</Text>
-        </View>
+        <div className="md:flex w-full rounded ">
+            <div className="bg-slate-200 py-36 px-24 rounded-lg">
+                <div className="font-inter_extrabold text-4xl text-slate-600 text-center mb-8">
+                    Loading
+                </div>
+            </div>
+        </div>
     );
 };
 

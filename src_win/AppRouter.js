@@ -1,6 +1,6 @@
 import {NativeRouter, Route, Routes} from "react-router-native";
-import {IdentityProvider} from "../src/identity/contexts/IdentityContext";
-import RequireAuth from "../src/identity/components/RequireAuth";
+import {IdentityProvider} from "../src_shared/identity/contexts/IdentityContext";
+import RequireAuth from "../src_shared/identity/utils/RequireAuth";
 import PasswordBrokerRouter from "./passwordBroker/routers/PasswordBrokerRouter";
 import IdentityRouter from "./identity/routers/IdentityRouter";
 import React, {useContext} from "react";
