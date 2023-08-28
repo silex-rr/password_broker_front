@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useRef, useState} from "react";
 import axios from "axios";
 import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from "../constants/MasterPasswordStates";
 import {Buffer} from "buffer";
@@ -18,6 +18,8 @@ import {
     FIELD_EDITING_LOADING_DATA
 } from "../constants/EntryGroupEntryFieldEditingStates";
 import {PasswordBrokerContext} from "./PasswordBrokerContext";
+import {ENTRY_GROUP_ADDING_AWAIT, ENTRY_GROUP_ADDING_IN_PROGRESS} from "../constants/EntryGroupAddingStates";
+import {ENTRY_GROUP_TREES_REQUIRED_LOADING} from "../constants/EntryGroupTreesStatus";
 
 const EntryGroupContext = React.createContext()
 
@@ -30,7 +32,6 @@ const EntryGroupProvider = (props) => {
     } = props.entryFieldTypes
     const EntryFieldButton = props.EntryFieldButton
 
-    const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
         masterPassword,
         setMasterPassword,
@@ -42,8 +43,60 @@ const EntryGroupProvider = (props) => {
         setEntryGroupFieldForEditDecryptedValue,
         entryGroupFieldForEditState,
         setEntryGroupFieldForEditState,
-    } = passwordBrokerContext
 
+        baseUrl,
+        setEntryGroupTreesStatus,
+        entryGroupTreesOpened,
+        setEntryGroupTreesOpened
+    } = useContext(PasswordBrokerContext)
+
+
+    const [addingEntryGroupState, setAddingEntryGroupState] = useState(ENTRY_GROUP_ADDING_AWAIT)
+    const [addingEntryGroupTitle, setAddingEntryGroupTitle] = useState('')
+    const [addingEntryGroupErrorMessage, setAddingEntryGroupErrorMessage] = useState("")
+    const addingEntryGroupModalVisibilityCheckboxRef = useRef()
+
+    const addNewEntryGroup = (entryGroupId = null) => {
+        if (addingEntryGroupState !== ENTRY_GROUP_ADDING_AWAIT) {
+            return
+        }
+        setAddingEntryGroupState(ENTRY_GROUP_ADDING_IN_PROGRESS)
+        const data = {}
+        data.name = addingEntryGroupTitle
+        if (entryGroupId) {
+            data.parent_entry_group_id = entryGroupId
+        }
+
+        axios.post(baseUrl + '/entryGroups/', data).then(
+            () => {
+
+                if (entryGroupId
+                    && !entryGroupTreesOpened.includes(entryGroupId)
+                ) {
+                    entryGroupTreesOpened.push(entryGroupTreesOpened)
+                    setEntryGroupTreesOpened(entryGroupTreesOpened)
+                }
+                setEntryGroupTreesStatus(ENTRY_GROUP_TREES_REQUIRED_LOADING)
+                setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
+                addingEntryGroupModalVisibilityCheckboxRef.current.checked = false
+                setAddingEntryGroupErrorMessage('')
+            },
+            (error) => {
+                console.log(error)
+                let errMsg = ''
+                if (error.response && error.response.data.errors.name[0]) {
+                    console.log(error.response.data.errors.name[0])
+                    errMsg += error.response.data.errors.name[0] + "\r\n";
+                }
+                if (errMsg.length) {
+                    setAddingEntryGroupErrorMessage(errMsg)
+                } else {
+                    setAddingEntryGroupErrorMessage(error.message)
+                }
+                setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
+            }
+        )
+    }
     const loadEntryFieldValueAndButtons = (
         url,
         states,
@@ -295,6 +348,15 @@ const EntryGroupProvider = (props) => {
         <EntryGroupContext.Provider
             value={{
                 loadEntryFieldValueAndButtons: loadEntryFieldValueAndButtons,
+
+                addNewEntryGroup: addNewEntryGroup,
+                addingEntryGroupState: addingEntryGroupState,
+                setAddingEntryGroupState: setAddingEntryGroupState,
+                addingEntryGroupTitle: addingEntryGroupTitle,
+                setAddingEntryGroupTitle: setAddingEntryGroupTitle,
+                addingEntryGroupErrorMessage: addingEntryGroupErrorMessage,
+                addingEntryGroupModalVisibilityCheckboxRef: addingEntryGroupModalVisibilityCheckboxRef,
+                setAddingEntryGroupErrorMessage: setAddingEntryGroupErrorMessage
             }}
         >
             {props.children}

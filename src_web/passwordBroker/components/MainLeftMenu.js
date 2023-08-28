@@ -23,7 +23,7 @@ const MainLeftMenu = () => {
         entryGroupTreesStatus,
         setEntryGroupTreesStatus,
         moveEntryGroupMode,
-        setMoveEntryGroupMode,
+        handleMoveEntryGroupMode,
     } = passwordBrokerContext
 
     const menuButtonSize = 'text-3xl'
@@ -53,9 +53,7 @@ const MainLeftMenu = () => {
         }
     }
 
-    const handleMoveEntryGroupMode = () => {
-        setMoveEntryGroupMode(!moveEntryGroupMode)
-    }
+
 
 //RiFolderSettingsFill
     return (

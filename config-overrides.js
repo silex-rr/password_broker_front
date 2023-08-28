@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
     paths: function (paths, env) {
-        paths.appIndexJs = path.resolve(__dirname, 'src_web/index.js');
-        paths.appSrc = path.resolve(__dirname, 'src');
+        paths.appIndexJs = path.resolve(__dirname, 'index.web.js');
+        paths.appSrc = path.resolve(__dirname, '');
         return paths;
     },
 }

@@ -5,32 +5,37 @@ import PasswordBrokerRouter from "./passwordBroker/routers/PasswordBrokerRouter"
 import IdentityRouter from "./identity/routers/IdentityRouter";
 import React, {useContext} from "react";
 import {AppContext} from "./AppContext";
+import {AppTokensService} from "../src_shared/utils/native/AppTokensService";
 
 const AppRouter = () => {
     const {
-        hostName
+        hostURL,
+        getAppUUId
     } = useContext(AppContext)
 
     return (
         <NativeRouter>
-            <Routes>
-                <Route path={'/*'}
-                       element={
-                           <IdentityProvider hostName={hostName}>
+            <IdentityProvider
+                hostURL={hostURL}
+                tokenMode={true}
+                getAppUUId={getAppUUId}
+                AppTokensService={new AppTokensService}
+            >
+                <Routes>
+                    <Route path={'/*'}
+                           element={
                                <RequireAuth>
                                    <PasswordBrokerRouter/>
                                </RequireAuth>
-                           </IdentityProvider>
-                       }
-                />
-                <Route path="/identity/*"
-                       element={
-                           <IdentityProvider  hostName={hostName}>
-                               <IdentityRouter/>
-                           </IdentityProvider>
-                       }
-                />
-            </Routes>
+                           }
+                    />
+                    <Route path="/identity/*"
+                           element={
+                                <IdentityRouter/>
+                           }
+                    />
+                </Routes>
+            </IdentityProvider>
         </NativeRouter>
     )
 }

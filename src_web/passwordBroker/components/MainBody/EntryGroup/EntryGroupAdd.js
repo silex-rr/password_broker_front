@@ -1,88 +1,30 @@
-import React, {useContext, useRef, useState} from "react";
-import {PasswordBrokerContext} from "../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
-import {ENTRY_ADDING_AWAIT, ENTRY_ADDING_IN_PROGRESS} from "../../../../../src_shared/passwordBroker/constants/EntryGroupEntryAddingStates";
+import React, {useContext} from "react";
 import {Button, Input} from "react-daisyui";
-import axios from "axios";
-import {ENTRY_GROUP_REQUIRED_LOADING} from "../../../../../src_shared/passwordBroker/constants/EntryGroupStatus";
-import {ENTRY_GROUP_TREES_REQUIRED_LOADING} from "../../../../../src_shared/passwordBroker/constants/EntryGroupTreesStatus";
-import {ENTRY_GROUP_ADDING_AWAIT, ENTRY_GROUP_ADDING_IN_PROGRESS} from "../../../../../src_shared/passwordBroker/constants/EntryGroupAddingStates";
+import {ENTRY_GROUP_ADDING_AWAIT} from "../../../../../src_shared/passwordBroker/constants/EntryGroupAddingStates";
+import {EntryGroupContext} from "../../../../../src_shared/passwordBroker/contexts/EntryGroupContext";
 
 const EntryGroupAdd = (props) => {
-    const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
-        baseUrl,
-        hostName,
-        setEntryGroupTreesStatus,
-        entryGroupTreesOpened,
-        setEntryGroupTreesOpened
-    } = passwordBrokerContext
+        addNewEntryGroup: addNewEntryGroup,
+        addingEntryGroupState: addingEntryGroupState,
+        setAddingEntryGroupState: setAddingEntryGroupState,
+        addingEntryGroupTitle: addingEntryGroupTitle,
+        setAddingEntryGroupTitle: setAddingEntryGroupTitle,
+        addingEntryGroupErrorMessage: addingEntryGroupErrorMessage,
+        setAddingEntryGroupErrorMessage: setAddingEntryGroupErrorMessage,
+        addingEntryGroupModalVisibilityCheckboxRef: addingEntryGroupModalVisibilityCheckboxRef,
+    } = useContext(EntryGroupContext)
 
     const entryGroupTitleParent = props.entryGroupTitle
     const entryGroupId = props.entryGroupId
 
-    const [addingEntryGroupState, setAddingEntryGroupState] = useState(ENTRY_GROUP_ADDING_AWAIT)
-    
-    const [entryGroupTitle, setEntryGroupTitle] = useState('')
-    const [errorMessage, setErrorMessage] = useState("")
-
-    const modalVisibilityCheckboxRef = useRef()
-
-    const addNewEntry = () => {
-        if (addingEntryGroupState !== ENTRY_GROUP_ADDING_AWAIT) {
-            return
-        }
-        setAddingEntryGroupState(ENTRY_GROUP_ADDING_IN_PROGRESS)
-        axios.defaults.withCredentials = true
-        // axios.get(hostName + "/sanctum/csrf-cookie").then(
-        //     (response) => {
-                let data = {'name': entryGroupTitle}
-                if (entryGroupId) {
-                    data.parent_entry_group_id = entryGroupId
-                }
-
-                axios.post(baseUrl + '/entryGroups/', data).then(
-                    (response) => {
-                        if (entryGroupId
-                            && !entryGroupTreesOpened.includes(entryGroupId)
-                        ) {
-                            entryGroupTreesOpened.push(entryGroupTreesOpened)
-                            setEntryGroupTreesOpened(entryGroupTreesOpened)
-                        }
-                        setEntryGroupTreesStatus(ENTRY_GROUP_TREES_REQUIRED_LOADING)
-                        setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
-                        modalVisibilityCheckboxRef.current.checked = false
-                        setErrorMessage('')
-                    },
-                    (error) => {
-                        let errMsg = []
-                        const addFieldErrKey = 'addEntryErr_'
-                        if (error.response.data.errors.name) {
-                            errMsg.push(<p key={addFieldErrKey + errMsg.length}>{error.response.data.errors.name[0]}</p>);
-                        }
-                        if (errMsg.length) {
-                            setErrorMessage(errMsg)
-                        } else {
-                            setErrorMessage(error.message)
-                        }
-                        setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
-                    }
-                )
-        //     },
-        //     (error) => {
-        //         setErrorMessage(error.message)
-        //         setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
-        //     }
-        // )
-    }
-
     const changeTitle = (e) => {
-        setEntryGroupTitle(e.target.value)
+        setAddingEntryGroupTitle(e.target.value)
     }
-
     const openModal = (e) => {
         if (e.target.checked) {
-            setEntryGroupTitle('')
-            setErrorMessage('')
+            setAddingEntryGroupTitle('')
+            setAddingEntryGroupErrorMessage('')
             setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT)
         }
     }
@@ -98,7 +40,7 @@ const EntryGroupAdd = (props) => {
                 {props.button}
             </label>
 
-            <input ref={modalVisibilityCheckboxRef}
+            <input ref={addingEntryGroupModalVisibilityCheckboxRef}
                    type="checkbox"
                    id={addEntryKey + entryGroupId}
                    className="modal-toggle"
@@ -115,7 +57,7 @@ const EntryGroupAdd = (props) => {
                             </label>
                             <Input id={addEntryKey + entryGroupId + "-title"}
                                    type='text'
-                                   value={entryGroupTitle}
+                                   value={addingEntryGroupTitle}
                                    onChange={changeTitle}
                                    placeholder="type title for new field"
                                    className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
@@ -123,18 +65,18 @@ const EntryGroupAdd = (props) => {
                         </div>
                         <div className="flex flex-row justify-around modal-action">
                             <Button className={"btn-success btn-sm basis-1/3 " + (addingEntryGroupState === ENTRY_GROUP_ADDING_AWAIT ? '' : 'loading')}
-                                    onClick={addNewEntry}>
+                                    onClick={() => addNewEntryGroup(entryGroupId)}>
                                 {addingEntryGroupState === ENTRY_GROUP_ADDING_AWAIT ? 'add' : ''}
                             </Button>
 
                             <label htmlFor={addEntryKey + entryGroupId}
                                    className="btn btn-error btn-sm btn-outline right-0 basis-1/3">close</label>
                         </div>
-                        {errorMessage === ''
+                        {addingEntryGroupErrorMessage === ''
                             ? ''
                             :
                             <div className="w-full bg-red-700 text-slate-100 text-center mt-8 py-1.5">
-                                {errorMessage}
+                                {addingEntryGroupErrorMessage}
                             </div>
                         }
 

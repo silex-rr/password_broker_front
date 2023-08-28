@@ -22,13 +22,6 @@ import {
 } from "../../../../src_shared/passwordBroker/constants/EntryGroupUsersStatus";
 import EntryGroupUsers from "./EntryGroup/EntryGroupUsers";
 import EntryGroupHistory from "./EntryGroup/EntryGroupHistory";
-import {EntryGroupProvider} from "../../../../src_shared/passwordBroker/contexts/EntryGroupContext";
-
-import EntryFieldButton from "./EntryGroup/EntryFieldButton";
-import Link from "./EntryGroup/EntryFieldTypes/Link";
-import Password from "./EntryGroup/EntryFieldTypes/Password";
-import Note from "./EntryGroup/EntryFieldTypes/Note";
-import File from "./EntryGroup/EntryFieldTypes/File";
 
 const MainBody = () => {
 
@@ -184,17 +177,7 @@ const MainBody = () => {
             <div className="grid grid-rows-3">
                 <div className="p-0 row-span-3 text-2xl bg-slate-200 text-slate-700">{head}</div>
                 <div className="p-5 row-span-3">
-                    <EntryGroupProvider
-                        entryFieldTypes={{
-                            Link: Link,
-                            Password: Password,
-                            Note: Note,
-                            File: File
-                        }}
-                        EntryFieldButton={EntryFieldButton}
-                    >
-                        {body}
-                    </EntryGroupProvider>
+                    {body}
                 </div>
             </div>
 

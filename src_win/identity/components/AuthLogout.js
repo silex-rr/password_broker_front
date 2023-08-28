@@ -9,7 +9,7 @@ const AuthLogout = () => {
     const navigate = useNavigate();
     const { logout } = identityContext
     useEffect(() => {
-            setTimeout(() =>  logout(navigate), 1000)
+            logout(navigate)
         },
         [navigate])
     return (

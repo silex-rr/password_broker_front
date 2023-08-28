@@ -4,7 +4,9 @@ import AuthContainer from "./identity/components/AuthContainer"
 import {BrowserRouter, Route, Routes,} from "react-router-dom";
 import RequireAuth from "../src_shared/identity/utils/RequireAuth";
 import PasswordBrokerRouter from "./passwordBroker/routers/PasswordBrokerRouter";
+import axios from "axios";
 
+axios.defaults.withCredentials = true;
 function App() {
 
     return (

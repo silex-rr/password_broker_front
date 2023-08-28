@@ -9,7 +9,7 @@ const EntryAdd = (props) => {
     const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
         baseUrl,
-        hostName,
+        hostURL,
         entryGroupId,
         setEntryGroupStatus,
     } = passwordBrokerContext
@@ -28,8 +28,8 @@ const EntryAdd = (props) => {
             return
         }
         setAddingEntryState(ENTRY_ADDING_IN_PROGRESS)
-        // axios.defaults.withCredentials = true
-        // axios.get(hostName + "/sanctum/csrf-cookie").then(
+
+        // axios.get(hostURL + "/sanctum/csrf-cookie").then(
         //     (response) => {
                 axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/',
                     {

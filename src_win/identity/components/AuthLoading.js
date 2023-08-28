@@ -1,6 +1,11 @@
 import React, {useContext, useEffect} from "react";
 import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
-import {LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM} from "../../../src_shared/identity/constants/AuthStatus";
+import {
+    LOG_IN_FORM,
+    LOGGED_IN,
+    SIGN_UP_FORM,
+    TOKEN_SELECTION_PAGE
+} from "../../../src_shared/identity/constants/AuthStatus";
 import {Navigate, useLocation} from "react-router-native";
 import {Text, View} from "react-native-windows";
 import tw from "twrnc";
@@ -10,6 +15,9 @@ const AuthLoading = ({ children }) => {
     const location = useLocation()
     const identityContext = useContext(IdentityContext)
 
+    /**
+     * @var AppTokenService appTokensService
+     */
     const { getUser, authStatus} = identityContext
 
     useEffect( () => {
@@ -21,7 +29,7 @@ const AuthLoading = ({ children }) => {
     switch (authStatus) {
         case LOGGED_IN:
             let path = '/'
-            if (location.state.from.pathname) {
+            if (location?.state?.from?.pathname) {
                 path = location.state.from.pathname;
             }
             return (<Navigate to={path} replace={true} />)

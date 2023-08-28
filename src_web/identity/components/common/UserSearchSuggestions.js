@@ -9,7 +9,7 @@ const UserSearchSuggestions = ({ searchTerm, suggestionOnClick, buttons }) => {
 
     const passwordBrokerContext = useContext(PasswordBrokerContext)
 
-    const {hostName, entryGroupId} = passwordBrokerContext
+    const {hostURL, entryGroupId} = passwordBrokerContext
 
     useEffect(() => {
         const abortController = new AbortController()
@@ -18,7 +18,7 @@ const UserSearchSuggestions = ({ searchTerm, suggestionOnClick, buttons }) => {
             setLoading(true)
             try {
                 const response = await axios.get(
-                    hostName + `/identity/api/users/search?q=${searchTerm}&entryGroupExclude=${entryGroupId}`,
+                    hostURL + `/identity/api/users/search?q=${searchTerm}&entryGroupExclude=${entryGroupId}`,
                     {signal: abortController.signal}
                 )
                 if (response.status === 200) {

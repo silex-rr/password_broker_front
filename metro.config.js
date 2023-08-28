@@ -18,7 +18,6 @@ const projectRoot = path.resolve(__dirname);
 
 module.exports = {
   // projectRoot: globalRoot,
-
   resolver: {
     blockList: exclusionList([
       // This stops "react-native run-windows" from causing the metro server to crash if its already running

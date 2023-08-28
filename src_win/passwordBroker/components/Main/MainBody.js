@@ -1,28 +1,33 @@
 import {useContext, useEffect} from "react";
-import {PasswordBrokerContext} from "../../contexts/PasswordBrokerContext";
+import {PasswordBrokerContext} from "../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 import {
     ENTRY_GROUP_LOADED,
     ENTRY_GROUP_LOADING,
     ENTRY_GROUP_NOT_SELECTED,
     ENTRY_GROUP_REQUIRED_LOADING
-} from "../../constants/EntryGroupStatus";
-import EntryGroup from "./EntryGroup/EntryGroup";
-import {ROLE_ADMIN, ROLE_MEMBER, ROLE_MODERATOR} from "../../constants/EntryGroupRole";
+} from "../../../../src_shared/passwordBroker/constants/EntryGroupStatus";
+import EntryGroup from "./MainBody/EntryGroup/EntryGroup";
+import {ROLE_ADMIN, ROLE_MEMBER, ROLE_MODERATOR} from "../../../../src_shared/passwordBroker/constants/EntryGroupRole";
 import {
     ENTRY_GROUP_MENU_HISTORY,
     ENTRY_GROUP_MENU_MAIN,
     ENTRY_GROUP_MENU_SETTINGS,
     ENTRY_GROUP_MENU_USERS
-} from "../../constants/EntryGroupMenu";
+} from "../../../../src_shared/passwordBroker/constants/EntryGroupMenu";
 import {
     ENTRY_GROUP_USERS_LOADED,
     ENTRY_GROUP_USERS_LOADING,
     ENTRY_GROUP_USERS_NOT_SELECTED,
     ENTRY_GROUP_USERS_REQUIRED_LOADING
-} from "../../constants/EntryGroupUsersStatus";
-import EntryGroupUsers from "./EntryGroup/EntryGroupUsers";
-import EntryGroupHistory from "./EntryGroup/EntryGroupHistory";
-import {EntryGroupProvider} from "../../contexts/EntryGroupContext";
+} from "../../../../src_shared/passwordBroker/constants/EntryGroupUsersStatus";
+// import EntryGroupUsers from "./MainBody/EntryGroup/EntryGroupUsers";
+// import EntryGroupHistory from "./MainBody/EntryGroup/EntryGroupHistory";
+import {EntryGroupProvider} from "../../../../src_shared/passwordBroker/contexts/EntryGroupContext";
+import {Pressable, Text, View} from "react-native-windows";
+import tw from "twrnc";
+import Link from "./MainBody/EntryGroup/EntryFieldTypes/Link";
+import Password from "./MainBody/EntryGroup/EntryFieldTypes/Password";
+import EntryGroupMenu from "./MainBody/EntryGroupMenu/EntryGroupMenu";
 
 const MainBody = () => {
 
@@ -56,13 +61,13 @@ const MainBody = () => {
     }, [entryGroupStatus, entryGroupId, loadEntryGroup, setEntryGroupStatus,
         entryGroupUsersStatus, setEntryGroupUsersStatus, loadEntryGroupUsers])
 
-    const menuClickHandler = (e) => {
-        if (e.target.id === ENTRY_GROUP_MENU_USERS
+    const menuClickHandler = (value) => {
+        if (value === ENTRY_GROUP_MENU_USERS
             && entryGroupUsersStatus === ENTRY_GROUP_USERS_NOT_SELECTED
         ) {
             setEntryGroupUsersStatus(ENTRY_GROUP_USERS_REQUIRED_LOADING)
         }
-        setEntryGroupMenu(e.target.id)
+        setEntryGroupMenu(value)
     }
 
     switch (entryGroupStatus) {
@@ -70,121 +75,102 @@ const MainBody = () => {
             break
         case ENTRY_GROUP_LOADING:
         case ENTRY_GROUP_REQUIRED_LOADING:
-            head = (<div className="px-5 py-3 ">loading</div>)
+            head = (<Text style={tw`px-5 py-3 text-slate-700`}>loading</Text>)
             body = ''
             break
         case ENTRY_GROUP_NOT_SELECTED:
-            head = (<div className="px-5 py-3 ">Select an Entry Group</div>)
+            head = (<Text style={tw`px-5 py-3 text-slate-700`}>Select an Entry Group</Text>)
             body = ''
             break
         case ENTRY_GROUP_LOADED:
-            let menu = []
-            let menu_selected = false;
-            let selected = '';
-            const unSelectedTab = 'text-slate-700 hover:bg-slate-300 hover:text-slate-900'
-            const selectedTab = 'tab-active'
+            const menuElements = []
+
             switch (entryGroupData.role.role) {
                 case ROLE_ADMIN:
-                    selected = unSelectedTab
-                    if (entryGroupMenu === ENTRY_GROUP_MENU_SETTINGS) {
-                        selected = selectedTab
-                        menu_selected = true
-                    }
-                    menu.push(
-                        <span id={ENTRY_GROUP_MENU_SETTINGS} key={ENTRY_GROUP_MENU_SETTINGS}
-                              onClick={menuClickHandler} className={"tab tab-lifted " + selected}>Settings</span>
-                    )
+                    menuElements.push({
+                        id: ENTRY_GROUP_MENU_SETTINGS,
+                        onPress: () => menuClickHandler(ENTRY_GROUP_MENU_SETTINGS),
+                        selected: entryGroupMenu === ENTRY_GROUP_MENU_SETTINGS,
+                        text: "Settings"
+                    })
                 // eslint-disable-next-line no-fallthrough
                 case ROLE_MODERATOR:
                 // eslint-disable-next-line no-fallthrough
                 default:
                 case ROLE_MEMBER:
-                    selected = unSelectedTab
-                    if (!menu_selected && entryGroupMenu === ENTRY_GROUP_MENU_USERS) {
-                        selected = selectedTab
-                        menu_selected = true
-                    }
-                    menu.push(
-                        <span id={ENTRY_GROUP_MENU_USERS} key={ENTRY_GROUP_MENU_USERS}
-                              onClick={menuClickHandler} className={"tab tab-lifted " + selected}>Users</span>
-                    )
+                    menuElements.push({
+                        id: ENTRY_GROUP_MENU_USERS,
+                        onPress: () => menuClickHandler(ENTRY_GROUP_MENU_USERS),
+                        selected: entryGroupMenu === ENTRY_GROUP_MENU_USERS,
+                        text: "Users"
+                    })
 
-                    selected = unSelectedTab
-                    if (entryGroupMenu === ENTRY_GROUP_MENU_HISTORY) {
-                        selected = selectedTab
-                        menu_selected = true
-                    }
-                    menu.push(
-                        <span id={ENTRY_GROUP_MENU_HISTORY} key={ENTRY_GROUP_MENU_HISTORY}
-                              onClick={menuClickHandler} className={"tab tab-lifted " + selected}>History</span>
-                    )
+                    menuElements.push({
+                        id: ENTRY_GROUP_MENU_HISTORY,
+                        onPress: () => menuClickHandler(ENTRY_GROUP_MENU_HISTORY),
+                        selected: entryGroupMenu === ENTRY_GROUP_MENU_HISTORY,
+                        text: "History"
+                    })
 
-                    selected = unSelectedTab
-                    if (!menu_selected || entryGroupMenu === ENTRY_GROUP_MENU_MAIN) {
-                        selected = selectedTab
-                        menu_selected = true
-                    }
-                    menu.push(
-                        <span id={ENTRY_GROUP_MENU_MAIN} key={ENTRY_GROUP_MENU_MAIN}
-                              onClick={menuClickHandler} className={"tab tab-lifted " + selected}>Entries</span>
-                    )
+                    menuElements.push({
+                        id: ENTRY_GROUP_MENU_MAIN,
+                        onPress: () => menuClickHandler(ENTRY_GROUP_MENU_MAIN),
+                        selected: entryGroupMenu === ENTRY_GROUP_MENU_MAIN,
+                        text: "Entries"
+                    })
             }
-            menu.reverse()
-
+            menuElements.reverse()
             head = (
-                <div className="w-full h-full flex justify-between">
-                    <div className="px-5 py-3 ">
+                <View style={tw`w-full flex flex-row justify-between`}>
+                    <Text style={tw`px-5 py-3 text-slate-700 text-2xl`}>
                         {entryGroupData.entryGroup.name}
-                    </div>
-                    <div className="tabs text-slate-800 pr-5">
-                        {menu}
-                    </div>
-                </div>
+                    </Text>
+                    <EntryGroupMenu elements={menuElements} />
+                </View>
             )
+
             switch (entryGroupMenu) {
                 default:
                 case ENTRY_GROUP_MENU_MAIN:
                     body = <EntryGroup {...entryGroupData}/>
                     break
                 case ENTRY_GROUP_MENU_HISTORY:
-                    body = <EntryGroupHistory />
+                    body = ''//<EntryGroupHistory />
                     break
                 case ENTRY_GROUP_MENU_USERS:
                     switch(entryGroupUsersStatus) {
                         case ENTRY_GROUP_USERS_LOADED:
-                            body = <EntryGroupUsers/>
+                            body = ''//<EntryGroupUsers/>
                             break
                         case ENTRY_GROUP_USERS_NOT_SELECTED:
                         case ENTRY_GROUP_USERS_LOADING:
                         case ENTRY_GROUP_USERS_REQUIRED_LOADING:
-                            body = 'loading...'
+                            body = <Text>'loading...'</Text>
                             break
 
                         default:
-                            body = 'Error'
+                            body = <Text>'Error'</Text>
                     }
                     break
                 case ENTRY_GROUP_MENU_SETTINGS:
-                    body = 'settings'
+                    body = <Text>'settings'</Text>
                     break
-
             }
 
             break
     }
 
     return (
-        <div className="basis-3/4 p-0 text-slate-100 bg-slate-600">
-            <div className="grid grid-rows-3">
-                <div className="p-0 row-span-3 text-2xl bg-slate-200 text-slate-700">{head}</div>
-                <div className="p-5 row-span-3">
-                    <EntryGroupProvider>
-                        {body}
-                    </EntryGroupProvider>
-                </div>
-            </div>
-
-        </div>
+        // <View><Text>asdasdad</Text>
+        //     {body}</View>
+        <View style={tw`basis-3/4 p-0 text-slate-100 bg-slate-600`}>
+            <View style={tw``}>
+                <View style={tw`p-0 bg-slate-200`}>{head}</View>
+                <View style={tw`p-5`}>
+                    {body}
+                </View>
+            </View>
+        </View>
     )
 }
 

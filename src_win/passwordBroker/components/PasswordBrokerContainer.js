@@ -6,7 +6,7 @@ import Footer from "./Footer";
 
 const PasswordBrokerContainer = (props) => {
     return (
-        <View style={tw`flex flex-col h-screen w-full`}>
+        <View style={tw`flex flex-col w-full h-full`}>
             <Head/>
             <Main/>
             <Footer/>

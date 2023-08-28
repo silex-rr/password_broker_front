@@ -21,10 +21,9 @@ import {FIELD_EDITING_AWAIT} from "../constants/EntryGroupEntryFieldEditingState
 const PasswordBrokerContext = React.createContext()
 
 const PasswordBrokerProvider = (props) => {
-    axios.defaults.withCredentials = true
 
-    const hostName = process.env.REACT_APP_PASSWORD_BROKER_HOST
-    const baseUrl  = hostName + '/passwordBroker/api'
+    const hostURL = props.hostURL ? props.hostURL : process.env.REACT_APP_PASSWORD_BROKER_HOST
+    const baseUrl  = hostURL + '/passwordBroker/api'
 
     const { entryGroupId: entryGroupIdParam } = useParams();
 
@@ -78,13 +77,20 @@ const PasswordBrokerProvider = (props) => {
         }
     }
 
+    const handleMoveEntryGroupMode = () => {
+        setMoveEntryGroupMode(!moveEntryGroupMode)
+    }
+
     const loadEntryGroupTrees = () => {
-        // axios.defaults.withCredentials = true
 
         axios.get(baseUrl + '/entryGroupsAsTree/').then(
             (response) => {
                 setEntryGroupTrees(response.data.trees)
                 setEntryGroupTreesStatus(ENTRY_GROUP_TREES_LOADED)
+                // console.log(response.data.trees)
+            },
+            (error) => {
+                console.log(error)
             }
         )
     }
@@ -159,7 +165,6 @@ const PasswordBrokerProvider = (props) => {
     }
 
     const loadEntryGroupEntries = (entryGroupID, data) => {
-        // axios.defaults.withCredentials = true
 
         axios.get(baseUrl + '/entryGroups/' + entryGroupID + '/entries').then(
             (response) => {
@@ -253,7 +258,7 @@ const PasswordBrokerProvider = (props) => {
                 selectEntryGroup: selectEntryGroup,
                 entryGroupMenu: entryGroupMenu,
                 setEntryGroupMenu: setEntryGroupMenu,
-                hostName: hostName,
+                hostURL: hostURL,
                 baseUrl: baseUrl,
                 setMasterPassword: setMasterPassword,
 
@@ -269,7 +274,8 @@ const PasswordBrokerProvider = (props) => {
 
                 moveEntryGroup: moveEntryGroup,
                 moveEntryGroupMode: moveEntryGroupMode,
-                setMoveEntryGroupMode: setMoveEntryGroupMode
+                setMoveEntryGroupMode: setMoveEntryGroupMode,
+                handleMoveEntryGroupMode: handleMoveEntryGroupMode
             }}
         >
             {props.children}

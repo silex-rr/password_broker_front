@@ -1,30 +1,53 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
-import {Navigate, useNavigate} from "react-router-dom";
+import {Navigate} from "react-router-dom";
 import {LOGGED_IN} from "../../../src_shared/identity/constants/AuthStatus";
 import {Text, TextInput, TouchableOpacity, View} from "react-native-windows";
 import tw from "twrnc"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import AuthLoginTokens from "./AuthLoginTokens";
 
 const AuthLogin = () => {
-    let navigate = useNavigate();
     const {
         userEmail,
         userPassword,
         handleUserEmail,
         handleUserPassword,
+        handleHostURL,
+        hostURL,
         login,
         errorMessage,
-        authStatus
+        authStatus,
+        appTokensService,
     } = useContext(IdentityContext)
 
     if (authStatus === LOGGED_IN) {
         return (<Navigate to="/" replace />)
     }
+
+    const [tokens, setTokens] = useState(appTokensService.getTokens())
+    //console-network
+    //database
+    //lan
     return (
         <React.Fragment>
             <View style={tw`mb-8`}>
                 <Text style={tw`text-4xl text-slate-700 text-center`}>Login</Text>
+            </View>
+
+            <View style={tw`mb-4 flex flex-row`}>
+                <View style={tw`bg-slate-500 pt-1 basis-1/6 items-center`}>
+                    <MaterialCommunityIcons name="console-network" size={28} color="white" />
+                </View>
+                <View style={tw` basis-5/6`}>
+                    <TextInput
+                        style={tw`w-full bg-slate-300 text-slate-800 pl-3 py-2`}
+                        placeholder="Server URL [https://example.com]"
+                        placeholderTextColor="#64748b"
+                        onChangeText={handleHostURL}
+                        value={hostURL}
+                    />
+                </View>
             </View>
 
             <View style={tw`mb-4 flex flex-row`}>
@@ -58,14 +81,16 @@ const AuthLogin = () => {
                 </View>
             </View>
 
-            <View style={tw`flex justify-center w-full mt-12`}>
-                <TouchableOpacity onPress={() => login()}>
-                    <Text style={tw`text-slate-700 text-center rounded py-2 px-10 border border-slate-700 `}>Login</Text>
+            <View style={tw`flex justify-center w-full mt-10`}>
+                <TouchableOpacity onPress={login}>
+                    <Text style={tw`text-slate-700 text-center rounded py-2 px-10 border border-slate-700`}>Login</Text>
                 </TouchableOpacity>
             </View>
 
+            {tokens.length ? <AuthLoginTokens tokens={tokens} setTokens={setTokens}/> : ''}
+
             <View>
-                <Text style={tw`w-full text-red-600 text-center mt-8`}>{errorMessage}</Text>
+                {errorMessage !== '' ? <Text style={tw`w-full text-red-600 text-center mt-8`}>{errorMessage}</Text> : ''}
             </View>
 
         </React.Fragment>
