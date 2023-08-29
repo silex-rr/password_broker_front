@@ -5,7 +5,7 @@ import tw from "twrnc";
 
 const Main = (props) => {
     return (
-        <View style={tw`mb-auto flex flex-wrap flex-row flex-grow`}>
+        <View style={tw`mb-auto flex flex-row flex-grow`}>
             <MainLeftMenu/>
             <MainBody/>
         </View>

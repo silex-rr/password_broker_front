@@ -26,7 +26,7 @@ const EntryGroupAddButton = (props) => {
     }
 
     return (
-        <View style={tw`px-2 inline-block`}>
+        <View style={tw`px-2`}>
             <Pressable
                 onPress={openModal}
             >

@@ -13,11 +13,12 @@ import {HTML5Backend} from "react-dnd-html5-backend";
 import {RiFolderAddFill, RiFolderSettingsFill} from "react-icons/ri";
 // import MainLeftMenuRootDrop from "./MainLeftMenuRootDrop";
 import {ClockLoader} from "react-spinners";
-import {Text, View, ActivityIndicator} from "react-native-windows";
+import {Text, View, ActivityIndicator, ScrollView} from "react-native-windows";
 import tw from "twrnc";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import EntryGroupAdd from "./MainBody/EntryGroup/EntryGroupAdd";
 import EntryGroupAddButton from "./MainBody/EntryGroup/EntryGroupAddButton";
+import {} from "react-native";
 
 const MainLeftMenu = () => {
 
@@ -61,10 +62,9 @@ const MainLeftMenu = () => {
     const handleMoveEntryGroupMode = () => {
         setMoveEntryGroupMode(!moveEntryGroupMode)
     }
-
     return (
-        <View style={tw`basis-1/4 bg-slate-900 text-slate-400 pr-1 h-full`}>
-            <View style={tw`w-full bg-slate-200 px-3 text-slate-800 py-1`}>
+        <View style={tw`bg-slate-900 text-slate-400 pr-1 h-full min-w-[20%]`}>
+            <View style={tw`w-full bg-slate-200 px-3 text-slate-800 py-0 min-w-[40px]`}>
                  <EntryGroupAddButton
                      entryGroupId = {null}
                      entryGroupTitle = {null}
@@ -73,7 +73,7 @@ const MainLeftMenu = () => {
                      }
                  />
             </View>
-            <View style={tw`py-5 px-2`}>
+            <View style={tw`py-0 px-2 flex h-full mt-5 flex-1`}>
                 <View style={
                     {...tw`absolute top-0 left-0 w-full h-full bg-transparent/80 bg-slate-900 z-50 text-center
                         flex items-center justify-center`
@@ -88,7 +88,10 @@ const MainLeftMenu = () => {
                 </View>
                  {/*<DndProvider backend={HTML5Backend}>*/}
                      {/*<MainLeftMenuRootDrop />*/}
-                     {trees}
+
+                    <ScrollView style={tw`py-0 px-2 h-full`} scrollEnabled={true}>
+                        {trees}
+                    </ScrollView>
                  {/*</DndProvider>*/}
             </View>
         </View>

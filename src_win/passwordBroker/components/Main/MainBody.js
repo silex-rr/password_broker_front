@@ -121,7 +121,7 @@ const MainBody = () => {
             }
             menuElements.reverse()
             head = (
-                <View style={tw`w-full flex flex-row justify-between`}>
+                <View style={tw`w-full flex flex-row justify-between relative`}>
                     <Text style={tw`px-5 py-3 text-slate-700 text-2xl`}>
                         {entryGroupData.entryGroup.name}
                     </Text>
@@ -163,13 +163,15 @@ const MainBody = () => {
     return (
         // <View><Text>asdasdad</Text>
         //     {body}</View>
-        <View style={tw`basis-3/4 p-0 text-slate-100 bg-slate-600`}>
-            <View style={tw``}>
-                <View style={tw`p-0 bg-slate-200`}>{head}</View>
+        <View style={tw`p-0 text-slate-100 bg-slate-500 w-full shrink`}>
+
+                <View style={tw`p-0 bg-slate-200`}>
+                    {head}
+                </View>
                 <View style={tw`p-5`}>
                     {body}
                 </View>
-            </View>
+
         </View>
     )
 }

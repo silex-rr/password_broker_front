@@ -13,7 +13,7 @@ const AuthLogout = () => {
         },
         [navigate])
     return (
-        <View style={tw`mb-8`}>
+        <View style={tw``}>
             <Text style={tw`text-4xl text-slate-700 text-center`}>Logout</Text>
         </View>
     )

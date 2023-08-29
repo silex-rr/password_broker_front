@@ -202,7 +202,7 @@ const MainLeftMenuTreeNode = (props) => {
                         ?
                             <TouchableOpacity
                                 onPress={handleOpening}
-                                style={tw`inline-block cursor-pointer`}>
+                                style={tw``}>
                                 {isOpened
                                     ? <MaterialCommunityIcons name='folder-open-outline' size={24} color={groupColor}/>//<HiOutlineFolderRemove className={"inline-block text-2xl " + groupColor}/>
                                     : <MaterialCommunityIcons name='folder-multiple-outline' size={24} color={groupColor}/>//<HiOutlineFolderAdd className={"inline-block text-2xl " + groupColor}/>
@@ -211,18 +211,18 @@ const MainLeftMenuTreeNode = (props) => {
                         : <MaterialCommunityIcons name='folder-outline' size={24} color={groupColor}/>//<HiOutlineFolder className={"inline-block text-2xl " + groupColor}/>
                     }
 
-                    <View style={{...tw`inline-block align-middle`, ...(canDrag ? {}: tw`w-2`)}}>
+                    <View style={{...tw``, ...(canDrag ? {}: tw`w-2`)}}>
                         {canDrag
                             ? <Text>dragable</Text>//<RiDraggable className={groupColor}/>
                             : ''
                         }
                     </View>
                     {props.role === ROLE_GUEST
-                        ? <Text className="inline-block align-middle">{props.title}</Text>
+                        ? <Text>{props.title}</Text>
                         :
                         <TouchableOpacity onPress={handleOpenEntryGroup} style={tw`justify-center`}>
                             <Text
-                                style={tw`inline-block align-middle`
+                                style={tw``
                                     + (entryGroupId === entryGroupIdCurrent ? ` font-bold text-slate-200`: ``)}
                             >
                                 {props.title}

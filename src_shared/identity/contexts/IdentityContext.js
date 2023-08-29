@@ -217,15 +217,19 @@ const IdentityProvider = (props) => {
 
     async function logout(navigate) {
         axios.get(hostURL + "/identity/api/logout").then(() => {
-            Cookies.remove('XSRF-TOKEN')
-            Cookies.remove('laravel_session')
+            if (authMode === AUTH_MODE_COOKIE) {
+                Cookies.remove('XSRF-TOKEN')
+                Cookies.remove('laravel_session')
+            }
+            if (authMode === AUTH_MODE_BEARER_TOKEN) {
+                deactivateUserToken()
+            }
             setUserId("")
             setUserName("")
             setUserNameInput("")
             setUserEmail("")
             setUserPassword("")
             setAuthStatus("")
-            deactivateUserToken()
             navigate('/')
         });
     }

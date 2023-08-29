@@ -31,7 +31,7 @@ const EntryGroupMenu = ({elements}) => {
 
     const entryGroupMenuElements = []
     for (let i = 0; i < elements.length; i++) {
-        entryGroupMenuElements.push(<EntryGroupMenuElement {...elements[i]} setHoveredElement={setHoveredElement}/>)
+        entryGroupMenuElements.push(<EntryGroupMenuElement key={'eg_el-' + i} {...elements[i]} setHoveredElement={setHoveredElement}/>)
     }
 
     return (

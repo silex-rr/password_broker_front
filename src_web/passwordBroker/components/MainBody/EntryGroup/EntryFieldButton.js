@@ -2,31 +2,31 @@ import React from "react";
 import {ClockLoader} from "react-spinners";
 import {FaCopy, FaDownload, FaEdit, FaHistory, FaRegEye, FaRegEyeSlash, FaTrashAlt} from "react-icons/fa";
 
-const EntryFieldButton = ({iconName, onclick, tip, colour = '', loading = false}) => {
+const EntryFieldButton = ({icon, onclick, tip, colour = '', loading = false}) => {
 
-    let icon = (<span></span>)
+    let iconElement = (<span></span>)
 
-    switch (iconName) {
+    switch (icon) {
         case 'FaCopy':
-            icon = <FaCopy/>
+            iconElement = <FaCopy/>
             break;
         case 'FaDownload':
-            icon = <FaDownload/>
+            iconElement = <FaDownload/>
             break;
         case 'FaEdit':
-            icon = <FaEdit/>
+            iconElement = <FaEdit/>
             break;
         case 'FaHistory':
-            icon = <FaHistory/>
+            iconElement = <FaHistory/>
             break;
         case 'FaRegEye':
-            icon = <FaRegEye/>
+            iconElement = <FaRegEye/>
             break;
         case 'FaRegEyeSlash':
-            icon = <FaRegEyeSlash/>
+            iconElement = <FaRegEyeSlash/>
             break;
         case 'FaTrashAlt':
-            icon = <FaTrashAlt/>
+            iconElement = <FaTrashAlt/>
             break;
     }
 
@@ -45,13 +45,14 @@ const EntryFieldButton = ({iconName, onclick, tip, colour = '', loading = false}
         )
     }
     colour = colour === '' ? 'text-slate-100' : colour
+
     return (
         <button
             className={colour + ' text-2xl focus:outline-none ml-2 w-7 items-baseline  tooltip tooltip-left'}
             onClick={onclick}
             data-tip={tip}
         >
-            {icon}
+            {iconElement}
         </button>
     )
 }
