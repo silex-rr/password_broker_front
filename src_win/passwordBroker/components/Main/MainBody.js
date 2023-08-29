@@ -1,4 +1,4 @@
-import {useContext, useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import {PasswordBrokerContext} from "../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 import {
     ENTRY_GROUP_LOADED,
@@ -23,11 +23,12 @@ import {
 // import EntryGroupUsers from "./MainBody/EntryGroup/EntryGroupUsers";
 // import EntryGroupHistory from "./MainBody/EntryGroup/EntryGroupHistory";
 import {EntryGroupProvider} from "../../../../src_shared/passwordBroker/contexts/EntryGroupContext";
-import {Pressable, Text, View} from "react-native-windows";
+import {ActivityIndicator, Pressable, Text, View} from "react-native-windows";
 import tw from "twrnc";
 import Link from "./MainBody/EntryGroup/EntryFieldTypes/Link";
 import Password from "./MainBody/EntryGroup/EntryFieldTypes/Password";
 import EntryGroupMenu from "./MainBody/EntryGroupMenu/EntryGroupMenu";
+import {ENTRY_GROUP_TREES_UPDATING} from "../../../../src_shared/passwordBroker/constants/EntryGroupTreesStatus";
 
 const MainBody = () => {
 
@@ -75,7 +76,14 @@ const MainBody = () => {
             break
         case ENTRY_GROUP_LOADING:
         case ENTRY_GROUP_REQUIRED_LOADING:
-            head = (<Text style={tw`px-5 py-3 text-slate-700`}>loading</Text>)
+            head = (
+                <View style={tw`px-5 py-3 flex flex-row  `}>
+                    <View style={tw`px-2`}>
+                        <ActivityIndicator size="small" color="#334155" />
+                    </View>
+                    <Text style={tw`text-slate-700`}>loading...</Text>
+                </View>
+            )
             body = ''
             break
         case ENTRY_GROUP_NOT_SELECTED:
@@ -163,7 +171,7 @@ const MainBody = () => {
     return (
         // <View><Text>asdasdad</Text>
         //     {body}</View>
-        <View style={tw`p-0 text-slate-100 bg-slate-500 w-full shrink`}>
+        <View style={tw`p-0 text-slate-100 bg-slate-600 w-full shrink`}>
 
                 <View style={tw`p-0 bg-slate-200`}>
                     {head}

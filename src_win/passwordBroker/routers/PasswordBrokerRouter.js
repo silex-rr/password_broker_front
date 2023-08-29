@@ -9,7 +9,7 @@ import Link from "../components/Main/MainBody/EntryGroup/EntryFieldTypes/Link";
 import Password from "../components/Main/MainBody/EntryGroup/EntryFieldTypes/Password";
 import Note from "../components/Main/MainBody/EntryGroup/EntryFieldTypes/Note";
 import File from "../components/Main/MainBody/EntryGroup/EntryFieldTypes/File";
-import EntryFieldButton from "../components/Main/MainBody/EntryGroup/EntryFieldButton";
+import EntryFieldButton from "../components/Main/MainBody/EntryGroup/Entry/EntryFieldButton";
 import {EntryGroupProvider} from "../../../src_shared/passwordBroker/contexts/EntryGroupContext";
 
 const PasswordBrokerRouter = () => {

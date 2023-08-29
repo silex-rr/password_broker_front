@@ -1,12 +1,10 @@
-import {View} from "react-native-windows";
-import {Textarea} from "react-daisyui";
+import {View, Text} from "react-native-windows";
+
 import tw from "twrnc";
 
 const Note = ({value}) => {
     return (
-        <View style={tw`col-span-3 px-2 basis-1/2`}>
-            <Textarea style={tw`whitespace-pre-line`}>{value}</Textarea>
-        </View>
+            <Text style={tw`px-2`}>{value}</Text>
     )
 }
 

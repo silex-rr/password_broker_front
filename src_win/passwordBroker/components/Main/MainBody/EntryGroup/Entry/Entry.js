@@ -8,7 +8,7 @@ import {
     ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED,
     ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING
 } from "../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus";
-// import EntryFields from "./EntryFields";
+import EntryFields from "./EntryFields";
 import {EntryContext} from "../../../../../../../src_shared/passwordBroker/contexts/EntryContext";
 import {Pressable, Text, View} from "react-native-windows";
 import {DataTable} from "react-native-paper";
@@ -60,20 +60,23 @@ const Entry = (props) => {
             break
 
         case ENTRY_GROUP_ENTRY_FIELDS_LOADED:
-            // entryFields = (
-            //     <EntryFields
-            //         fields={entryFieldsData}
-            //         entryGroupId={entryGroupId}
-            //         entryId={entryId}
-            //         entryTitle={props.title}
-            //         setEntryFieldsStatus = {setEntryFieldsStatus}
-            //     />
-            // )
+            entryFields = (
+                <EntryFields
+                    fields={entryFieldsData}
+                    entryGroupId={entryGroupId}
+                    entryId={entryId}
+                    entryTitle={props.title}
+                    setEntryFieldsStatus = {setEntryFieldsStatus}
+                />
+            )
             break
         case ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING:
         case ENTRY_GROUP_ENTRY_FIELDS_LOADING:
         case ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED:
-            entryFields = (<Text className="w-full text-center p-2 bg-slate-500">Loading...</Text>)
+            entryFields = (
+                <View style={tw`w-full text-center p-2 bg-slate-500`}>
+                        <Text>Loading...</Text>
+                </View>)
             break
     }
 
@@ -99,11 +102,11 @@ const Entry = (props) => {
                     </Moment>
                 </DataTable.Cell>
             </DataTable.Row>
-            <DataTable.Row key={entryId + '_fields'} style={tw`${entryFieldsIsVisible ? '' : 'hidden'}`}>
+            <View key={entryId + '_fields'} style={tw`${entryFieldsIsVisible ? '' : 'hidden'}`}>
                 <View style={tw`bg-slate-700 text-slate-100 pt-0 px-0`}>
                     {entryFields}
                 </View>
-            </DataTable.Row>
+            </View>
         </React.Fragment>
     )
 }

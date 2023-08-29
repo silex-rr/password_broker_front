@@ -3,9 +3,7 @@ import tw from "twrnc";
 //onPress={() => Linking.openURL(value)}
 const Link = ({value}) => {
     return (
-        <View style={tw`col-span-3 px-2 basis-1/2`}>
-            <Text >{value}</Text>
-        </View>
+            <Text style={tw`px-2`}>{value}</Text>
     )
 }
 
