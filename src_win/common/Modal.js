@@ -19,7 +19,7 @@ const Modal = (props) => {
         elevation: 10000,
     }
 
-    console.log({...tw`p-4 rounded bg-slate-700`, ...modalStyle})
+    // console.log({...tw`p-4 rounded bg-slate-700`, ...modalStyle})
 
     return (
         <View style={style}>

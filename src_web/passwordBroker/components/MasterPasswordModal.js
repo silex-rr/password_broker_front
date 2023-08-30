@@ -1,18 +1,18 @@
 import React, {useContext, useState} from "react"
 import {PasswordBrokerContext} from "../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 import {Button, Input} from "react-daisyui";
-import {MASTER_PASSWORD_FILLED_IN} from "../../../src_shared/passwordBroker/constants/MasterPasswordStates";
+import {AppContext} from "../../AppContext";
 
 const MasterPasswordModal = () => {
-    const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {
-        setMasterPassword,
+        memorizeMasterPassword,
+    } = useContext(PasswordBrokerContext)
+
+    const {
         masterPasswordModalVisibilityCheckboxRef,
         masterPasswordModalVisibilityErrorRef,
-        masterPasswordCallback,
-        setMasterPasswordCallback,
-        setMasterPasswordState,
-    } = passwordBrokerContext
+        closeMasterPasswordModal
+    } = useContext(AppContext)
 
     const [masterPasswordField, setMasterPasswordField] = useState('')
 
@@ -21,18 +21,10 @@ const MasterPasswordModal = () => {
     }
 
     const handleSaveMasterPassword = () => {
-        setMasterPassword(masterPasswordField)
-        const modalVisibilityCheckbox = masterPasswordModalVisibilityCheckboxRef.current
-        modalVisibilityCheckbox.checked = false
-        const masterPasswordModalVisibilityError = masterPasswordModalVisibilityErrorRef.current;
-        masterPasswordModalVisibilityError.text = ''
-
-        masterPasswordCallback(masterPasswordField)
+        memorizeMasterPassword(masterPasswordField)
         setMasterPasswordField('')
-        setMasterPasswordCallback(() => () => {})
-        setMasterPasswordState(MASTER_PASSWORD_FILLED_IN)
+        closeMasterPasswordModal()
     }
-
 
     return (
         <div className="p-0 m-0">

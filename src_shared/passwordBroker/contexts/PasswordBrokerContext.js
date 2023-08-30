@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react'
 import axios from "axios";
 import {
     ENTRY_GROUP_TREES_LOADED,
@@ -11,18 +11,19 @@ import {
     ENTRY_GROUP_REQUIRED_LOADING
 } from "../constants/EntryGroupStatus";
 import {useNavigate, useParams} from "react-router-dom";
-import {MASTER_PASSWORD_IS_EMPTY} from "../constants/MasterPasswordStates";
+import {MASTER_PASSWORD_FILLED_IN, MASTER_PASSWORD_IS_EMPTY} from "../constants/MasterPasswordStates";
 import {ENTRY_GROUP_MENU_MAIN} from "../constants/EntryGroupMenu";
 import {ENTRY_GROUP_USERS_LOADED, ENTRY_GROUP_USERS_NOT_SELECTED} from "../constants/EntryGroupUsersStatus";
 import {ROLE_GUEST} from "../constants/EntryGroupRole";
 import {FIELD_EDITING_AWAIT} from "../constants/EntryGroupEntryFieldEditingStates";
-
-
 const PasswordBrokerContext = React.createContext()
 
 const PasswordBrokerProvider = (props) => {
 
-    const hostURL = props.hostURL ? props.hostURL : process.env.REACT_APP_PASSWORD_BROKER_HOST
+    const {
+        hostURL,
+        showMasterPasswordModal
+    } = useContext(props.AppContext)
     const baseUrl  = hostURL + '/passwordBroker/api'
 
     const { entryGroupId: entryGroupIdParam } = useParams();
@@ -30,8 +31,6 @@ const PasswordBrokerProvider = (props) => {
     const [entryGroupTrees, setEntryGroupTrees] = useState([])
     const [entryGroupTreesStatus, setEntryGroupTreesStatus] = useState(ENTRY_GROUP_TREES_REQUIRED_LOADING)
     const [entryGroupTreesOpened, setEntryGroupTreesOpened] = useState([])
-
-
 
     const [entryGroupData, setEntryGroupData] = useState(null)
     const [entryGroupRole, setEntryGroupRole] = useState(ROLE_GUEST)
@@ -49,8 +48,6 @@ const PasswordBrokerProvider = (props) => {
     const [masterPassword, setMasterPassword] = useState('')
     const [masterPasswordState, setMasterPasswordState] = useState(MASTER_PASSWORD_IS_EMPTY)
     const [masterPasswordCallback, setMasterPasswordCallback] = useState(() => () => {})
-    const masterPasswordModalVisibilityCheckboxRef = useRef()
-    const masterPasswordModalVisibilityErrorRef = useRef()
 
     const [moveEntryGroupMode, setMoveEntryGroupMode] = useState(false)
 
@@ -58,24 +55,6 @@ const PasswordBrokerProvider = (props) => {
 
     let loadEntryGroupAbortController = null
     let loadEntryGroupUsersAbortController = null;
-
-    const showMasterPasswordModal = (errorText = '') => {
-        const masterPasswordModalVisibilityCheckbox = masterPasswordModalVisibilityCheckboxRef.current
-        const masterPasswordModalVisibilityError = masterPasswordModalVisibilityErrorRef.current
-        if (!masterPasswordModalVisibilityCheckbox.checked){
-            masterPasswordModalVisibilityCheckbox.click()
-        }
-        masterPasswordModalVisibilityError.textContent = errorText
-
-        const classList = masterPasswordModalVisibilityError.classList
-        if (errorText !== '') {
-            classList.add("mt-8")
-            classList.add("py-1.5")
-        } else {
-            classList.remove("mt-8")
-            classList.remove("py-1.5")
-        }
-    }
 
     const handleMoveEntryGroupMode = () => {
         setMoveEntryGroupMode(!moveEntryGroupMode)
@@ -215,6 +194,13 @@ const PasswordBrokerProvider = (props) => {
         )
     }
 
+    const memorizeMasterPassword = (masterPassword) => {
+        setMasterPassword(masterPassword)
+        masterPasswordCallback(masterPassword)
+        setMasterPasswordCallback(() => () => {})
+        setMasterPasswordState(MASTER_PASSWORD_FILLED_IN)
+    }
+
     useEffect(() => {
         if ( typeof entryGroupIdParam === 'string'
             && entryGroupIdParam !== ''
@@ -261,13 +247,12 @@ const PasswordBrokerProvider = (props) => {
                 hostURL: hostURL,
                 baseUrl: baseUrl,
                 setMasterPassword: setMasterPassword,
+                showMasterPasswordModal: showMasterPasswordModal,
 
                 masterPassword: masterPassword,
-                masterPasswordModalVisibilityCheckboxRef: masterPasswordModalVisibilityCheckboxRef,
-                masterPasswordModalVisibilityErrorRef: masterPasswordModalVisibilityErrorRef,
                 masterPasswordCallback: masterPasswordCallback,
                 setMasterPasswordCallback: setMasterPasswordCallback,
-                showMasterPasswordModal: showMasterPasswordModal,
+                memorizeMasterPassword: memorizeMasterPassword,
                 masterPasswordState: masterPasswordState,
                 setMasterPasswordState: setMasterPasswordState,
                 removeUserFromGroup: removeUserFromGroup,

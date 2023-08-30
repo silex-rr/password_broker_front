@@ -30,7 +30,7 @@ const EntryGroupAdd = (props) => {
         modalTitle = "Adding new Entry Group to the Entry Group " + entryGroupTitleParent
     }
 
-    console.log(addingEntryGroupState, addingEntryGroupErrorMessage)
+    // console.log(addingEntryGroupState, addingEntryGroupErrorMessage)
 
     return (
         <View>
@@ -44,7 +44,7 @@ const EntryGroupAdd = (props) => {
                             value={addingEntryGroupTitle}
                             onChangeText={changeTitle}
                             placeholder={"type title for new field"}
-                            style={tw`input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}
+                            style={tw`basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}
                         />
                     </View>
 

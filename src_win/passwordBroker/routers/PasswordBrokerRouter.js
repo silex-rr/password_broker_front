@@ -14,12 +14,8 @@ import {EntryGroupProvider} from "../../../src_shared/passwordBroker/contexts/En
 
 const PasswordBrokerRouter = () => {
 
-    const {
-        hostURL
-    } = useContext(AppContext)
-
     return (
-        <PasswordBrokerProvider hostURL={hostURL}>
+        <PasswordBrokerProvider AppContext={AppContext}>
                 <EntryGroupProvider
                     entryFieldTypes={{
                         Link: Link,

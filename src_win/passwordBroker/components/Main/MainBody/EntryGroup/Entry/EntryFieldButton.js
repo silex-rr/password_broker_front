@@ -1,7 +1,7 @@
 import React from "react";
 // import {ClockLoader} from "react-spinners";
 // import {FaCopy, FaDownload, FaEdit, FaHistory, FaRegEye, FaRegEyeSlash, FaTrashAlt} from "react-icons/fa";
-import {ActivityIndicator, Pressable, Text, View} from "react-native-windows";
+import {ActivityIndicator, TouchableOpacity, View} from "react-native-windows";
 import tw from "twrnc";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -54,13 +54,16 @@ const EntryFieldButton = ({icon, onclick, tip, colour = '', loading = false}) =>
     colour = colour === '' ? 'text-slate-100' : colour
     //focus:outline-none
     return (
-        <View
-            style={tw`${colour}  ml-2 w-7 items-baseline`}
-            onPress={onclick}
-            // data-tip={tip}
-        >
-            {iconElement}
-        </View>
+        <TouchableOpacity onPress={onclick}>
+            <View
+                style={tw`${colour}  ml-2 w-7 items-baseline`}
+
+                // data-tip={tip}
+            >
+                {iconElement}
+            </View>
+        </TouchableOpacity>
+
     )
 }
 

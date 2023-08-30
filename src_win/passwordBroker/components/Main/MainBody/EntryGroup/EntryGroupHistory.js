@@ -59,7 +59,7 @@ const EntryGroupHistory = () => {
 
     return (
         <div className="">
-            <table className="table w-full table-compact">
+            <table className="w-full">
                 <thead>
                 <tr>
                     <th className="bg-slate-900 text-slate-200">Entry</th>

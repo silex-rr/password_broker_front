@@ -7,10 +7,13 @@ import Note from "../components/MainBody/EntryGroup/EntryFieldTypes/Note";
 import File from "../components/MainBody/EntryGroup/EntryFieldTypes/File";
 import EntryFieldButton from "../components/MainBody/EntryGroup/EntryFieldButton";
 import {EntryGroupProvider} from "../../../src_shared/passwordBroker/contexts/EntryGroupContext";
+import {AppContext} from "../../AppContext";
+
 
 const PasswordBrokerRouter = () => {
+
     return (
-        <PasswordBrokerProvider>
+        <PasswordBrokerProvider AppContext={AppContext}>
             <EntryGroupProvider
                 entryFieldTypes={{
                     Link: Link,

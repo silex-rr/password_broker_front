@@ -115,7 +115,7 @@ const EntryGroupUsers = () => {
 
     return (
         <div className="overflow-x-auto">
-            <table className="table w-full table-compact">
+            <table className="w-full">
                 <thead>
                 <tr>
                     <th className="bg-slate-900 text-slate-200">User</th>

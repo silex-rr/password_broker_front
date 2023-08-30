@@ -3,7 +3,6 @@ import {PasswordBrokerContext} from "../../../../../../../src_shared/passwordBro
 // import EntryFieldHistory from "./EntryFieldHistory";
 import {EntryGroupContext} from "../../../../../../../src_shared/passwordBroker/contexts/EntryGroupContext";
 import {Text, View} from "react-native-windows";
-import {DataTable} from "react-native-paper";
 import tw from "twrnc";
 
 const EntryField = (props) => {

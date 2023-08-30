@@ -5,34 +5,17 @@ import {BrowserRouter, Route, Routes,} from "react-router-dom";
 import RequireAuth from "../src_shared/identity/utils/RequireAuth";
 import PasswordBrokerRouter from "./passwordBroker/routers/PasswordBrokerRouter";
 import axios from "axios";
+import {AppProvider} from "./AppContext";
+import AppRouter from "./AppRouter";
 
 axios.defaults.withCredentials = true;
 function App() {
 
     return (
         <div className="flex w-full justify-center bg-slate-600 h-screen">
-            <BrowserRouter>
-                <Routes>
-                    <Route
-                        path="/*"
-                        element={
-                            <IdentityProvider>
-                                <RequireAuth>
-                                    <PasswordBrokerRouter/>
-                                </RequireAuth>
-                            </IdentityProvider>
-                        }
-                    />
-                    <Route
-                        path="/identity/*"
-                        element={
-                            <IdentityProvider>
-                                <AuthContainer/>
-                            </IdentityProvider>
-                        }
-                    />
-                </Routes>
-            </BrowserRouter>
+            <AppProvider>
+                <AppRouter />
+            </AppProvider>
         </div>
     )
 

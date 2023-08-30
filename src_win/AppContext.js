@@ -1,6 +1,7 @@
 import React, {useState} from "react"
 import {View} from "react-native-windows"
 import {appUUIDFromStorage} from "../src_shared/utils/native/appUUIDFromStorage";
+import MasterPasswordModal from "./passwordBroker/components/MasterPasswordModal";
 
 const AppContext = React.createContext()
 
@@ -31,6 +32,14 @@ const AppProvider = (props) => {
         setModalStyle({})
     }
 
+    const showMasterPasswordModal = () => {
+        modalShow(<MasterPasswordModal/>, {width: 700})
+    }
+
+    const closeMasterPasswordModal = () => {
+        modalClose()
+    }
+
     return (
         <AppContext.Provider
             value={{
@@ -42,6 +51,9 @@ const AppProvider = (props) => {
                 modalShow: modalShow,
                 modalClose: modalClose,
                 getAppUUId: getAppUUId,
+
+                showMasterPasswordModal: showMasterPasswordModal,
+                closeMasterPasswordModal: closeMasterPasswordModal,
             }}
             >
             {props.children}

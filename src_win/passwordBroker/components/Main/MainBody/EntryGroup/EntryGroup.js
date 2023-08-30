@@ -31,7 +31,7 @@ const EntryGroup = (props) => {
 
     return (
         <View style={tw`overflow-x-auto`}>
-            <DataTable style={tw`table w-full`}>
+            <DataTable style={tw`w-full`}>
                 <DataTable.Header style={{borderColor: '#191e24', paddingHorizontal: 0}}>
                     <DataTable.Title style={tw`bg-slate-900 pl-4`}>
                         <Text style={tw`text-slate-200`}>Entry title</Text>
