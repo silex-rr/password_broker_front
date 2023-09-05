@@ -1,16 +1,13 @@
-import Head from "./Head";
-import Main from "./Main";
-import Footer from "./Footer";
-import MasterPasswordModal from "./MasterPasswordModal";
+import Container from "../../common/Container";
+import MainLeftMenu from "./MainLeftMenu";
+import MainBody from "./MainBody/MainBody";
 
 const PasswordBrokerContainer = () => {
     return (
-        <div className="flex flex-col h-screen w-full">
-            <Head/>
-            <Main/>
-            <Footer/>
-            <MasterPasswordModal/>
-        </div>
+        <Container>
+            <MainLeftMenu/>
+            <MainBody/>
+        </Container>
     )
 }
 
