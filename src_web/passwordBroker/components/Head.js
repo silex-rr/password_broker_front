@@ -58,6 +58,8 @@ const Head = () => {
             </div>
             <nav className="flex justify-end px-5">
                 <ul className="menu menu-horizontal p-0 font-bold align-middle flex self-center">
+                    <li>
+                       <a href="/admin/">Admin Panel</a></li>
                     <li className="" onClick={masterPasswordIconClickHandler}>
                         {masterPasswordIcon}
                     </li>
