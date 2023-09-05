@@ -8,7 +8,6 @@ import {
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD
 } from "../constants/MainBodyEntryGroupEntryFieldTypes";
-import copy from "copy-to-clipboard";
 import {stringToBlob} from "../../utils/stringToBlob";
 
 import {ROLE_CAN_EDIT} from "../constants/EntryGroupRole";
@@ -31,6 +30,7 @@ const EntryGroupProvider = (props) => {
         File
     } = props.entryFieldTypes
     const EntryFieldButton = props.EntryFieldButton
+    const copy = props.copyToCliboard
 
     const {
         masterPassword,

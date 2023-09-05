@@ -8,6 +8,7 @@ import File from "../components/MainBody/EntryGroup/EntryFieldTypes/File";
 import EntryFieldButton from "../components/MainBody/EntryGroup/EntryFieldButton";
 import {EntryGroupProvider} from "../../../src_shared/passwordBroker/contexts/EntryGroupContext";
 import {AppContext} from "../../AppContext";
+import copy from "copy-to-clipboard";
 
 
 const PasswordBrokerRouter = () => {
@@ -22,6 +23,7 @@ const PasswordBrokerRouter = () => {
                     File: File
                 }}
                 EntryFieldButton={EntryFieldButton}
+                copyToCliboard={copy}
             >
                 <Routes>
                     <Route

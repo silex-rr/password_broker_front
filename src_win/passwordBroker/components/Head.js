@@ -55,7 +55,7 @@ const Head = () => {
         case MASTER_PASSWORD_VALIDATED:
             masterPasswordIcon = (
                 <View className="tooltip tooltip-bottom" data-tip="Master Pasword validated">
-                    <MaterialCommunityIcons name="key" size={20} color="green"/>
+                    <MaterialCommunityIcons name="key" size={20} color="#a3e635"/>
                 </View>
             )
             break;

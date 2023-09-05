@@ -28,6 +28,7 @@ const MasterPasswordModal = () => {
     const handleSaveMasterPassword = () => {
         memorizeMasterPassword(masterPasswordField)
         setMasterPasswordField('')
+        modalClose()
     }
 
 
@@ -41,7 +42,7 @@ const MasterPasswordModal = () => {
                    onChangeText={handleMasterPasswordField}
                    autoFocus={true}
                    placeholder="type your MasterPassword"
-                   style={tw`bg-slate-800 text-slate-200 placeholder-slate-300 w-full`}
+                   style={tw`bg-slate-800 text-slate-200 w-full`}
                    onKeyPress={(e)=>
                     {if (e.nativeEvent.key === "Enter") {handleSaveMasterPassword()}}}
                    onSubmitEditing={handleSaveMasterPassword}

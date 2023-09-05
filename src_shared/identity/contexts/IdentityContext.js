@@ -277,6 +277,29 @@ const IdentityProvider = (props) => {
         )
     }
 
+    const getUsers = (page = 1,
+                      perPage = 20,
+                      searchQuery = ''
+    ) => {
+        const req = []
+        if (page) {
+            req.push(`page=${page}`)
+        }
+        if (perPage) {
+            req.push(`perPage=${perPage}`)
+        }
+        if (searchQuery) {
+            req.push(`q=${searchQuery}`)
+        }
+        const reqString =  (req.length > 0 ? '?' + req.join('&') : '')
+        const url = hostURL + `/identity/api/users/search${reqString}`
+
+
+        return new Promise((resolve, reject) => {
+            axios.get(url).then(resolve, reject)
+        })
+    }
+
     return (
         <IdentityContext.Provider
             value={{
@@ -289,6 +312,7 @@ const IdentityProvider = (props) => {
                 userNameInput,
                 userEmail,
                 userPassword,
+                getUsers,
                 handleUserNameInput,
                 handleUserEmail,
                 handleUserPassword,
