@@ -296,7 +296,10 @@ const IdentityProvider = (props) => {
 
 
         return new Promise((resolve, reject) => {
-            axios.get(url).then(resolve, reject)
+            axios.get(url).then(
+                (response) => { resolve(response.data.data)},
+                reject
+            )
         })
     }
 
