@@ -1,6 +1,7 @@
+import AdminPanelLeftMenuNagivation from "./AdminPanelLeftMenuNavigation"
 
 const AdminPanelLeftMenu = () => {
-const title = "Admin panel elements"
+    const title = "Admin panel elements"
 
     return (
         <section className=" bg-slate-900">
@@ -8,13 +9,13 @@ const title = "Admin panel elements"
                 <div className="w-full bg-slate-200 px-3 text-slate-800 py-1">{title}</div>
             </div>
             <div className="py-5 px-2 relative">
-                <a href='/admin/user_control/'>User Control</a>
+                <AdminPanelLeftMenuNagivation path={'/admin/user_control/'} name={'User Control'}/>
             </div>
             <div className="py-5 px-2 relative">
-                <a href='/admin/settings/'>Settings</a>
+                <AdminPanelLeftMenuNagivation path={'/admin/settings/'} name={'Settings'} />
             </div>
             <div className="py-5 px-2 relative">
-                <a href='/admin/logs/'>Logs</a>
+                <AdminPanelLeftMenuNagivation path={'/admin/logs/'} name={'Logs'} />
             </div>
         </section>
     )
