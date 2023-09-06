@@ -6,7 +6,7 @@ const RequireAuth = ({ children }) => {
     const location = useLocation()
     const identityContext = useContext(IdentityContext)
     const { userId } = identityContext
-    console.log('userId: ' + userId)
+    // console.log('userId: ' + userId)
     if (userId === "") {
         // Redirect them to the /login page, but save the current location they were
         // trying to go to when they were redirected. This allows us to send them

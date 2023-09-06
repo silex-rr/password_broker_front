@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState} from "react";
+import React, {useContext, useRef} from "react";
 import {
     FIELD_TYPE_FILE,
     FIELD_TYPE_LINK,
@@ -6,151 +6,51 @@ import {
     FIELD_TYPE_PASSWORD
 } from "../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes";
 import {Button, Input, Textarea} from "react-daisyui";
-import axios from "axios";
+import {FIELD_ADDING_AWAIT} from "../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates";
+import {EntryFieldContext} from "../../../../../src_shared/passwordBroker/contexts/EntryFieldContext";
 import {PasswordBrokerContext} from "../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
-import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from "../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus";
-import {FIELD_ADDING_AWAIT, FIELD_ADDING_IN_PROGRESS} from "../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates";
-import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from "../../../../../src_shared/passwordBroker/constants/MasterPasswordStates";
+import {
+    ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING
+} from "../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus";
 
 const EntryFieldsAdd = (props) => {
+    const {masterPassword} = useContext(PasswordBrokerContext)
 
-    const passwordBrokerContext = useContext(PasswordBrokerContext)
-    const {baseUrl, masterPassword, setMasterPassword, setMasterPasswordState} = passwordBrokerContext
+    const {
+        addNewField,
+        addingFieldType,
+        beforeModalOpen,
+        changeLogin,
+        addingFieldLogin,
+        changeValue,
+        addingFieldValue,
+        masterPasswordInput,
+        changeMasterPassword,
+        addingFieldTitle,
+        changeTitle,
+        changeType,
+        addingFieldState,
+        errorMessage,
+    } = useContext(EntryFieldContext)
 
     const entryGroupId = props.entryGroupId
     const entryId = props.entryId
     const entryTitle = props.entryTitle
 
-    const [addingFieldState, setAddingFieldState] = useState(FIELD_ADDING_AWAIT)
-
-    const [fieldType, setFieldType] = useState(FIELD_TYPE_PASSWORD)
-    const [fieldValue, setFieldValue] = useState('')
-    const [fieldLogin, setFieldLogin] = useState('')
-    const [fieldFile, setFieldFile] = useState(null)
-    const [fieldTitle, setFieldTitle] = useState('')
-    const [masterPasswordInput, setMasterPasswordInput] = useState('')
-    const [errorMessage, setErrorMessage] = useState("")
-
     const modalVisibilityCheckboxRef = useRef()
     const modalFieldTypeSelectorRef = useRef()
 
-    const addNewField = () => {
-        if (addingFieldState !== FIELD_ADDING_AWAIT) {
-            return
-        }
-        let masterPasswordForm = masterPassword
-        if (masterPassword === '') {
-            setMasterPassword(masterPasswordInput)
-            masterPasswordForm = masterPasswordInput
-        }
-
-        setAddingFieldState(FIELD_ADDING_IN_PROGRESS)
-
-        const data = new FormData();
-        data.append('title', fieldTitle)
-        data.append('type', fieldType)
-        data.append('master_password', masterPasswordForm)
-        switch (fieldType) {
-            default:
-                break
-            case FIELD_TYPE_PASSWORD:
-                data.append('login', fieldLogin)
-            case FIELD_TYPE_LINK:
-            case FIELD_TYPE_NOTE:
-                data.append('value', fieldValue)
-                break
-
-            case FIELD_TYPE_FILE:
-                data.append('file', fieldFile)
-                break
-
-        }
-
-        axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields',
-                    data
-                ).then(
-                    () => {
-                        props.setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING)
-                        setAddingFieldState(FIELD_ADDING_AWAIT)
-                        const modalVisibilityCheckbox =  modalVisibilityCheckboxRef.current
-                        modalVisibilityCheckbox.checked = false
-                        setErrorMessage('')
-                        setMasterPasswordState(MASTER_PASSWORD_VALIDATED)
-                    },
-                    (error) => {
-                        let errMsg = []
-                        const addFieldErrKey = 'addFieldErr_'
-                        if (error.response.data.errors.master_password) {
-                            if (error.response.data.errors.master_password === 'invalid') {
-                                errMsg.push(<p key={addFieldErrKey + errMsg.length}>MasterPassword is invalid</p>);
-                            } else {
-                                errMsg.push(<p key={addFieldErrKey + errMsg.length}>MasterPassword is missing</p>);
-                            }
-                            setMasterPasswordState(MASTER_PASSWORD_INVALID)
-                            setMasterPassword('')
-                        }
-                        if (error.response.data.errors.value) {
-                            errMsg.push(<p key={addFieldErrKey + errMsg.length}>Field Value is missing</p>);
-                        }
-                        if (error.response.data.errors.title) {
-                            errMsg.push(<p key={addFieldErrKey + errMsg.length}>{error.response.data.errors.title[0]}</p>);
-                        }
-
-                        if (errMsg.length) {
-                            setErrorMessage(errMsg)
-                        } else {
-                            setErrorMessage(error.message)
-                        }
-                        setAddingFieldState(FIELD_ADDING_AWAIT)
-                    }
-                )
-        //     },
-        //     (error) => {
-        //         setErrorMessage(error.message)
-        //         setAddingFieldState(FIELD_ADDING_AWAIT)
-        //     }
-        // )
-    }
-    const changeType = (e) => {
-        setFieldValue('')
-        setFieldFile(null)
-        setFieldType(e.target.value)
-    }
-
-    const changeValue = (e) => {
-        setFieldValue(e.target.value)
-        if (fieldType === FIELD_TYPE_FILE) {
-            setFieldFile(e.target.files[0])
-        }
-
-    }
-
-    const changeTitle = (e) => {
-        setFieldTitle(e.target.value)
-    }
-    const changeLogin = (e) => {
-        setFieldLogin(e.target.value)
-    }
-
-    const changeMasterPassword = (e) => {
-        setMasterPasswordInput(e.target.value)
-    }
 
     const openModal = (e) => {
         if (e.target.checked) {
-            setFieldTitle('')
-            setFieldValue('')
-            setFieldType(FIELD_TYPE_PASSWORD)
-            setMasterPasswordInput('')
+            beforeModalOpen()
             modalFieldTypeSelectorRef.current.value = FIELD_TYPE_PASSWORD
-            setErrorMessage('')
-            setAddingFieldState(FIELD_ADDING_AWAIT)
         }
     }
 
     let value = ''
 
-    switch (fieldType) {
+    switch (addingFieldType) {
         default:
             break;
         case FIELD_TYPE_PASSWORD:
@@ -165,10 +65,10 @@ const EntryFieldsAdd = (props) => {
                         <Input
                             id={"add-field-for-" + entryId + "-login"}
                             className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
-                            onChange={changeLogin}
+                            onChange={(e) => changeLogin(e.target.value)}
                             placeholder="type new login"
                             type="text"
-                            value={fieldLogin}/>
+                            value={addingFieldLogin}/>
                     </div>
                     <div className="flex flex-row ">
                         <label htmlFor={"add-field-for-" + entryId + "-value"}
@@ -179,10 +79,10 @@ const EntryFieldsAdd = (props) => {
                         <Input
                             id={"add-field-for-" + entryId + "-value"}
                             className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
-                            onChange={changeValue}
+                            onChange={(e) => changeValue(e.target.value)}
                             placeholder="type new password"
                             type="password"
-                            value={fieldValue}/>
+                            value={addingFieldValue}/>
                     </div>
                 </div>
             )
@@ -190,7 +90,7 @@ const EntryFieldsAdd = (props) => {
         case FIELD_TYPE_NOTE:
             value = (
                 <div className="py-1.5 items-center">
-                    <Textarea onChange={changeValue} placeholder="type new note" value={fieldValue}
+                    <Textarea onChange={(e) => changeValue(e.target.value)} placeholder="type new note" value={addingFieldValue}
                               className="textarea-bordered w-full bg-slate-800 text-slate-200 placeholder-slate-300"/>
                 </div>
             )
@@ -206,10 +106,10 @@ const EntryFieldsAdd = (props) => {
                     <Input
                         id={"add-field-for-" + entryId + "-value"}
                         className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
-                        onChange={changeValue}
+                        onChange={(e) => changeValue(e.target.value)}
                         placeholder="put new link"
                         type="text"
-                        value={fieldValue}/>
+                        value={addingFieldValue}/>
                 </div>
             )
             break;
@@ -224,14 +124,26 @@ const EntryFieldsAdd = (props) => {
                     <Input
                         id={"add-field-for-" + entryId + "-value"}
                         className="file-input file-input-bordered file-input-sm w-full basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
-                        onChange={changeValue}
+                        onChange={(e) => changeValue(e.target.value, e.target.files[0])}
                         placeholder="add a file"
                         type="file"
-                        value={fieldValue}/>
+                        value={addingFieldValue}/>
                 </div>
             )
             break
 
+    }
+
+    const sendFormHandler = () => {
+        addNewField(entryGroupId, entryId)
+            .then(
+                ()=> {
+                    props.setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING)
+                    const modalVisibilityCheckbox = modalVisibilityCheckboxRef.current
+                    modalVisibilityCheckbox.checked = false
+                },
+                () => {}
+                )
     }
 
     let masterPasswordField = ''
@@ -248,7 +160,7 @@ const EntryFieldsAdd = (props) => {
                     id={"add-field-for-" + entryId + "-master-password"}
                     type='password'
                     value={masterPasswordInput}
-                    onChange={changeMasterPassword}
+                    onChange={(e) => changeMasterPassword(e.target.value)}
                     placeholder="type your master password"
                     className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
                 />
@@ -277,8 +189,8 @@ const EntryFieldsAdd = (props) => {
                             </label>
                             <Input id={"add-field-for-" + entryId + "-title"}
                                    type='text'
-                                   value={fieldTitle}
-                                   onChange={changeTitle}
+                                   value={addingFieldTitle}
+                                   onChange={(e) => changeTitle(e.target.value)}
                                    placeholder="type title for new field"
                                    className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
                             />
@@ -294,7 +206,7 @@ const EntryFieldsAdd = (props) => {
                                     ref={modalFieldTypeSelectorRef}
                                     className="select select-bordered select-sm basis-2/3 bg-slate-800 text-slate-200"
                                     defaultValue={FIELD_TYPE_PASSWORD}
-                                    onChange={changeType}>
+                                    onChange={(e) => changeType(e.target.value)}>
                                 <option value={FIELD_TYPE_PASSWORD}>{FIELD_TYPE_PASSWORD}</option>
                                 <option value={FIELD_TYPE_LINK}>{FIELD_TYPE_LINK}</option>
                                 <option value={FIELD_TYPE_NOTE}>{FIELD_TYPE_NOTE}</option>
@@ -307,7 +219,9 @@ const EntryFieldsAdd = (props) => {
                         {masterPasswordField}
 
                         <div className="flex flex-row justify-around modal-action">
-                            <Button className={"btn-success btn-sm basis-1/3" + (addingFieldState === FIELD_ADDING_AWAIT ? "" : " loading")} onClick={addNewField}>
+                            <Button
+                                className={"btn-success btn-sm basis-1/3" + (addingFieldState === FIELD_ADDING_AWAIT ? "" : " loading")}
+                                onClick={sendFormHandler}>
                                 {addingFieldState === FIELD_ADDING_AWAIT ? 'add' : ''}
                             </Button>
 

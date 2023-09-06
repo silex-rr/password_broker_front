@@ -5,6 +5,7 @@ import EntryGroupAdd from "./EntryGroupAdd";
 import {useContext} from "react";
 import {PasswordBrokerContext} from "../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 import {EntryProvider} from "../../../../../src_shared/passwordBroker/contexts/EntryContext";
+import {EntryFieldProvider} from "../../../../../src_shared/passwordBroker/contexts/EntryFieldContext";
 
 const EntryGroup = (props) => {
     const passwordBrokerContext = useContext(PasswordBrokerContext)
@@ -37,7 +38,9 @@ const EntryGroup = (props) => {
                     </tr>
                 </thead>
                 <tbody>
+                <EntryFieldProvider>
                     {entries}
+                </EntryFieldProvider>
                 </tbody>
             </table>
             {ROLE_CAN_EDIT.includes(props.role.role)
