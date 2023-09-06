@@ -14,16 +14,28 @@ const UserControl = () => {
 
     const [userControlStatus, setUserControlStatus] = useState(USER_CONTROL_REQUIRE_LOADING)
     const [userControlData, setUserControlData] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [lastPage, setLastPage] = useState()
+
+    const getUsersPerPage = () => {
+        setUserControlStatus(USER_CONTROL_LOADING)
+        getUsers(currentPage).then((users) => {
+            setLastPage(users.last_page)
+            setUserControlData(users.data)
+            setUserControlStatus(USER_CONTROL_LOADED)
+        })
+    }
+    const handlePagination = (page) => {
+        setCurrentPage(page)
+        setUserControlStatus(USER_CONTROL_REQUIRE_LOADING)
+    }
 
     useEffect(() => {
         if (userControlStatus === USER_CONTROL_LOADED
             || userControlStatus === USER_CONTROL_LOADING
         ) {return}
         setUserControlStatus(USER_CONTROL_LOADING)
-        getUsers().then((users) => {
-            setUserControlData(users.data)
-            setUserControlStatus(USER_CONTROL_LOADED)
-        })
+        getUsersPerPage(currentPage)
     }, [setUserControlData, setUserControlStatus, userControlStatus])
 
     const users = []
@@ -38,26 +50,34 @@ const UserControl = () => {
                 <AdminPanelLoading />
             }  
             {userControlStatus === USER_CONTROL_LOADED &&
-             <table className="table table-xs">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Email</th> 
-                    <th>Name</th> 
-                    <th>Created At</th> 
-                </tr>
-                </thead> 
-                <tbody>
-                    {users.map((user, index) => (
-                        <tr key={index}>
-                            <td>{index+1}</td>
-                            <td>{user.email}</td> 
-                            <td>{user.name}</td> 
-                            <td><Moment format="YYYY.MM.DD HH:mm">{user.created_at}</Moment></td> 
-                        </tr>
-                    ))}
-                </tbody> 
-            </table>}
+             <div>
+                 <table className="table table-xs">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Created At</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {users.map((user, index) => (
+                            <tr key={index}>
+                                <td>{index+1 + ((currentPage > 1) ? (currentPage-1) * 20 : 0)}</td>
+                                <td>{user.email}</td>
+                                <td>{user.name}</td>
+                                <td><Moment format="YYYY.MM.DD HH:mm">{user.created_at}</Moment></td>
+                            </tr>
+                        ))}
+                    </tbody> 
+                </table>
+                    <div className="join">
+                        <button className="join-item btn-outline btn" disabled={currentPage === 1} onClick={() => {handlePagination(currentPage-1)}}>«</button>
+                        <button onClick={() => {handlePagination(currentPage)}} className="join-item btn-outline btn">{currentPage}</button>
+                        <button disabled={currentPage === lastPage} onClick={() => {handlePagination(currentPage+1)}} className="join-item btn-outline btn">»</button>
+                    </div>
+             </div>
+            }
         </div>
     )
 }
