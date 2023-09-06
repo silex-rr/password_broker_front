@@ -1,7 +1,7 @@
 import React, {useContext, useState} from "react"
-import {PasswordBrokerContext} from "../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
+import {PasswordBrokerContext} from "../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 import {Button, Input} from "react-daisyui";
-import {AppContext} from "../../AppContext";
+import {AppContext} from "../AppContext";
 
 const MasterPasswordModal = () => {
     const {

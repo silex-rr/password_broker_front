@@ -1,12 +1,12 @@
 import React, {useContext} from "react";
-import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
-import {PasswordBrokerContext} from "../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
+import {IdentityContext} from "../../src_shared/identity/contexts/IdentityContext";
+import {PasswordBrokerContext} from "../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 import {
     MASTER_PASSWORD_FILLED_IN,
     MASTER_PASSWORD_INVALID,
     MASTER_PASSWORD_IS_EMPTY,
     MASTER_PASSWORD_VALIDATED
-} from "../../../src_shared/passwordBroker/constants/MasterPasswordStates";
+} from "../../src_shared/passwordBroker/constants/MasterPasswordStates";
 import {MdOutlineKey, MdOutlineKeyOff} from "react-icons/md";
 
 const Head = () => {

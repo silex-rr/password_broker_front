@@ -1,6 +1,6 @@
-import Head from "../passwordBroker/components/Head";
-import Footer from "../passwordBroker/components/Footer";
-import MasterPasswordModal from "../passwordBroker/components/MasterPasswordModal";
+import Head from "./Head";
+import Footer from "./Footer";
+import MasterPasswordModal from "./MasterPasswordModal";
 
 const Container = (props) => {
     return (
