@@ -16,18 +16,30 @@ const UserControl = () => {
     const [userControlData, setUserControlData] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const [lastPage, setLastPage] = useState()
+    const [searchRequest, setSearchRequest] = useState('')
+    const [usersPerPage, setUsersPerPage] = useState(20)
+
+ 
 
     const getUsersPerPage = () => {
         setUserControlStatus(USER_CONTROL_LOADING)
-        getUsers(currentPage).then((users) => {
+        getUsers(currentPage, usersPerPage, searchRequest).then((users) => {
             setLastPage(users.last_page)
             setUserControlData(users.data)
             setUserControlStatus(USER_CONTROL_LOADED)
         })
     }
+
     const handlePagination = (page) => {
         setCurrentPage(page)
         setUserControlStatus(USER_CONTROL_REQUIRE_LOADING)
+    }
+
+    const handleSearch = (request) => {
+        request.preventDefault()
+        if (searchRequest.trim() != '') {
+            setCurrentPage(1)
+            setUserControlStatus(USER_CONTROL_REQUIRE_LOADING)}
     }
 
     useEffect(() => {
@@ -46,6 +58,12 @@ const UserControl = () => {
     } 
     return (
         <div className="overflow-x-auto">
+            <div className="navbar bg-base-100">
+                    <form onSubmit={handleSearch}>
+                        <input type="text" value={searchRequest} onChange={(e) => setSearchRequest(e.target.value)} placeholder="Search" className="input input-bordered w-24 md:w-auto" />
+                        <button type="submit" className="btn btn-ghost normal-case text-xl" />
+                    </form>
+            </div>
              {userControlStatus != USER_CONTROL_LOADED &&
                 <AdminPanelLoading />
             }  
