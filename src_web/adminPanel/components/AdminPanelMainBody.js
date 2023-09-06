@@ -1,4 +1,4 @@
-import AdminPanelLeftMenu from "./AdminPanelLeftManu"
+import AdminPanelLeftMenu from "./AdminPanelLeftMenu"
 import AdminPanelRightMenu from "./AdminPanelRightMenu"
 
 const AdminPanelMainBody = (props) => {
