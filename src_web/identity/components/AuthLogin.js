@@ -6,6 +6,8 @@ import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import {Navigate, useNavigate} from "react-router-dom";
 import {LOGGED_IN} from "../../../src_shared/identity/constants/AuthStatus";
+import {AUTH_LOGIN_AWAIT, AUTH_LOGIN_IN_PROCESS} from "../../../src_shared/identity/constants/AuthLoginStatus";
+import {ClockLoader} from "react-spinners";
 
 const AuthLogin = () => {
     let navigate = useNavigate();
@@ -17,9 +19,12 @@ const AuthLogin = () => {
         handleUserPassword,
         login,
         errorMessage,
-        authStatus
+        authStatus,
+        authLoginStatus
     } = identityContext;
     const [hidePassword, setHidePassword] = useState(true);
+    const [loaderSpinnerColor, setLoaderSpinnerColor] = useState('#e2e8f0')
+
     const showHiddenPassword = hidePassword ? "" : "hidden";
     const showRevealedPassword = hidePassword ? "hidden" : "";
     function togglePassword() {
@@ -29,9 +34,44 @@ const AuthLogin = () => {
     if (authStatus === LOGGED_IN) {
         return (<Navigate to="/" replace />)
     }
+
+    let loginButton = ''
+
+
+    if (authLoginStatus === AUTH_LOGIN_AWAIT) {
+        loginButton = "Login"
+    }
+
+    const spinnerMouseEnterHandler = () => {
+        setLoaderSpinnerColor('#e2e8f0')
+    }
+    const spinnerMouseLeaveHandler = () => {
+        setLoaderSpinnerColor('#64748b')
+    }
+
+    if (authLoginStatus === AUTH_LOGIN_IN_PROCESS) {
+        loginButton = (
+                <span className="flex flex-row place-content-center place-items-center">
+                    <ClockLoader
+                        color={loaderSpinnerColor}
+                        size={18}
+                        aria-label="Loading Spinner"
+                        data-testid="loader"
+                        speedMultiplier={1}
+                    />
+                    <span className="pl-2">
+                        Loading ...
+                    </span>
+                </span>
+
+            )
+    }
+
     return (
         <div className="md:flex w-full rounded ">
-            <div className="bg-slate-200 py-24 px-12 rounded-lg">
+            <form className="bg-slate-200 py-24 px-12 rounded-lg"
+                onSubmit={(e) => {e.preventDefault(); login()}}
+            >
                 <div className="font-inter_extrabold text-4xl text-slate-700 text-center mb-8">
                     Login
                 </div>
@@ -67,12 +107,12 @@ const AuthLogin = () => {
                         />
                     </div>
                     <div className="col-span-1 bg-slate-300 text-center pt-1">
-                        <button
-                            className="text-slate-500 text-3xl focus:outline-none"
+                        <span
+                            className="text-slate-500 text-3xl focus:outline-none cursor-pointer"
                             onClick={() => togglePassword()}
                         >
                             <FaRegEye />
-                        </button>
+                        </span>
                     </div>
                 </div>
                 {/* REVEALED PASSWORD */}
@@ -82,21 +122,21 @@ const AuthLogin = () => {
                     </div>
                     <div className="col-span-5">
                         <input
-                            className="w-full bg-slate-300 placeholder-slate-800 pl-3 py-2"
+                            className="w-full bg-slate-300 placeholder-slate-800 text-slate-800 pl-3 py-2"
                             name="password"
                             type="text"
                             placeholder="Password"
                             value={userPassword}
-                            onChange={handleUserPassword}
+                            onChange={(e) => handleUserPassword(e.target.value)}
                         />
                     </div>
-                    <div className="col-span-1 bg-slate-300 text-center pt-1">
-                        <button
+                    <div className="col-span-1 bg-slate-300 text-center pt-1 cursor-pointer">
+                        <span
                             className="text-slate-500 text-3xl focus:outline-none"
                             onClick={() => togglePassword()}
                         >
                             <FaRegEyeSlash />
-                        </button>
+                        </span>
                     </div>
                 </div>
                 {/* SUBMIT BUTTON */}
@@ -105,14 +145,16 @@ const AuthLogin = () => {
                         className="font-inter_bold hover:bg-slate-700 text-slate-700 hover:text-white
                             text-center rounded py-2 px-10 border border-slate-700 focus:outline-none"
                         onClick={() => login()}
+                        onMouseEnter={spinnerMouseEnterHandler}
+                        onMouseLeave={spinnerMouseLeaveHandler}
                     >
-                        Login
+                        {loginButton}
                     </button>
                 </div>
                 <div className="w-full text-red-600 text-center mt-8">
                     {errorMessage}
                 </div>
-            </div>
+            </form>
         </div>
     );
 };
