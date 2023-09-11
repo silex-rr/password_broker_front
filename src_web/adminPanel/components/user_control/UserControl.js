@@ -7,6 +7,7 @@ import {
     USER_CONTROL_NOT_LOADED,
     USER_CONTROL_LOADING } from "./UserControlStatus"
 import AdminPanelLoading from "../AdminPanelLoading";
+import {FaEdit, FaTrashAlt} from "react-icons/fa";
 
 
 const UserControl = () => {
@@ -52,9 +53,7 @@ const UserControl = () => {
 
     const users = []
     if (userControlStatus === USER_CONTROL_LOADED) {
-        for (let i = 0; i<userControlData.length; i++) {
-            users.push(userControlData[i])
-        }
+        userControlData.forEach((user) => {users.push(user)})
     } 
     return (
         <div className="overflow-x-auto">
@@ -76,22 +75,39 @@ const UserControl = () => {
                         <th>Email</th>
                         <th>Name</th>
                         <th>Created At</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
                     </tr>
                     </thead>
                     <tbody>
                         {users.map((user, index) => (
+                            
                             <tr key={index}>
                                 <td>{index+1 + ((currentPage > 1) ? (currentPage-1) * 20 : 0)}</td>
                                 <td>{user.email}</td>
                                 <td>{user.name}</td>
                                 <td><Moment format="YYYY.MM.DD HH:mm">{user.created_at}</Moment></td>
+                                <td><FaEdit /></td>
+                                <td><FaTrashAlt /></td>
                             </tr>
                         ))}
                     </tbody> 
                 </table>
                     <div className="join">
                         <button className="join-item btn-outline btn" disabled={currentPage === 1} onClick={() => {handlePagination(currentPage-1)}}>«</button>
-                        <button onClick={() => {handlePagination(currentPage)}} className="join-item btn-outline btn">{currentPage}</button>
+                        {currentPage>1 &&
+                            <button className="join-item btn-outline btn" onClick={() => handlePagination(1)}>1</button>
+                        }
+                        {currentPage>2 &&
+                            <button className="join-item btn-outline btn" disabled='true'>...</button>
+                        }
+                        <button className="join-item btn-outline btn" onClick={() => {handlePagination(currentPage)}} >{currentPage}</button>
+                        { currentPage!=lastPage &&
+                            <button className="join-item btn-outline btn" disabled='true'>...</button>
+                        }
+                        {currentPage!=lastPage &&
+                            <button className="join-item btn-outline btn" onClick={() => {handlePagination(lastPage)}}>{lastPage}</button>
+                        }
                         <button disabled={currentPage === lastPage} onClick={() => {handlePagination(currentPage+1)}} className="join-item btn-outline btn">»</button>
                     </div>
              </div>
