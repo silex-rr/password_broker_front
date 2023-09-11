@@ -20,8 +20,6 @@ const UserControl = () => {
     const [searchRequest, setSearchRequest] = useState('')
     const [usersPerPage, setUsersPerPage] = useState(20)
 
- 
-
     const getUsersPerPage = () => {
         setUserControlStatus(USER_CONTROL_LOADING)
         getUsers(currentPage, usersPerPage, searchRequest).then((users) => {
@@ -81,7 +79,6 @@ const UserControl = () => {
                     </thead>
                     <tbody>
                         {users.map((user, index) => (
-                            
                             <tr key={index}>
                                 <td>{index+1 + ((currentPage > 1) ? (currentPage-1) * 20 : 0)}</td>
                                 <td>{user.email}</td>
@@ -99,11 +96,11 @@ const UserControl = () => {
                             <button className="join-item btn-outline btn" onClick={() => handlePagination(1)}>1</button>
                         }
                         {currentPage>2 &&
-                            <button className="join-item btn-outline btn" disabled='true'>...</button>
+                            <button className="join-item btn-outline btn" disabled={true}>...</button>
                         }
                         <button className="join-item btn-outline btn" onClick={() => {handlePagination(currentPage)}} >{currentPage}</button>
                         { currentPage!=lastPage &&
-                            <button className="join-item btn-outline btn" disabled='true'>...</button>
+                            <button className="join-item btn-outline btn" disabled={true}>...</button>
                         }
                         {currentPage!=lastPage &&
                             <button className="join-item btn-outline btn" onClick={() => {handlePagination(lastPage)}}>{lastPage}</button>
