@@ -3,6 +3,7 @@ import axios from "axios"
 import Cookies from "js-cookie"
 import {LOADING, LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM,} from "../constants/AuthStatus"
 import {AUTH_MODE_BEARER_TOKEN, AUTH_MODE_COOKIE} from "../constants/AuthMode";
+import {AUTH_LOGIN_AWAIT, AUTH_LOGIN_IN_PROCESS} from "../constants/AuthLoginStatus";
 
 const IdentityContext = React.createContext();
 
@@ -28,6 +29,7 @@ const IdentityProvider = (props) => {
     const [userToken, setUserToken] = useState("")
     const [authMode, setAuthMode] = useState(props.tokenMode ? AUTH_MODE_BEARER_TOKEN : AUTH_MODE_COOKIE)
     const [hostURL, setHostURL] = useState(hostURLDefault)
+    const [authLoginStatus, setAuthLoginStatus] = useState(AUTH_LOGIN_AWAIT)
 
     const changeAuthStatusLogin = () => {
         setAuthStatus(LOG_IN_FORM)
@@ -155,6 +157,13 @@ const IdentityProvider = (props) => {
         // CSRF COOKIE
         // console.log(hostURL + "/sanctum/csrf-cookie")
         // axios.get(hostURL + "/sanctum/csrf-cookie")
+
+        if (authLoginStatus !== AUTH_LOGIN_AWAIT) {
+            return
+        }
+
+        setAuthLoginStatus(AUTH_LOGIN_IN_PROCESS)
+
         const errorMessages = []
         if (hostURL === '') {
             errorMessages.push('Field: Server URL should be filled in')
@@ -184,10 +193,12 @@ const IdentityProvider = (props) => {
                     .then(
                         () => {
                             // console.log('login', response)
+                            setAuthLoginStatus(AUTH_LOGIN_AWAIT)
                             getUser()
                         },
                         // LOGIN ERROR
                         (error) => {
+                            setAuthLoginStatus(AUTH_LOGIN_AWAIT)
                             if (error.response) {
                                 setErrorMessage(error.response.data.message)
                             } else {
@@ -198,6 +209,7 @@ const IdentityProvider = (props) => {
             },
             // COOKIE ERROR
             () => {
+                setAuthLoginStatus(AUTH_LOGIN_AWAIT)
                 setErrorMessage("Could not complete the login")
             }
         );
@@ -328,7 +340,8 @@ const IdentityProvider = (props) => {
                 errorMessage,
                 appTokensService,
                 CSRF,
-                hostURL
+                hostURL,
+                authLoginStatus
             }}
         >
             {props.children}
