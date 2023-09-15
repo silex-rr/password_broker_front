@@ -9,6 +9,7 @@ import {
 import AdminPanelLoading from "../AdminPanelLoading";
 import {FaEdit, FaTrashAlt} from "react-icons/fa";
 import PaginationButton from "../Pagination";
+import SearchField from "../SearchField";
 
 
 const UserControl = () => {
@@ -57,10 +58,7 @@ const UserControl = () => {
     return (
         <div className="overflow-x-auto mx-auto">
             <div className="navbar bg-base-100">
-                    <form onSubmit={handleSearch}>
-                        <input type="text" value={searchRequest} onChange={(e) => setSearchRequest(e.target.value)} placeholder="Search" className="input input-bordered w-24 md:w-auto" />
-                        <button type="submit" className="btn btn-ghost normal-case text-xl" />
-                    </form>
+                <SearchField handleSearch={handleSearch} searchRequest={searchRequest} setSearchRequest={setSearchRequest} />
             </div>
              {userControlStatus != USER_CONTROL_LOADED &&
                 <AdminPanelLoading />
