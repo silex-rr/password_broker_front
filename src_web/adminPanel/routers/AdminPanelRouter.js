@@ -6,6 +6,7 @@ import Logs from "../components/logs/Logs"
 import {AppContext} from "../../AppContext"
 import {PasswordBrokerProvider} from "../../../src_shared/passwordBroker/contexts/PasswordBrokerContext"
 import {AdminPanelProvider} from "../contexts/AdminPanelContext";
+import UserUpdate from "../components/user_control/UserUpdate"
 
 const AdminPanelRouter = (props) => {
     return (
@@ -19,6 +20,10 @@ const AdminPanelRouter = (props) => {
                     <Route
                         path="/user_control/*"
                         element={<AdminPanelContainer><UserControl/></AdminPanelContainer>}
+                    />
+                    <Route 
+                        path="/user_control/update/:userID"
+                        element={<AdminPanelContainer><UserUpdate/></AdminPanelContainer>}
                     />
                     <Route
                         path="/settings/*"
