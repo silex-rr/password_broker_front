@@ -8,6 +8,7 @@ import {
     USER_CONTROL_LOADING } from "./UserControlStatus"
 import AdminPanelLoading from "../AdminPanelLoading";
 import {FaEdit, FaTrashAlt} from "react-icons/fa";
+import PaginationButton from "../Pagination";
 
 
 const UserControl = () => {
@@ -54,7 +55,7 @@ const UserControl = () => {
         userControlData.forEach((user) => {users.push(user)})
     } 
     return (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mx-auto">
             <div className="navbar bg-base-100">
                     <form onSubmit={handleSearch}>
                         <input type="text" value={searchRequest} onChange={(e) => setSearchRequest(e.target.value)} placeholder="Search" className="input input-bordered w-24 md:w-auto" />
@@ -65,8 +66,8 @@ const UserControl = () => {
                 <AdminPanelLoading />
             }  
             {userControlStatus === USER_CONTROL_LOADED &&
-             <div>
-                 <table className="table table-xs">
+             <div className="overflow-x-auto">
+                 <table className="table p-3 table-xs">
                     <thead>
                     <tr>
                         <th></th>
@@ -79,7 +80,7 @@ const UserControl = () => {
                     </thead>
                     <tbody>
                         {users.map((user, index) => (
-                            <tr key={index}>
+                            <tr className="hover:bg-base-200 p-1" key={index}>
                                 <td>{index+1 + ((currentPage > 1) ? (currentPage-1) * 20 : 0)}</td>
                                 <td>{user.email}</td>
                                 <td>{user.name}</td>
@@ -90,23 +91,7 @@ const UserControl = () => {
                         ))}
                     </tbody> 
                 </table>
-                    <div className="join">
-                        <button className="join-item btn-outline btn" disabled={currentPage === 1} onClick={() => {handlePagination(currentPage-1)}}>«</button>
-                        {currentPage>1 &&
-                            <button className="join-item btn-outline btn" onClick={() => handlePagination(1)}>1</button>
-                        }
-                        {currentPage>2 &&
-                            <button className="join-item btn-outline btn" disabled={true}>...</button>
-                        }
-                        <button className="join-item btn-outline btn" onClick={() => {handlePagination(currentPage)}} >{currentPage}</button>
-                        { currentPage!=lastPage &&
-                            <button className="join-item btn-outline btn" disabled={true}>...</button>
-                        }
-                        {currentPage!=lastPage &&
-                            <button className="join-item btn-outline btn" onClick={() => {handlePagination(lastPage)}}>{lastPage}</button>
-                        }
-                        <button disabled={currentPage === lastPage} onClick={() => {handlePagination(currentPage+1)}} className="join-item btn-outline btn">»</button>
-                    </div>
+                <PaginationButton currentPage={currentPage} lastPage={lastPage} handlePagination={handlePagination} />
              </div>
             }
         </div>
