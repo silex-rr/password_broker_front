@@ -36,7 +36,7 @@ const EntryGroupMenu = ({elements}) => {
 
     return (
         <View style={tw`flex flex-row text-slate-800 pr-5 items-end border-b border-slate-900 realtive`}>
-            <View style={tw`absolute b-0 w-full bg-slate-900 h-4`}></View>
+            <View style={tw`absolute w-full bg-slate-900 h-4`}></View>
             <View style={tw`flex flex-row justify-around`}>
                 {entryGroupMenuElements}
             </View>

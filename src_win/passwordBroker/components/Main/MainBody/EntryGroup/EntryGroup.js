@@ -8,6 +8,7 @@ import {DataTable} from "react-native-paper";
 import tw from "twrnc";
 import {EntryProvider} from "../../../../../../src_shared/passwordBroker/contexts/EntryContext";
 import EntryGroupAddButton from "./EntryGroupAddButton";
+import {EntryFieldProvider} from "../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext";
 
 const EntryGroup = (props) => {
     const passwordBrokerContext = useContext(PasswordBrokerContext)
@@ -30,7 +31,7 @@ const EntryGroup = (props) => {
     // const entryGroupAddButton =
 
     return (
-        <View style={tw`overflow-x-auto`}>
+        <View>
             <DataTable style={tw`w-full`}>
                 <DataTable.Header style={{borderColor: '#191e24', paddingHorizontal: 0}}>
                     <DataTable.Title style={tw`bg-slate-900 pl-4`}>

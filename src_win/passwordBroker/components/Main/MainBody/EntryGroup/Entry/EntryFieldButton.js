@@ -39,7 +39,7 @@ const EntryFieldButton = ({icon, onclick, tip, colour = '', loading = false}) =>
     if (loading) {
         const color = "#f1f5f9"
         return (
-            <View className="ml-1 w-7 items-baseline pt-0.5">
+            <View style={tw`ml-2 w-7 items-baseline pt-0.5`}>
                 <ActivityIndicator size="small" color={color} />
                 {/*<ClockLoader*/}
                 {/*    color={color}*/}

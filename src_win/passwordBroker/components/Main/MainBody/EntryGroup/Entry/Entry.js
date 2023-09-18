@@ -1,6 +1,6 @@
 import Moment from "react-moment";
 import axios from "axios";
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {PasswordBrokerContext} from "../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 import {
     ENTRY_GROUP_ENTRY_FIELDS_LOADED,
@@ -22,16 +22,21 @@ const Entry = (props) => {
     const passwordBrokerContext = useContext(PasswordBrokerContext)
     const {baseUrl} = passwordBrokerContext
 
-    const entryContext = useContext(EntryContext)
+    // const entryContext = useContext(EntryContext)
+    //
+    // const {
+    //     entryFieldsStatus,
+    //     setEntryFieldsStatus,
+    //     entryFieldsData,
+    //     setEntryFieldsData,
+    //     entryFieldsIsVisible,
+    //     setEntryFieldVisible
+    // } = entryContext
 
-    const {
-        entryFieldsStatus,
-        setEntryFieldsStatus,
-        entryFieldsData,
-        setEntryFieldsData,
-        entryFieldsIsVisible,
-        setEntryFieldVisible
-    } = entryContext
+    const [entryFieldsStatus, setEntryFieldsStatus] = useState(ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED)
+    const [entryFieldsData, setEntryFieldsData] = useState([])
+    const [entryFieldsIsVisible, setEntryFieldVisible] = useState(false)
+
 
     useEffect( () => {
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING) {
@@ -46,7 +51,7 @@ const Entry = (props) => {
     }, [entryFieldsStatus, baseUrl, entryGroupId, entryId, setEntryFieldsStatus, setEntryFieldsData]);
 
 
-    const EntryFieldsVisibility = () => {
+    const entryFieldsVisibility = () => {
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED) {
             setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING)
         }
@@ -88,7 +93,7 @@ const Entry = (props) => {
     return (
         <React.Fragment>
             <DataTable.Row key={entryId + '_main'} style={{borderColor: '#191e24', paddingHorizontal: 0}}>
-                <DataTable.Cell style={tw`bg-slate-700 pl-4`} onPress={EntryFieldsVisibility}>
+                <DataTable.Cell style={tw`bg-slate-700 pl-4`} onPress={entryFieldsVisibility}>
                     <Text style={tw`text-slate-100`}>{props.title}</Text>
                 </DataTable.Cell>
                 <DataTable.Cell style={tw`bg-slate-700 pl-4`}>

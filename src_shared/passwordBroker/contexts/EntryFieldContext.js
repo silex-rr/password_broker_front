@@ -8,14 +8,16 @@ import {
     FIELD_TYPE_PASSWORD
 } from "../constants/MainBodyEntryGroupEntryFieldTypes";
 import axios from "axios";
-import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from "../constants/EntryGroupEntryFieldsStatus";
 import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from "../constants/MasterPasswordStates";
+import FormData from 'form-data'
+import {APP_TYPE_WIN} from "../../constants/AppType";
 
 const EntryFieldContext = React.createContext()
 
 const EntryFieldProvider = (props) => {
 
-    const {baseUrl, masterPassword, setMasterPassword, setMasterPasswordState} = useContext(PasswordBrokerContext)
+    const {baseUrl, masterPassword, setMasterPassword, setMasterPasswordState, AppContext} = useContext(PasswordBrokerContext)
+    const {appType} = useContext(AppContext)
 
 
     const [addingFieldState, setAddingFieldState] = useState(FIELD_ADDING_AWAIT)
@@ -40,10 +42,11 @@ const EntryFieldProvider = (props) => {
 
         setAddingFieldState(FIELD_ADDING_IN_PROGRESS)
 
-        const data = new FormData();
+        let data = new FormData()
         data.append('title', addingFieldTitle)
         data.append('type', addingFieldType)
         data.append('master_password', masterPasswordForm)
+
         switch (addingFieldType) {
             default:
                 break
@@ -58,38 +61,42 @@ const EntryFieldProvider = (props) => {
                 break
         }
 
+        // Have to convert FormData to common obj bcz Axios has been broken since v 0.25 for React Native
+        if (appType === APP_TYPE_WIN) {
+            const dataObj = {}
+            for (let i = 0; i < data._parts.length; i++) {
+                dataObj[data._parts[i][0]] =  data._parts[i][1]
+            }
+            data = dataObj
+        }
         return new Promise((resolve, reject) => {
             axios.post(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields',
-                data, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
+                data
             ).then(
-                () => {
-                    setAddingFieldState(FIELD_ADDING_AWAIT)
-                    setErrorMessage('')
+                (response) => {
                     setMasterPasswordState(MASTER_PASSWORD_VALIDATED)
                     beforeModalOpen()
-                    resolve()
+                    resolve(response)
                 },
                 (error) => {
                     let errMsg = []
                     const addFieldErrKey = 'addFieldErr_'
-                    if (error.response.data.errors.master_password) {
-                        if (error.response.data.errors.master_password === 'invalid') {
-                            errMsg.push(<p key={addFieldErrKey + errMsg.length}>MasterPassword is invalid</p>);
-                        } else {
-                            errMsg.push(<p key={addFieldErrKey + errMsg.length}>MasterPassword is missing</p>);
+                    if (error.response) {
+                        if (error.response.data.errors.master_password) {
+                            if (error.response.data.errors.master_password === 'invalid') {
+                                errMsg.push('MasterPassword is invalid');
+                            } else {
+                                errMsg.push('MasterPassword is missing');
+                            }
+                            setMasterPasswordState(MASTER_PASSWORD_INVALID)
+                            setMasterPassword('')
                         }
-                        setMasterPasswordState(MASTER_PASSWORD_INVALID)
-                        setMasterPassword('')
-                    }
-                    if (error.response.data.errors.value) {
-                        errMsg.push(<p key={addFieldErrKey + errMsg.length}>Field Value is missing</p>);
-                    }
-                    if (error.response.data.errors.title) {
-                        errMsg.push(<p key={addFieldErrKey + errMsg.length}>{error.response.data.errors.title[0]}</p>);
+                        if (error.response.data.errors.value) {
+                            errMsg.push('Field Value is missing');
+                        }
+                        if (error.response.data.errors.title) {
+                            errMsg.push(error.response.data.errors.title[0]);
+                        }
                     }
 
                     if (errMsg.length) {
@@ -98,7 +105,7 @@ const EntryFieldProvider = (props) => {
                         setErrorMessage(error.message)
                     }
                     setAddingFieldState(FIELD_ADDING_AWAIT)
-                    reject()
+                    reject(error)
                 }
             )
         })
@@ -151,7 +158,7 @@ const EntryFieldProvider = (props) => {
             changeTitle: changeTitle,
             changeType: changeType,
             addingFieldState: addingFieldState,
-            errorMessage: errorMessage,
+            errorMessage: errorMessage
 
         }} >
             {props.children}

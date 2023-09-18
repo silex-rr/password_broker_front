@@ -1,20 +1,25 @@
-import React from "react";
+import React, {useContext} from "react";
 // import EntryFieldsAdd from "./EntryFieldsAdd";
 import EntryField from "./EntryField";
 // import EntryFieldsEdit from "./EntryFieldsEdit";
 import {Text, View} from "react-native-windows";
 import {DataTable} from "react-native-paper";
 import tw from "twrnc";
+import EntryFieldAddButton from "./EntryFieldAddButton";
+import {PasswordBrokerContext} from "../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
 
-const EntryFields = (props) => {
-    const entryGroupId = props.entryGroupId
-    const entryId = props.entryId
-    const entryFieldsIsVisible = props.entryFieldsIsVisible
+const EntryFields = ({
+                         fields,
+                         entryGroupId,
+                         entryId,
+                         entryTitle,
 
-    const fields = []
+                         setEntryFieldsStatus
+                     }) => {
+    const fieldComponents = []
 
-    for (let i = 0; i < props.fields.length; i++) {
-        fields.push(EntryField(props.fields[i]))
+    for (let i = 0; i < fields.length; i++) {
+        fieldComponents.push(EntryField(fields[i]))
     }
 
     return (
@@ -26,7 +31,22 @@ const EntryFields = (props) => {
                 <Text style={tw`text-slate-100 font-bold px-2 basis-1/6`}>actions</Text>
             </View>
 
-            {fields}
+            {fieldComponents}
+
+            <EntryFieldAddButton
+                    entryGroupId={entryGroupId}
+                    entryId={entryId}
+                    entryTitle={entryTitle}
+                    setEntryFieldsStatus={setEntryFieldsStatus}
+            >
+                <View style={tw`flex flex-row m-2`}>
+                    <View style={tw`rounded py-2 px-10 bg-slate-800`}>
+                        <Text
+                            style={tw`text-slate-200 text-center`}
+                        >add new Field</Text>
+                    </View>
+                </View>
+            </EntryFieldAddButton>
 
             {/*<EntryFieldsEdit*/}
             {/*    entryGroupId={entryGroupId}*/}

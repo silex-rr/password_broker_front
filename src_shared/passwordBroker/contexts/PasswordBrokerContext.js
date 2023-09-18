@@ -20,10 +20,12 @@ const PasswordBrokerContext = React.createContext()
 
 const PasswordBrokerProvider = (props) => {
 
+    const AppContext = props.AppContext
+
     const {
         hostURL,
         showMasterPasswordModal
-    } = useContext(props.AppContext)
+    } = useContext(AppContext)
     const baseUrl  = hostURL + '/passwordBroker/api'
 
     const { entryGroupId: entryGroupIdParam } = useParams();
@@ -260,7 +262,8 @@ const PasswordBrokerProvider = (props) => {
                 moveEntryGroup: moveEntryGroup,
                 moveEntryGroupMode: moveEntryGroupMode,
                 setMoveEntryGroupMode: setMoveEntryGroupMode,
-                handleMoveEntryGroupMode: handleMoveEntryGroupMode
+                handleMoveEntryGroupMode: handleMoveEntryGroupMode,
+                AppContext: AppContext
             }}
         >
             {props.children}

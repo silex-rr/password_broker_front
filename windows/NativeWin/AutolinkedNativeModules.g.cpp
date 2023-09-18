@@ -9,6 +9,9 @@
 // Includes from @react-native-clipboard/clipboard
 #include <winrt/NativeClipboard.h>
 
+// Includes from @react-native-picker/picker
+#include <winrt/ReactNativePicker.h>
+
 namespace winrt::Microsoft::ReactNative
 {
 
@@ -18,6 +21,8 @@ void RegisterAutolinkedNativeModulePackages(winrt::Windows::Foundation::Collecti
     packageProviders.Append(winrt::ReactNativeAsyncStorage::ReactPackageProvider());
     // IReactPackageProviders from @react-native-clipboard/clipboard
     packageProviders.Append(winrt::NativeClipboard::ReactPackageProvider());
+    // IReactPackageProviders from @react-native-picker/picker
+    packageProviders.Append(winrt::ReactNativePicker::ReactPackageProvider());
 }
 
 }
