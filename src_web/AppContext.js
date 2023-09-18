@@ -1,4 +1,5 @@
 import {createContext, useRef} from "react";
+import {APP_TYPE_WEB} from "../src_shared/constants/AppType";
 
 const AppContext = createContext()
 
@@ -35,7 +36,8 @@ const AppProvider = (props) => {
 
     return (
         <AppContext.Provider value={{
-            hostURL : process.env.REACT_APP_PASSWORD_BROKER_HOST,
+            appType: APP_TYPE_WEB,
+            hostURL: process.env.REACT_APP_PASSWORD_BROKER_HOST,
             showMasterPasswordModal: showMasterPasswordModal,
             closeMasterPasswordModal: closeMasterPasswordModal,
             masterPasswordModalVisibilityCheckboxRef: masterPasswordModalVisibilityCheckboxRef,
