@@ -23,7 +23,7 @@ import {
 // import EntryGroupUsers from "./MainBody/EntryGroup/EntryGroupUsers";
 // import EntryGroupHistory from "./MainBody/EntryGroup/EntryGroupHistory";
 import {EntryGroupProvider} from "../../../../src_shared/passwordBroker/contexts/EntryGroupContext";
-import {ActivityIndicator, Pressable, Text, View} from "react-native-windows";
+import {ActivityIndicator, Pressable, ScrollView, Text, View} from "react-native-windows";
 import tw from "twrnc";
 import Link from "./MainBody/EntryGroup/EntryFieldTypes/Link";
 import Password from "./MainBody/EntryGroup/EntryFieldTypes/Password";
@@ -129,7 +129,7 @@ const MainBody = () => {
             }
             menuElements.reverse()
             head = (
-                <View style={tw`w-full flex flex-row justify-between relative`}>
+                <View style={tw`w-full flex flex-row justify-between`}>
                     <Text style={tw`px-5 py-3 text-slate-700 text-2xl`}>
                         {entryGroupData.entryGroup.name}
                     </Text>
@@ -176,8 +176,10 @@ const MainBody = () => {
                 <View style={tw`p-0 bg-slate-200`}>
                     {head}
                 </View>
-                <View style={tw`p-5`}>
-                    {body}
+                <View style={tw`flex flex-1`}>
+                    <ScrollView style={tw`m-5`}>
+                        {body}
+                    </ScrollView>
                 </View>
 
         </View>

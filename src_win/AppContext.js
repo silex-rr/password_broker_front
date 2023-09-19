@@ -2,6 +2,7 @@ import React, {useState} from "react"
 import {View} from "react-native-windows"
 import {appUUIDFromStorage} from "../src_shared/utils/native/appUUIDFromStorage";
 import MasterPasswordModal from "./passwordBroker/components/MasterPasswordModal";
+import {APP_TYPE_WIN} from "../src_shared/constants/AppType";
 
 const AppContext = React.createContext()
 
@@ -44,6 +45,7 @@ const AppProvider = (props) => {
         <AppContext.Provider
             value={{
                 hostURL: hostURL,
+                appType: APP_TYPE_WIN,
 
                 modalContent: modalContent,
                 modalStyle: modalStyle,

@@ -1,7 +1,7 @@
 import {Route, Routes} from "react-router-native";
 import PasswordBrokerContainer from "../components/PasswordBrokerContainer";
 import {PasswordBrokerProvider} from "../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
-import React, {useContext} from "react";
+import React from "react";
 import {AppContext} from "../../AppContext";
 import ModalOverlay from "../../common/ModalOverlay";
 import Modal from "../../common/Modal";
@@ -11,8 +11,10 @@ import Note from "../components/Main/MainBody/EntryGroup/EntryFieldTypes/Note";
 import File from "../components/Main/MainBody/EntryGroup/EntryFieldTypes/File";
 import EntryFieldButton from "../components/Main/MainBody/EntryGroup/Entry/EntryFieldButton";
 import {EntryGroupProvider} from "../../../src_shared/passwordBroker/contexts/EntryGroupContext";
-import Clipboard from '@react-native-clipboard/clipboard';
+import {EntryFieldProvider} from "../../../src_shared/passwordBroker/contexts/EntryFieldContext";
+
 const PasswordBrokerRouter = () => {
+
 
     return (
         <PasswordBrokerProvider AppContext={AppContext}>
@@ -24,24 +26,26 @@ const PasswordBrokerRouter = () => {
                         File: File
                     }}
                     EntryFieldButton={EntryFieldButton}
-                    copyToCliboard={(value) => {Clipboard.setString(value)}}
+                    copyToCliboard={() => {}}
                 >
-                <Routes>
-                    <Route
-                        path="/entryGroup/:entryGroupId"
-                        element={
-                            <PasswordBrokerContainer/>
-                        }
-                    />
-                    <Route
-                        path="/"
-                        element={
-                            <PasswordBrokerContainer/>
-                        }
-                    />
-                </Routes>
-                <ModalOverlay/>
-                <Modal/>
+                    <EntryFieldProvider>
+                        <Routes>
+                            <Route
+                                path="/entryGroup/:entryGroupId"
+                                element={
+                                    <PasswordBrokerContainer/>
+                                }
+                            />
+                            <Route
+                                path="/"
+                                element={
+                                    <PasswordBrokerContainer/>
+                                }
+                            />
+                        </Routes>
+                        <ModalOverlay/>
+                        <Modal/>
+                    </EntryFieldProvider>
             </EntryGroupProvider>
         </PasswordBrokerProvider>
     )

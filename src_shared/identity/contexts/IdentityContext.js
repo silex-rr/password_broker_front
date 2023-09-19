@@ -113,11 +113,15 @@ const IdentityProvider = (props) => {
     }
     const activateUserToken = (token) => {
         setUserToken(token)
-        axios.defaults.headers.common = {'Authorization': `Bearer ${token}`}
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`
+        // axios.interceptors.request.use((config) => {
+        //     config.headers = {...config.headers, Authorization: `Bearer ${token}`}
+        // })
     }
     const deactivateUserToken = () => {
         setUserToken('')
         axios.defaults.headers.common = {}
+        // axios.interceptors.request.use(() => {})
     }
 
     const getUserToken = async (login) => {
