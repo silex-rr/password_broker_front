@@ -1,9 +1,6 @@
-const Footer = (props) => {
-    return (
-        <footer className="bg-slate-700 text-slate-300 w-full py-2 px-10">
-            text
-        </footer>
-    )
-}
+import React from 'react';
+const Footer = () => {
+    return <footer className="w-full bg-slate-700 px-10 py-2 text-slate-300">text</footer>;
+};
 
-export default Footer
+export default Footer;

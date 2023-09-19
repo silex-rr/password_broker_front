@@ -1,18 +1,17 @@
-import Head from "./Head";
-import Footer from "./Footer";
-import MasterPasswordModal from "./MasterPasswordModal";
+import Head from './Head';
+import Footer from './Footer';
+import MasterPasswordModal from './MasterPasswordModal';
+import React from 'react';
 
-const Container = (props) => {
+const Container = props => {
     return (
-        <div className="flex flex-col h-screen w-full">
-            <Head/>
-            <main className="mb-auto flex flex-wrap flex-row flex-grow">
-                {props.children}
-            </main>
-            <Footer/>
-            <MasterPasswordModal/>
+        <div className="flex h-screen w-full flex-col">
+            <Head />
+            <main className="mb-auto flex flex-grow flex-row flex-wrap">{props.children}</main>
+            <Footer />
+            <MasterPasswordModal />
         </div>
-    )
-}
+    );
+};
 
-export default Container
+export default Container;

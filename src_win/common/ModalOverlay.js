@@ -1,27 +1,24 @@
-import {View} from "react-native-windows";
-import {useContext} from "react";
-import {AppContext} from "../AppContext";
+import {View} from 'react-native-windows';
+import {useContext} from 'react';
+import AppContext from '../AppContext';
+import React from 'react';
 
 const ModalOverlay = () => {
-    const {modalVisible} = useContext(AppContext)
+    const {modalVisible} = useContext(AppContext);
     if (!modalVisible) {
-        return <View></View>
+        return <View />;
     }
-    return (
-        <View
-            style={{
-                width: '100%',
-                height: '100%',
-                opacity: 0.2,
-                backgroundColor: '#777777',
-                zIndex: 9000,
-                elevation: 9000,
-                position: 'absolute',
-                display: (modalVisible ? 'flex' : 'none')
-        }}>
+    const overlayStyle = {
+        width: '100%',
+        height: '100%',
+        opacity: 0.2,
+        backgroundColor: '#777777',
+        zIndex: 9000,
+        elevation: 9000,
+        position: 'absolute',
+        display: modalVisible ? 'flex' : 'none',
+    };
+    return <View style={overlayStyle} />;
+};
 
-        </View>
-    )
-}
-
-export default ModalOverlay
+export default ModalOverlay;

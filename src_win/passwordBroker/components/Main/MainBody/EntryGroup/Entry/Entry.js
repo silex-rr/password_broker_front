@@ -1,26 +1,25 @@
-import Moment from "react-moment";
-import axios from "axios";
-import React, {useContext, useEffect, useState} from "react";
-import {PasswordBrokerContext} from "../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
+import Moment from 'react-moment';
+import axios from 'axios';
+import React, {useContext, useEffect, useState} from 'react';
+import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 import {
     ENTRY_GROUP_ENTRY_FIELDS_LOADED,
     ENTRY_GROUP_ENTRY_FIELDS_LOADING,
     ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED,
-    ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING
-} from "../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus";
-import EntryFields from "./EntryFields";
-import {EntryContext} from "../../../../../../../src_shared/passwordBroker/contexts/EntryContext";
-import {Pressable, Text, View} from "react-native-windows";
-import {DataTable} from "react-native-paper";
-import tw from "twrnc";
+    ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING,
+} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus';
+import EntryFields from './EntryFields';
+// import {EntryContext} from '../../../../../../../src_shared/passwordBroker/contexts/EntryContext';
+import {Text, View} from 'react-native-windows';
+import {DataTable} from 'react-native-paper';
+import tw from 'twrnc';
 
-const Entry = (props) => {
+const Entry = props => {
+    const entryGroupId = props.entry_group_id;
+    const entryId = props.entry_id;
 
-    const entryGroupId = props.entry_group_id
-    const entryId = props.entry_id
-
-    const passwordBrokerContext = useContext(PasswordBrokerContext)
-    const {baseUrl} = passwordBrokerContext
+    const passwordBrokerContext = useContext(PasswordBrokerContext);
+    const {baseUrl} = passwordBrokerContext;
 
     // const entryContext = useContext(EntryContext)
     //
@@ -33,36 +32,32 @@ const Entry = (props) => {
     //     setEntryFieldVisible
     // } = entryContext
 
-    const [entryFieldsStatus, setEntryFieldsStatus] = useState(ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED)
-    const [entryFieldsData, setEntryFieldsData] = useState([])
-    const [entryFieldsIsVisible, setEntryFieldVisible] = useState(false)
+    const [entryFieldsStatus, setEntryFieldsStatus] = useState(ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED);
+    const [entryFieldsData, setEntryFieldsData] = useState([]);
+    const [entryFieldsIsVisible, setEntryFieldVisible] = useState(false);
 
-
-    useEffect( () => {
+    useEffect(() => {
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING) {
-            setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADING)
-            axios.get(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields').then(
-                (response) => {
-                    setEntryFieldsData(response.data)
-                    setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADED)
-                }
-            )
+            setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADING);
+            axios.get(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields').then(response => {
+                setEntryFieldsData(response.data);
+                setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADED);
+            });
         }
     }, [entryFieldsStatus, baseUrl, entryGroupId, entryId, setEntryFieldsStatus, setEntryFieldsData]);
 
-
     const entryFieldsVisibility = () => {
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED) {
-            setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING)
+            setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING);
         }
-        setEntryFieldVisible(!entryFieldsIsVisible)
-    }
+        setEntryFieldVisible(!entryFieldsIsVisible);
+    };
 
-    let entryFields = <Text>''</Text>
+    let entryFields = <Text>''</Text>;
 
     switch (entryFieldsStatus) {
         default:
-            break
+            break;
 
         case ENTRY_GROUP_ENTRY_FIELDS_LOADED:
             entryFields = (
@@ -71,28 +66,30 @@ const Entry = (props) => {
                     entryGroupId={entryGroupId}
                     entryId={entryId}
                     entryTitle={props.title}
-                    setEntryFieldsStatus = {setEntryFieldsStatus}
+                    setEntryFieldsStatus={setEntryFieldsStatus}
                 />
-            )
-            break
+            );
+            break;
         case ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING:
         case ENTRY_GROUP_ENTRY_FIELDS_LOADING:
         case ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED:
             entryFields = (
                 <View style={tw`w-full text-center p-2 bg-slate-500`}>
-                        <Text>Loading...</Text>
-                </View>)
-            break
+                    <Text>Loading...</Text>
+                </View>
+            );
+            break;
     }
-
 
     //    borderStyle: 'solid',
     //     borderBottomWidth: StyleSheet.hairlineWidth,
     //     minHeight: 48,
     //     paddingHorizontal: 16,
+    const rowStyle = {borderColor: '#191e24', paddingHorizontal: 0};
+
     return (
         <React.Fragment>
-            <DataTable.Row key={entryId + '_main'} style={{borderColor: '#191e24', paddingHorizontal: 0}}>
+            <DataTable.Row key={entryId + '_main'} style={rowStyle}>
                 <DataTable.Cell style={tw`bg-slate-700 pl-4`} onPress={entryFieldsVisibility}>
                     <Text style={tw`text-slate-100`}>{props.title}</Text>
                 </DataTable.Cell>
@@ -108,13 +105,10 @@ const Entry = (props) => {
                 </DataTable.Cell>
             </DataTable.Row>
             <View key={entryId + '_fields'} style={tw`${entryFieldsIsVisible ? '' : 'hidden'}`}>
-                <View style={tw`bg-slate-700 text-slate-100 pt-0 px-0`}>
-                    {entryFields}
-                </View>
+                <View style={tw`bg-slate-700 text-slate-100 pt-0 px-0`}>{entryFields}</View>
             </View>
         </React.Fragment>
-    )
-}
+    );
+};
 
-
-export default Entry
+export default Entry;

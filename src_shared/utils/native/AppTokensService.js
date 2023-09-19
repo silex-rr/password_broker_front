@@ -1,94 +1,84 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {AppToken} from "./AppToken";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {AppToken} from './AppToken';
 
-export class AppTokensService
-{
-    static TOKENS_STORAGE_KEY = 'APPLICATION_TOKENS'
-    loaded = false
+export class AppTokensService {
+    static TOKENS_STORAGE_KEY = 'APPLICATION_TOKENS';
+    loaded = false;
 
     /**
      * @type AppToken[]
      */
-    tokens = []
-    constructor() {
-
-    }
+    tokens = [];
+    constructor() {}
     async load(force = false) {
         if (this.loaded && force === false) {
-            return
+            return;
         }
         // console.log(1)
-        const tokens_json = await AsyncStorage.getItem(this.constructor.TOKENS_STORAGE_KEY)
+        const tokens_json = await AsyncStorage.getItem(this.constructor.TOKENS_STORAGE_KEY);
         if (tokens_json === null) {
-            this.tokens = []
-            this.loaded = true
-            return
+            this.tokens = [];
+            this.loaded = true;
+            return;
         }
 
-        let tokens_raw = null
+        let tokens_raw = null;
 
         try {
-            tokens_raw = JSON.parse(tokens_json)
+            tokens_raw = JSON.parse(tokens_json);
         } catch (e) {
-            this.tokens = []
-            this.loaded = true
-            return
+            this.tokens = [];
+            this.loaded = true;
+            return;
         }
 
         if (tokens_raw.constructor !== Array) {
-            this.tokens = []
-            this.loaded = true
-            return
+            this.tokens = [];
+            this.loaded = true;
+            return;
         }
 
         // console.log(3, tokens_raw)
-        const tokens = []
+        const tokens = [];
         for (let i = 0; i < tokens_raw.length; i++) {
-            if (
-                !tokens_raw[i].login
-                || !tokens_raw[i].url
-                || !tokens_raw[i].token
-            ) {
-                continue
+            if (!tokens_raw[i].login || !tokens_raw[i].url || !tokens_raw[i].token) {
+                continue;
             }
-            tokens.push(new AppToken(tokens_raw[i].login, tokens_raw[i].url, tokens_raw[i].token))
+            tokens.push(new AppToken(tokens_raw[i].login, tokens_raw[i].url, tokens_raw[i].token));
         }
         // console.log(4, tokens)
-        this.tokens = tokens
-        this.loaded = true
+        this.tokens = tokens;
+        this.loaded = true;
     }
-    
+
     getTokens() {
-        return this.tokens
+        return this.tokens;
     }
-    
-    async setTokens(tokens){
+
+    async setTokens(tokens) {
         if (typeof tokens !== 'object') {
-            return
+            return;
         }
-        await AsyncStorage.setItem(
-            this.constructor.TOKENS_STORAGE_KEY,
-            JSON.stringify(tokens)
-        )
-        this.tokens = tokens
+        await AsyncStorage.setItem(this.constructor.TOKENS_STORAGE_KEY, JSON.stringify(tokens));
+        this.tokens = tokens;
     }
 
-    async addToken(appToken){
+    async addToken(appToken) {
         if (appToken.constructor !== AppToken) {
-            console.log('AppTokensService.addToken error: appToken isn\'t instance of class AppToken')
-            return
+            console.log("AppTokensService.addToken error: appToken isn't instance of class AppToken");
+            return;
         }
-        await this.load()
+        await this.load();
         let appTokens = this.getTokens();
-        appTokens = appTokens.filter((token) => token.login !== appToken.login && token.url !== appToken.url)
-        appTokens.push(appToken)
-        await this.setTokens(appTokens)
-        // console.log('seted', appTokens, appToken, appToken.url, appToken.login, appToken.token)
-        await this.load(true)
+        appTokens = appTokens.filter(token => token.login !== appToken.login && token.url !== appToken.url);
+        appTokens.push(appToken);
+        await this.setTokens(appTokens);
+        // console.log('set', appTokens, appToken, appToken.url, appToken.login, appToken.token)
+        await this.load(true);
     }
 
-    async addTokenByParams(login, url, token){
-        await this.addToken(new AppToken(login, url, token))
+    async addTokenByParams(login, url, token) {
+        await this.addToken(new AppToken(login, url, token));
     }
 
     /**
@@ -98,13 +88,11 @@ export class AppTokensService
      * @returns {Promise<void>}
      */
     async removeTokenByParams(login = null, url = null) {
-        await this.load()
+        await this.load();
         let tokens = this.getTokens();
-        tokens = tokens.filter((token) => !(
-            ( login === null || token.login === login )
-            && ( url === null || token.url === url )
-        ))
-        await this.setTokens(tokens)
+        tokens = tokens.filter(
+            token => !((login === null || token.login === login) && (url === null || token.url === url)),
+        );
+        await this.setTokens(tokens);
     }
-
 }

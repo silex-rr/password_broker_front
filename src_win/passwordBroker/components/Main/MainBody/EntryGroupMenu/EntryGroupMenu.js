@@ -1,7 +1,7 @@
-import {View} from "react-native-windows";
-import tw from "twrnc";
-import EntryGroupMenuElement from "./EntryGroupMenuElement";
-import {useState} from "react";
+import {View} from 'react-native-windows';
+import tw from 'twrnc';
+import EntryGroupMenuElement from './EntryGroupMenuElement';
+import React, {useState} from 'react';
 
 /**
  *
@@ -14,34 +14,33 @@ import {useState} from "react";
  * @constructor
  */
 const EntryGroupMenu = ({elements}) => {
+    const [hoveredElement, setHoveredElement] = useState('');
 
-    const [hoveredElement, setHoveredElement] = useState('')
-
-    let prevSelected = false
+    let prevSelected = false;
 
     for (let i = 0; i < elements.length; i++) {
-        elements[i].hovered = hoveredElement === elements[i].id
-        elements[i].leftAdjacentSelected = prevSelected
-        elements[i].rightAdjacentSelected = false
-        prevSelected = elements[i].selected
+        elements[i].hovered = hoveredElement === elements[i].id;
+        elements[i].leftAdjacentSelected = prevSelected;
+        elements[i].rightAdjacentSelected = false;
+        prevSelected = elements[i].selected;
         if (elements[i].selected && i > 0) {
-            elements[i - 1].rightAdjacentSelected = true
+            elements[i - 1].rightAdjacentSelected = true;
         }
     }
 
-    const entryGroupMenuElements = []
+    const entryGroupMenuElements = [];
     for (let i = 0; i < elements.length; i++) {
-        entryGroupMenuElements.push(<EntryGroupMenuElement key={'eg_el-' + i} {...elements[i]} setHoveredElement={setHoveredElement}/>)
+        entryGroupMenuElements.push(
+            <EntryGroupMenuElement key={'eg_el-' + i} {...elements[i]} setHoveredElement={setHoveredElement} />,
+        );
     }
 
     return (
-        <View style={tw`flex flex-row text-slate-800 pr-5 items-end border-b border-slate-900 realtive`}>
-            <View style={tw`absolute w-full bg-slate-900 h-4`}></View>
-            <View style={tw`flex flex-row justify-around`}>
-                {entryGroupMenuElements}
-            </View>
+        <View style={tw`flex flex-row text-slate-800 pr-5 items-end border-b border-slate-900 relative`}>
+            <View style={tw`absolute w-full bg-slate-900 h-4`} />
+            <View style={tw`flex flex-row justify-around`}>{entryGroupMenuElements}</View>
         </View>
-    )
-}
+    );
+};
 
-export default EntryGroupMenu
+export default EntryGroupMenu;

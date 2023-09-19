@@ -1,63 +1,63 @@
-import React, {useContext} from "react";
-import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
-import {PasswordBrokerContext} from "../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
+import React, {useContext} from 'react';
+import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
+import PasswordBrokerContext from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 import {
     MASTER_PASSWORD_FILLED_IN,
     MASTER_PASSWORD_INVALID,
     MASTER_PASSWORD_IS_EMPTY,
-    MASTER_PASSWORD_VALIDATED
-} from "../../../src_shared/passwordBroker/constants/MasterPasswordStates";
-import {Text, TouchableOpacity, View} from "react-native-windows";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import tw from "twrnc";
-import {Link} from "react-router-native";
-import {useNavigate} from "react-router-dom";
+    MASTER_PASSWORD_VALIDATED,
+} from '../../../src_shared/passwordBroker/constants/MasterPasswordStates';
+import {Text, TouchableOpacity, View} from 'react-native-windows';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import tw from 'twrnc';
+// import {Link} from 'react-router-native';
+import {useNavigate} from 'react-router-dom';
 
 const Head = () => {
-    const identityContext = useContext(IdentityContext)
-    const { userName } = identityContext
-    const passwordBrokerContext = useContext(PasswordBrokerContext)
-    const { masterPasswordState, showMasterPasswordModal } = passwordBrokerContext
+    const identityContext = useContext(IdentityContext);
+    const {userName} = identityContext;
+    const passwordBrokerContext = useContext(PasswordBrokerContext);
+    const {masterPasswordState /*, showMasterPasswordModal*/} = passwordBrokerContext;
     const navigateFunction = useNavigate();
 
     const logoutClickHandler = () => {
-        navigateFunction('/identity/logout')
-    }
+        navigateFunction('/identity/logout');
+    };
 
-    let masterPasswordIcon = (<View></View>);
-    let masterPasswordIconClickHandler = () => {}
+    let masterPasswordIcon = <View />;
+    let masterPasswordIconClickHandler = () => {};
 
     switch (masterPasswordState) {
         default:
         case MASTER_PASSWORD_IS_EMPTY:
             masterPasswordIcon = (
                 <View className="tooltip tooltip-bottom" data-tip="Master Pasword not entered">
-                    <MaterialCommunityIcons name="key" size={20} color="white"/>
+                    <MaterialCommunityIcons name="key" size={20} color="white" />
                 </View>
-            )
+            );
             // masterPasswordIconClickHandler = () => {showMasterPasswordModal()}
             break;
         case MASTER_PASSWORD_FILLED_IN:
             masterPasswordIcon = (
                 <View className="tooltip tooltip-bottom" data-tip="Master Pasword entered">
-                    <MaterialCommunityIcons name="key" size={20} color="yellow"/>
+                    <MaterialCommunityIcons name="key" size={20} color="yellow" />
                 </View>
-            )
+            );
             break;
         case MASTER_PASSWORD_INVALID:
             masterPasswordIcon = (
                 <View className="tooltip tooltip-bottom" data-tip="Master Pasword is incorrect">
-                    <MaterialCommunityIcons name="key" size={20} color="red"/>
+                    <MaterialCommunityIcons name="key" size={20} color="red" />
                 </View>
-            )
+            );
             // masterPasswordIconClickHandler = () => {showMasterPasswordModal()}
             break;
         case MASTER_PASSWORD_VALIDATED:
             masterPasswordIcon = (
                 <View className="tooltip tooltip-bottom" data-tip="Master Pasword validated">
-                    <MaterialCommunityIcons name="key" size={20} color="#a3e635"/>
+                    <MaterialCommunityIcons name="key" size={20} color="#a3e635" />
                 </View>
-            )
+            );
             break;
     }
 
@@ -68,7 +68,11 @@ const Head = () => {
             </View>
             <View style={tw`flex justify-around px-5`}>
                 <View style={tw`p-0 font-bold flex flex-row`}>
-                    <TouchableOpacity onPress={() => {masterPasswordIconClickHandler}} style={tw`px-2`}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            masterPasswordIconClickHandler;
+                        }}
+                        style={tw`px-2`}>
                         {masterPasswordIcon}
                     </TouchableOpacity>
                     <Text style={tw`px-2`}>{userName}</Text>
@@ -78,7 +82,7 @@ const Head = () => {
                 </View>
             </View>
         </View>
-    )
-}
+    );
+};
 
-export default Head
+export default Head;

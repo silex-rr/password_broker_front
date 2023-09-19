@@ -1,9 +1,9 @@
-import React, {useContext} from "react";
-import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
-import {Text, TextInput, TouchableOpacity, View} from "react-native-windows";
-import tw from "twrnc";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import React, {useContext} from 'react';
+import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
+import {Text, TextInput, TouchableOpacity, View} from 'react-native-windows';
+import tw from 'twrnc';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const AuthSignup = () => {
     const {
@@ -71,17 +71,17 @@ const AuthSignup = () => {
 
             <View style={tw`flex justify-center w-full mt-12`}>
                 <TouchableOpacity onPress={() => signup()}>
-                    <Text style={tw`text-slate-700 text-center rounded py-2 px-10 border border-slate-700 `}>Signup</Text>
+                    <Text style={tw`text-slate-700 text-center rounded py-2 px-10 border border-slate-700 `}>
+                        Signup
+                    </Text>
                 </TouchableOpacity>
             </View>
 
             <View>
                 <Text style={tw`w-full text-red-600 text-center mt-8`}>{errorMessage}</Text>
             </View>
-
         </React.Fragment>
     );
 };
 
 export default AuthSignup;
-

@@ -1,25 +1,25 @@
-import React, {useContext} from "react";
+import React from 'react';
 // import EntryFieldsAdd from "./EntryFieldsAdd";
-import EntryField from "./EntryField";
+import EntryField from './EntryField';
 // import EntryFieldsEdit from "./EntryFieldsEdit";
-import {Text, View} from "react-native-windows";
-import {DataTable} from "react-native-paper";
-import tw from "twrnc";
-import EntryFieldAddButton from "./EntryFieldAddButton";
-import {PasswordBrokerContext} from "../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
+import {Text, View} from 'react-native-windows';
+// import {DataTable} from 'react-native-paper';
+import tw from 'twrnc';
+import EntryFieldAddButton from './EntryFieldAddButton';
+//import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 
 const EntryFields = ({
-                         fields,
-                         entryGroupId,
-                         entryId,
-                         entryTitle,
+    fields,
+    entryGroupId,
+    entryId,
+    entryTitle,
 
-                         setEntryFieldsStatus
-                     }) => {
-    const fieldComponents = []
+    setEntryFieldsStatus,
+}) => {
+    const fieldComponents = [];
 
     for (let i = 0; i < fields.length; i++) {
-        fieldComponents.push(EntryField(fields[i]))
+        fieldComponents.push(EntryField(fields[i]));
     }
 
     return (
@@ -34,16 +34,13 @@ const EntryFields = ({
             {fieldComponents}
 
             <EntryFieldAddButton
-                    entryGroupId={entryGroupId}
-                    entryId={entryId}
-                    entryTitle={entryTitle}
-                    setEntryFieldsStatus={setEntryFieldsStatus}
-            >
+                entryGroupId={entryGroupId}
+                entryId={entryId}
+                entryTitle={entryTitle}
+                setEntryFieldsStatus={setEntryFieldsStatus}>
                 <View style={tw`flex flex-row m-2`}>
                     <View style={tw`rounded py-2 px-10 bg-slate-800`}>
-                        <Text
-                            style={tw`text-slate-200 text-center`}
-                        >add new Field</Text>
+                        <Text style={tw`text-slate-200 text-center`}>add new Field</Text>
                     </View>
                 </View>
             </EntryFieldAddButton>
@@ -62,9 +59,8 @@ const EntryFields = ({
             {/*    entryTitle={props.entryTitle}*/}
             {/*    setEntryFieldsStatus = {props.setEntryFieldsStatus}*/}
             {/*/>*/}
-
         </React.Fragment>
-    )
-}
+    );
+};
 
-export default EntryFields
+export default EntryFields;

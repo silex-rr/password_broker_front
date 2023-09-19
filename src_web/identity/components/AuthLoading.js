@@ -1,44 +1,41 @@
-import React, {useContext, useEffect} from "react";
-import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
-import {LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM} from "../../../src_shared/identity/constants/AuthStatus";
-import {Navigate, useLocation} from "react-router-dom";
+import React, {useContext, useEffect} from 'react';
+import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
+import {LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM} from '../../../src_shared/identity/constants/AuthStatus';
+import {Navigate, useLocation} from 'react-router-dom';
 
+const AuthLoading = () => {
+    const location = useLocation();
+    const identityContext = useContext(IdentityContext);
 
-const AuthLoading = ({ children }) => {
-    const location = useLocation()
-    const identityContext = useContext(IdentityContext)
+    const {getUser, authStatus} = identityContext;
 
-    const { getUser, authStatus} = identityContext
-
-    useEffect( () => {
+    useEffect(() => {
         // console.log('AuthLoading-useEffect', authStatus, Math.random())
-        if (authStatus === "") {
-            getUser(location)
+        if (authStatus === '') {
+            getUser(location);
         }
-    }, [authStatus]);
+    }, [authStatus, getUser, location]);
 
     // console.log('AuthLoading', authStatus, Math.random())
 
     switch (authStatus) {
         case LOGGED_IN:
-            let path = '/'
+            let path = '/';
             if (location.state.from.pathname) {
                 path = location.state.from.pathname;
             }
             // console.log(path)
-            return (<Navigate to={path} replace={true} />)
+            return <Navigate to={path} replace={true} />;
         case LOG_IN_FORM:
-            return (<Navigate to="/identity/login" replace={true} />)
+            return <Navigate to="/identity/login" replace={true} />;
         case SIGN_UP_FORM:
-            return (<Navigate to="/identity/signup" replace={true} />)
+            return <Navigate to="/identity/signup" replace={true} />;
     }
 
     return (
-        <div className="md:flex w-full rounded ">
-            <div className="bg-slate-200 py-36 px-24 rounded-lg">
-                <div className="font-inter_extrabold text-4xl text-slate-600 text-center mb-8">
-                    Loading
-                </div>
+        <div className="w-full rounded md:flex ">
+            <div className="rounded-lg bg-slate-200 px-24 py-36">
+                <div className="font-inter_extrabold mb-8 text-center text-4xl text-slate-600">Loading</div>
             </div>
         </div>
     );

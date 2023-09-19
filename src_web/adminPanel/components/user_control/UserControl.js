@@ -1,8 +1,8 @@
 import Moment from "react-moment"
 import { useContext, useEffect, useState } from "react"
-import { IdentityContext } from "../../../../src_shared/identity/contexts/IdentityContext"
-import { 
-    USER_CONTROL_REQUIRE_LOADING, 
+import IdentityContext from "../../../../src_shared/identity/contexts/IdentityContext"
+import {
+    USER_CONTROL_REQUIRE_LOADING,
     USER_CONTROL_LOADED,
     USER_CONTROL_NOT_LOADED,
     USER_CONTROL_LOADING } from "./UserControlStatus"
@@ -54,7 +54,7 @@ const UserControl = () => {
     const users = []
     if (userControlStatus === USER_CONTROL_LOADED) {
         userControlData.forEach((user) => {users.push(user)})
-    } 
+    }
     return (
         <div className="overflow-x-auto mx-auto">
             <div className="navbar bg-base-100">
@@ -62,7 +62,7 @@ const UserControl = () => {
             </div>
              {userControlStatus != USER_CONTROL_LOADED &&
                 <AdminPanelLoading />
-            }  
+            }
             {userControlStatus === USER_CONTROL_LOADED &&
              <div className="overflow-x-auto">
                  <table className="table p-3 table-xs">
@@ -87,7 +87,7 @@ const UserControl = () => {
                                 <td><FaTrashAlt /></td>
                             </tr>
                         ))}
-                    </tbody> 
+                    </tbody>
                 </table>
                 <PaginationButton currentPage={currentPage} lastPage={lastPage} handlePagination={handlePagination} />
              </div>

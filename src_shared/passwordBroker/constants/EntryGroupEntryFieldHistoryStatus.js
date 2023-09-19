@@ -1,5 +1,4 @@
-export const ENTRY_GROUP_ENTRY_FIELD_HISTORY_LOADED = 'loaded'
-export const ENTRY_GROUP_ENTRY_FIELD_HISTORY_NOT_LOADED = 'not loaded'
-export const ENTRY_GROUP_ENTRY_FIELD_HISTORY_LOADING = 'loading'
-export const ENTRY_GROUP_ENTRY_FIELD_HISTORY_REQUIRED_LOADING = 'required loading'
-
+export const ENTRY_GROUP_ENTRY_FIELD_HISTORY_LOADED = 'loaded';
+export const ENTRY_GROUP_ENTRY_FIELD_HISTORY_NOT_LOADED = 'not loaded';
+export const ENTRY_GROUP_ENTRY_FIELD_HISTORY_LOADING = 'loading';
+export const ENTRY_GROUP_ENTRY_FIELD_HISTORY_REQUIRED_LOADING = 'required loading';

@@ -1,24 +1,21 @@
-import {Navigate, useLocation, useNavigate} from "react-router-dom";
-import React, {useContext, useEffect} from "react";
-import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
+import {useNavigate} from 'react-router-dom';
+import React, {useContext, useEffect} from 'react';
+import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
 
 const AuthLogout = () => {
-    const identityContext = useContext(IdentityContext)
+    const identityContext = useContext(IdentityContext);
     const navigate = useNavigate();
-    const { logout } = identityContext
+    const {logout} = identityContext;
     useEffect(() => {
-            logout(navigate)
-        },
-        [navigate])
+        logout(navigate);
+    }, [navigate, logout]);
     return (
-        <div className="md:flex w-full rounded ">
-            <div className="bg-white py-24 px-12 rounded-lg">
-                <div className="font-inter_extrabold text-4xl text-blue-500 text-center mb-8">
-                    Logout
-                </div>
+        <div className="w-full rounded md:flex ">
+            <div className="rounded-lg bg-white px-12 py-24">
+                <div className="font-inter_extrabold mb-8 text-center text-4xl text-blue-500">Logout</div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default AuthLogout
+export default AuthLogout;

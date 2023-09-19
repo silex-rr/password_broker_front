@@ -1,74 +1,85 @@
-import React, {useContext} from "react";
-import {IdentityContext} from "../../src_shared/identity/contexts/IdentityContext";
-import {PasswordBrokerContext} from "../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
+import React, {useContext} from 'react';
+import IdentityContext from '../../src_shared/identity/contexts/IdentityContext';
+import PasswordBrokerContext from '../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 import {
     MASTER_PASSWORD_FILLED_IN,
     MASTER_PASSWORD_INVALID,
     MASTER_PASSWORD_IS_EMPTY,
-    MASTER_PASSWORD_VALIDATED
-} from "../../src_shared/passwordBroker/constants/MasterPasswordStates";
-import {MdOutlineKey, MdOutlineKeyOff} from "react-icons/md";
+    MASTER_PASSWORD_VALIDATED,
+} from '../../src_shared/passwordBroker/constants/MasterPasswordStates';
+import {MdOutlineKey, MdOutlineKeyOff} from 'react-icons/md';
 
 const Head = () => {
-    const identityContext = useContext(IdentityContext)
-    const { userName } = identityContext
-    const passwordBrokerContext = useContext(PasswordBrokerContext)
-    const { masterPasswordState, showMasterPasswordModal } = passwordBrokerContext
+    const identityContext = useContext(IdentityContext);
+    const {userName} = identityContext;
+    const passwordBrokerContext = useContext(PasswordBrokerContext);
+    const {masterPasswordState, showMasterPasswordModal} = passwordBrokerContext;
     //MdOutlineKeyOff
-    let masterPasswordIcon = (<span></span>);
-    let masterPasswordIconClickHandler = () => {}
+    let masterPasswordIcon = <span />;
+    let masterPasswordIconClickHandler = () => {};
     switch (masterPasswordState) {
         default:
         case MASTER_PASSWORD_IS_EMPTY:
             masterPasswordIcon = (
                 <span className="tooltip tooltip-bottom" data-tip="Master Pasword not entered">
-                    <MdOutlineKeyOff className="text-3xl mx-auto"/>
+                    <MdOutlineKeyOff className="mx-auto text-3xl" />
                 </span>
-            )
-            masterPasswordIconClickHandler = () => {showMasterPasswordModal()}
+            );
+            masterPasswordIconClickHandler = () => {
+                showMasterPasswordModal();
+            };
             break;
         case MASTER_PASSWORD_FILLED_IN:
             masterPasswordIcon = (
                 <span className="tooltip tooltip-bottom" data-tip="Master Pasword entered">
-                    <MdOutlineKey className="text-yellow-300 text-3xl mx-auto"/>
+                    <MdOutlineKey className="mx-auto text-3xl text-yellow-300" />
                 </span>
-            )
+            );
             break;
         case MASTER_PASSWORD_INVALID:
             masterPasswordIcon = (
                 <span className="tooltip tooltip-bottom" data-tip="Master Pasword is incorrect">
-                    <MdOutlineKey className="text-error text-3xl mx-auto"/>
+                    <MdOutlineKey className="mx-auto text-3xl text-error" />
                 </span>
-            )
-            masterPasswordIconClickHandler = () => {showMasterPasswordModal()}
+            );
+            masterPasswordIconClickHandler = () => {
+                showMasterPasswordModal();
+            };
             break;
         case MASTER_PASSWORD_VALIDATED:
             masterPasswordIcon = (
                 <span className="tooltip tooltip-bottom" data-tip="Master Pasword validated">
-                    <MdOutlineKey className="text-green-200 text-3xl mx-auto"/>
+                    <MdOutlineKey className="mx-auto text-3xl text-green-200" />
                 </span>
-            )
+            );
             break;
     }
 
     return (
-        <header className="bg-slate-700 text-slate-300 px16 w-full flex flex-row justify-between">
+        <header className="px16 flex w-full flex-row justify-between bg-slate-700 text-slate-300">
             <div className="flex justify-start px-5 py-2">
-                <a href="/" className="btn btn-ghost normal-case text-3xl">PasswordBroker</a>
+                <a href="/" className="btn btn-ghost text-3xl normal-case">
+                    PasswordBroker
+                </a>
             </div>
             <nav className="flex justify-end px-5">
-                <ul className="menu menu-horizontal p-0 font-bold align-middle flex self-center">
+                <ul className="menu menu-horizontal flex self-center p-0 align-middle font-bold">
                     <li>
-                       <a href="/admin/">Admin Panel</a></li>
+                        <a href="/admin/">Admin Panel</a>
+                    </li>
                     <li className="" onClick={masterPasswordIconClickHandler}>
                         {masterPasswordIcon}
                     </li>
-                    <li className="px-2"><span>{userName}</span></li>
-                    <li className="px-2"><a href="/identity/logout">logout</a></li>
+                    <li className="px-2">
+                        <span>{userName}</span>
+                    </li>
+                    <li className="px-2">
+                        <a href="/identity/logout">logout</a>
+                    </li>
                 </ul>
             </nav>
         </header>
-    )
-}
+    );
+};
 
-export default Head
+export default Head;

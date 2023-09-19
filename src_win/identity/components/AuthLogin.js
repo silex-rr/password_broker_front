@@ -1,11 +1,11 @@
-import React, {useContext, useState} from "react";
-import {IdentityContext} from "../../../src_shared/identity/contexts/IdentityContext";
-import {Navigate} from "react-router-dom";
-import {LOGGED_IN} from "../../../src_shared/identity/constants/AuthStatus";
-import {Text, TextInput, TouchableOpacity, View} from "react-native-windows";
-import tw from "twrnc"
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import AuthLoginTokens from "./AuthLoginTokens";
+import React, {useContext, useState} from 'react';
+import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
+import {Navigate} from 'react-router-dom';
+import {LOGGED_IN} from '../../../src_shared/identity/constants/AuthStatus';
+import {Text, TextInput, TouchableOpacity, View} from 'react-native-windows';
+import tw from 'twrnc';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AuthLoginTokens from './AuthLoginTokens';
 
 const AuthLogin = () => {
     const {
@@ -19,13 +19,13 @@ const AuthLogin = () => {
         errorMessage,
         authStatus,
         appTokensService,
-    } = useContext(IdentityContext)
+    } = useContext(IdentityContext);
+
+    const [tokens, setTokens] = useState(appTokensService.getTokens());
 
     if (authStatus === LOGGED_IN) {
-        return (<Navigate to="/" replace />)
+        return <Navigate to="/" replace />;
     }
-
-    const [tokens, setTokens] = useState(appTokensService.getTokens())
     //console-network
     //database
     //lan
@@ -87,14 +87,16 @@ const AuthLogin = () => {
                 </TouchableOpacity>
             </View>
 
-            {tokens.length ? <AuthLoginTokens tokens={tokens} setTokens={setTokens}/> : ''}
+            {tokens.length ? <AuthLoginTokens tokens={tokens} setTokens={setTokens} /> : ''}
 
             <View>
-                {errorMessage !== '' ? <Text style={tw`w-full text-red-600 text-center mt-8`}>{errorMessage}</Text> : ''}
+                {errorMessage !== '' ? (
+                    <Text style={tw`w-full text-red-600 text-center mt-8`}>{errorMessage}</Text>
+                ) : (
+                    ''
+                )}
             </View>
-
         </React.Fragment>
-
     );
 };
 

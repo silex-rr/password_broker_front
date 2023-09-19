@@ -1,41 +1,36 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
-import {IdentityProvider} from "../src_shared/identity/contexts/IdentityContext";
-import RequireAuth from "../src_shared/identity/utils/RequireAuth";
-import PasswordBrokerRouter from "./passwordBroker/routers/PasswordBrokerRouter";
-import AuthContainer from "./identity/components/AuthContainer";
-import AdminPanelRouter from "./adminPanel/routers/AdminPanelRouter";
-
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import RequireAuth from '../src_shared/identity/utils/RequireAuth';
+import PasswordBrokerRouter from './passwordBroker/routers/PasswordBrokerRouter';
+import AuthContainer from './identity/components/AuthContainer';
+import AdminPanelRouter from './adminPanel/routers/AdminPanelRouter';
+import React from 'react';
+import IdentityContextProvider from '../src_shared/identity/contexts/IdentityContextProvider';
 const AppRouter = () => {
     return (
-        <IdentityProvider>
+        <IdentityContextProvider>
             <BrowserRouter>
                 <Routes>
                     <Route
                         path="/*"
                         element={
                             <RequireAuth>
-                                <PasswordBrokerRouter/>
+                                <PasswordBrokerRouter />
                             </RequireAuth>
                         }
                     />
-                    <Route
-                        path="/identity/*"
-                        element={
-                            <AuthContainer/>
-                        }
-                    />
+                    <Route path="/identity/*" element={<AuthContainer />} />
                     <Route
                         path="/admin/*"
                         element={
                             <RequireAuth>
-                                <AdminPanelRouter/>
+                                <AdminPanelRouter />
                             </RequireAuth>
                         }
                     />
                 </Routes>
             </BrowserRouter>
-        </IdentityProvider>
-    )
-}
+        </IdentityContextProvider>
+    );
+};
 
-export default AppRouter
+export default AppRouter;

@@ -1,59 +1,58 @@
-import {Pressable, Text} from "react-native-windows";
-import tw from "twrnc";
+import {Pressable, Text} from 'react-native-windows';
+import tw from 'twrnc';
+import React from 'react';
 
 const EntryGroupMenuElement = ({
-                                   id,
-                                   onPress,
-                                   text,
-                                   selected = false,
-                                   hovered = false,
-                                   leftAdjacentSelected = false,
-                                   rightAdjacentSelected = false,
+    id,
+    onPress,
+    text,
+    selected = false,
+    hovered = false,
+    leftAdjacentSelected = false,
+    rightAdjacentSelected = false,
 
-                                   setHoveredElement: setHoveredElement
-                               }) => {
+    setHoveredElement: setHoveredElement,
+}) => {
+    const unSelectedTab = ' bg-slate-200';
+    const selectedTab = ' bg-slate-900';
+    const leftAdjacent = ' rounded-bl-md';
+    const rightAdjacent = ' rounded-br-md';
+    const menuFontColor = 'text-slate-700';
+    const menuFontColorSelected = 'text-slate-300';
+    const menuTabStyle = 'px-3 py-1 rounded-t-md';
 
-    const unSelectedTab = ' bg-slate-200'
-    const selectedTab = ' bg-slate-900'
-    const leftAdjacent = ' rounded-bl-md'
-    const rightAdjacent = ' rounded-br-md'
-    const menuFontColor = 'text-slate-700'
-    const menuFontColorSelected = 'text-slate-300'
-    const menuTabStyle = 'px-3 py-1 rounded-t-md'
+    const hoveredHolder = ' bg-slate-300';
+    const hoveredText = ' text-slate-900';
 
-    const hoveredHolder = ' bg-slate-300'
-    const hoveredText = ' text-slate-900'
-
-    let holderStyle = menuTabStyle
-    let textStyle = (hovered ? hoveredText : menuFontColor)
+    let holderStyle = menuTabStyle;
+    let textStyle = hovered ? hoveredText : menuFontColor;
 
     if (selected) {
-        holderStyle += selectedTab
-        textStyle = menuFontColorSelected
+        holderStyle += selectedTab;
+        textStyle = menuFontColorSelected;
     } else {
-        holderStyle += (hovered ? hoveredHolder : unSelectedTab)
+        holderStyle += hovered ? hoveredHolder : unSelectedTab;
 
         if (leftAdjacentSelected) {
-            holderStyle += leftAdjacent
+            holderStyle += leftAdjacent;
         }
         if (rightAdjacentSelected) {
-            holderStyle += rightAdjacent
+            holderStyle += rightAdjacent;
         }
     }
 
     const hoverIn = () => {
-        setHoveredElement(id)
-    }
+        setHoveredElement(id);
+    };
     const hoverOut = () => {
-        setHoveredElement('')
-    }
+        setHoveredElement('');
+    };
 
     return (
-        <Pressable key={id}
-                   onPress={onPress} style={tw`${holderStyle}`} onHoverIn={hoverIn} onHoverOut={hoverOut}>
+        <Pressable key={id} onPress={onPress} style={tw`${holderStyle}`} onHoverIn={hoverIn} onHoverOut={hoverOut}>
             <Text style={tw`${textStyle}`}>{text}</Text>
         </Pressable>
-    )
-}
+    );
+};
 
-export default EntryGroupMenuElement
+export default EntryGroupMenuElement;

@@ -1,8 +1,7 @@
 export class AppToken {
-
-    login = ''
-    url = ''
-    token = ''
+    login = '';
+    url = '';
+    token = '';
     constructor(login, url, token) {
         this.login = login;
         this.url = url;

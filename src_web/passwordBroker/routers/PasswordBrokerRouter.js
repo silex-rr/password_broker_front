@@ -1,47 +1,35 @@
-import {Route, Routes} from "react-router-dom";
-import PasswordBrokerContainer from "../components/PasswordBrokerContainer";
-import {PasswordBrokerProvider} from "../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
-import Link from "../components/MainBody/EntryGroup/EntryFieldTypes/Link";
-import Password from "../components/MainBody/EntryGroup/EntryFieldTypes/Password";
-import Note from "../components/MainBody/EntryGroup/EntryFieldTypes/Note";
-import File from "../components/MainBody/EntryGroup/EntryFieldTypes/File";
-import EntryFieldButton from "../components/MainBody/EntryGroup/EntryFieldButton";
-import {EntryGroupProvider} from "../../../src_shared/passwordBroker/contexts/EntryGroupContext";
-import {AppContext} from "../../AppContext";
-import copy from "copy-to-clipboard";
-
+import {Route, Routes} from 'react-router-dom';
+import PasswordBrokerContainer from '../components/PasswordBrokerContainer';
+import Link from '../components/MainBody/EntryGroup/EntryFieldTypes/Link';
+import Password from '../components/MainBody/EntryGroup/EntryFieldTypes/Password';
+import Note from '../components/MainBody/EntryGroup/EntryFieldTypes/Note';
+import File from '../components/MainBody/EntryGroup/EntryFieldTypes/File';
+import EntryFieldButton from '../components/MainBody/EntryGroup/EntryFieldButton';
+import AppContext from '../../AppContext';
+import copy from 'copy-to-clipboard';
+import React from 'react';
+import PasswordBrokerContextProvider from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContextProvider';
+import EntryGroupContextProvider from '../../../src_shared/passwordBroker/contexts/EntryGroupContextProvider';
 
 const PasswordBrokerRouter = () => {
-
     return (
-        <PasswordBrokerProvider AppContext={AppContext}>
-            <EntryGroupProvider
+        <PasswordBrokerContextProvider AppContext={AppContext}>
+            <EntryGroupContextProvider
                 entryFieldTypes={{
                     Link: Link,
                     Password: Password,
                     Note: Note,
-                    File: File
+                    File: File,
                 }}
                 EntryFieldButton={EntryFieldButton}
-                copyToCliboard={copy}
-            >
+                copyToCliboard={copy}>
                 <Routes>
-                    <Route
-                        path="/entryGroup/:entryGroupId"
-                        element={
-                                <PasswordBrokerContainer/>
-                        }
-                    />
-                    <Route
-                        path="/"
-                        element={
-                                <PasswordBrokerContainer/>
-                        }
-                    />
+                    <Route path="/entryGroup/:entryGroupId" element={<PasswordBrokerContainer />} />
+                    <Route path="/" element={<PasswordBrokerContainer />} />
                 </Routes>
-            </EntryGroupProvider>
-        </PasswordBrokerProvider>
-    )
-}
+            </EntryGroupContextProvider>
+        </PasswordBrokerContextProvider>
+    );
+};
 
-export default PasswordBrokerRouter
+export default PasswordBrokerRouter;

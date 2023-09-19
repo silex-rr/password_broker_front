@@ -1,64 +1,59 @@
-import React, {useContext, useState} from "react";
-import {PasswordBrokerContext} from "../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext";
-import EntryFieldHistory from "./EntryFieldHistory";
-import {EntryGroupContext} from "../../../../../src_shared/passwordBroker/contexts/EntryGroupContext";
+import React, {useContext, useState} from 'react';
+import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
+import EntryFieldHistory from './EntryFieldHistory';
+import EntryGroupContext from '../../../../../src_shared/passwordBroker/contexts/EntryGroupContext';
 
-const EntryField = (props) => {
+const EntryField = props => {
+    const fieldId = props.field_id;
+    const entryId = props.entry_id;
+    const type = props.type;
+    const title = props.title;
 
-    const fieldId = props.field_id
-    const entryId = props.entry_id
-    const type = props.type
-    const title = props.title
+    const [decryptedValue, setDecryptedValue] = useState('');
+    const [decryptedValueVisible, setDecryptedValueVisible] = useState(false);
+    const [buttonLoading, setButtonLoading] = useState('');
+    const [historyVisible, setHistoryVisible] = useState(false);
+    const [trashed, setTrashed] = useState(false);
 
-    const [decryptedValue, setDecryptedValue] = useState('')
-    const [decryptedValueVisible, setDecryptedValueVisible] = useState(false)
-    const [buttonLoading, setButtonLoading] = useState('')
-    const [historyVisible, setHistoryVisible] = useState(false)
-    const [trashed, setTrashed] = useState(false)
+    //,
 
-//,
+    const passwordBrokerContext = useContext(PasswordBrokerContext);
+    const {baseUrl, entryGroupId} = passwordBrokerContext;
 
-    const passwordBrokerContext = useContext(PasswordBrokerContext)
-    const {
-        baseUrl,
-        entryGroupId,
-    } = passwordBrokerContext
+    const entryGroupContext = useContext(EntryGroupContext);
+    const {loadEntryFieldValueAndButtons} = entryGroupContext;
 
-    const entryGroupContext = useContext(EntryGroupContext)
-    const {
-        loadEntryFieldValueAndButtons
-    } = entryGroupContext
-
-    const {
-        value,
-        buttons
-    } = loadEntryFieldValueAndButtons(
+    const {value, buttons} = loadEntryFieldValueAndButtons(
         baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId,
         {
-            decryptedValue, setDecryptedValue,
-            decryptedValueVisible, setDecryptedValueVisible,
-            buttonLoading, setButtonLoading,
-            historyVisible, setHistoryVisible,
-            trashed, setTrashed
+            decryptedValue,
+            setDecryptedValue,
+            decryptedValueVisible,
+            setDecryptedValueVisible,
+            buttonLoading,
+            setButtonLoading,
+            historyVisible,
+            setHistoryVisible,
+            trashed,
+            setTrashed,
         },
-        props
+        props,
     );
 
     return (
         <React.Fragment key={fieldId}>
-            <div className={"flex flex-row w-full px-2 bg-slate-500 hover:bg-slate-600 items-baseline" + (trashed ? " hidden":"")}>
-                <div className="px-2 basis-1/6">{title}</div>
-                <div className="px-2 basis-1/6">{type}</div>
+            <div
+                className={
+                    'flex w-full flex-row items-baseline bg-slate-500 px-2 hover:bg-slate-600' +
+                    (trashed ? ' hidden' : '')
+                }>
+                <div className="basis-1/6 px-2">{title}</div>
+                <div className="basis-1/6 px-2">{type}</div>
                 {value}
-                <div className="px-2 basis-1/6 flex justify-end py-1">
-                    {buttons}
-                </div>
+                <div className="flex basis-1/6 justify-end px-2 py-1">{buttons}</div>
             </div>
-            <EntryFieldHistory
-                fieldProps={props}
-                historyVisible={historyVisible}
-            />
+            <EntryFieldHistory fieldProps={props} historyVisible={historyVisible} />
         </React.Fragment>
-    )
-}
-export default EntryField
+    );
+};
+export default EntryField;
