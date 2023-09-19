@@ -10,6 +10,7 @@ import AdminPanelLoading from "../AdminPanelLoading";
 import {FaEdit, FaTrashAlt} from "react-icons/fa";
 import PaginationButton from "../Pagination";
 import SearchField from "../SearchField";
+import UserControlNavigation from "./UserControlNagivation";
 
 
 const UserControl = () => {
@@ -83,7 +84,7 @@ const UserControl = () => {
                                 <td>{user.email}</td>
                                 <td>{user.name}</td>
                                 <td><Moment format="YYYY.MM.DD HH:mm">{user.created_at}</Moment></td>
-                                <td><FaEdit /></td>
+                                <td><UserControlNavigation path={`/admin/user_control/update/${user.user_id}`} name={<FaEdit />}/></td>
                                 <td><FaTrashAlt /></td>
                             </tr>
                         ))}
