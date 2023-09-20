@@ -1,16 +1,13 @@
-import AdminPanelLeftMenu from "./AdminPanelLeftMenu"
-import AdminPanelRightMenu from "./AdminPanelRightMenu"
+import AdminPanelLeftMenu from './AdminPanelLeftMenu';
+import AdminPanelRightMenu from './AdminPanelRightMenu';
 
-const AdminPanelMainBody = (props) => {
-
+const AdminPanelMainBody = props => {
     return (
-        <main className="mb-auto flex flex-wrap flex-row flex-grow">
+        <main className="mb-auto flex flex-grow flex-row flex-wrap">
             <AdminPanelLeftMenu />
-            <AdminPanelRightMenu>
-                {props.children}
-            </AdminPanelRightMenu>
+            <AdminPanelRightMenu>{props.children}</AdminPanelRightMenu>
         </main>
-    )
-}
+    );
+};
 
-export default AdminPanelMainBody
+export default AdminPanelMainBody;

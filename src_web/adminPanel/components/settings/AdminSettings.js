@@ -1,9 +1,5 @@
+const AdminSettings = props => {
+    return <div>settings are here</div>;
+};
 
-const AdminSettings = (props) => {
-
-    return (
-        <div>settings are here</div>
-    )
-}
-
-export default AdminSettings
+export default AdminSettings;

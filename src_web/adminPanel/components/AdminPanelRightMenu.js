@@ -1,17 +1,14 @@
-
-const AdminPanelRightMenu = (props) => {
-    const head = 'User list'
-    const body = props.children
+const AdminPanelRightMenu = props => {
+    const head = 'User list';
+    const body = props.children;
     return (
-        <div className="basis-3/4 p-0 text-slate-100 bg-slate-600">
+        <div className="basis-3/4 bg-slate-600 p-0 text-slate-100">
             <div className="grid grid-rows-3">
-                <div className="pl-2 row-span-3 text-2xl bg-slate-200 text-slate-700">{head}</div>
-                <div className="p-5 row-span-3">
-                    {body}
-                </div>
+                <div className="row-span-3 bg-slate-200 pl-2 text-2xl text-slate-700">{head}</div>
+                <div className="row-span-3 p-5">{body}</div>
             </div>
-       </div>
-    )
-}
+        </div>
+    );
+};
 
-export default AdminPanelRightMenu
+export default AdminPanelRightMenu;

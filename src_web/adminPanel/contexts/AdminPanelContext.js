@@ -1,14 +1,9 @@
-import React from "react"
+import React from 'react';
 
 const AdminPanelContext = React.createContext();
 
-const AdminPanelProvider = (props) => {
+const AdminPanelProvider = props => {
+    return <AdminPanelContext.Provider value={{}}>{props.children}</AdminPanelContext.Provider>;
+};
 
-    return (
-        <AdminPanelContext.Provider value={{}}>
-            {props.children}
-        </AdminPanelContext.Provider>
-    )
-}
-
-export {AdminPanelContext, AdminPanelProvider}
+export {AdminPanelContext, AdminPanelProvider};
