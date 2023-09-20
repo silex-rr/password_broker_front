@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { AppContext } from "../../../AppContext";
+import AppContext from "../../../AppContext";
 import { FaEdit } from "react-icons/fa";
 import AdminPanelLoading from '../AdminPanelLoading';
 import {debounce} from 'lodash.debounce'
