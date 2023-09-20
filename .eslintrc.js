@@ -1,6 +1,5 @@
 module.exports = {
     root: true,
-    extends: ['@react-native', 'prettier'],
     plugins: ['prettier'],
     rules: {
         'prettier/prettier': ['error', {endOfLine: 'auto'}],
@@ -9,4 +8,5 @@ module.exports = {
         'react-native/no-inline-styles': 0,
         // 'indent': ['error', 4],
     },
+    extends: ['@react-native', 'plugin:prettier/recommended'],
 };
