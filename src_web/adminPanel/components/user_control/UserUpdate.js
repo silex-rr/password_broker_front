@@ -13,23 +13,18 @@ const UserUpdate = props => {
         username: '',
         email: '',
     });
-    const [tempName, setTempName] = useState('');
-    const [tempEmail, setTempEmail] = useState('');
     const [updateStatus, setUpdateStatus] = useState('')
 
     const handleSubmit = async e => {
         e.preventDefault();
         // console.log(e);
-
-        if (formData['email'] != tempEmail || formData['username'] != tempName) {
-            try {
-                console.log('putting', userID, formData);
-                await axios.put(hostURL + `/identity/api/user/${userID}`, { user: formData });
-                setUpdateStatus('updated')
-            } catch (error) {
-                // console.log('error', error);
-                setUpdateStatus('error')
-            }
+        try {
+            console.log('putting', userID, formData);
+            await axios.put(hostURL + `/identity/api/user/${userID}`, formData);
+            setUpdateStatus('updated')
+        } catch (error) {
+            // console.log('error', error);
+            setUpdateStatus('error')
         }
     };
 
@@ -41,7 +36,7 @@ const UserUpdate = props => {
     };
 
     const handleEmailChange = event => {
-        console.log(event);
+        // console.log(event);
         setFormData(prevData => ({
             ...prevData,
             'email': event.target.value,
@@ -50,8 +45,8 @@ const UserUpdate = props => {
 
     const handleClear = () => {
         setFormData(() => ({
-            'username': '',
-            'email': '',
+            'username': user.name,
+            'email': user.email,
         }));
     };
 
@@ -62,25 +57,24 @@ const UserUpdate = props => {
                 if (userRequiresLoading === true) {
                     setUserRequiresLoading(false);
                     setUser(user.data);
-                    setTempName(user.data.name);
-                    setTempEmail(user.data.email);
+                    setFormData({ 'username': user.data.name, 'email': user.data.email })
                 }
             },
             error => {
                 console.log(error);
             },
         );
-    }, [setUserRequiresLoading, setUser, setTempName, setTempEmail]);
+    }, [setUserRequiresLoading, setUser, setFormData]);
 
-    console.log(`form data ${formData['email']}, ${formData['username']}`);
-    console.log('user ', user);
+    // console.log(`form data ${formData['email']}, ${formData['username']}`);
+    // console.log('user ', user);
 
     return (
         <div className="form m-9 p-5">
             {userRequiresLoading === true && <AdminPanelLoading />}
             {userRequiresLoading === false && (
                 <div className="flex flex-col justify-evenly space-y-4">
-                    <span>{tempName}</span>
+                    <span>{user.name}</span>
                     <div className="min-h-12 h-full basis-2/4">
                         <input
                             type="text"
@@ -92,7 +86,7 @@ const UserUpdate = props => {
                             placeholder="Modify the name"
                         />
                     </div>
-                    <span>{tempEmail}</span>
+                    <span>{user.email}</span>
                     <div className="min-h-16 basis-2/4">
                         <input
                             type="email"
