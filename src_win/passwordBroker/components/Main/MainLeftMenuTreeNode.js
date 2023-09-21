@@ -179,7 +179,7 @@ const MainLeftMenuTreeNode = props => {
             </React.Fragment>
         );
 
-    const treePtahUpper =
+    const treePathUpper =
         lvl < 3 || parentLast ? (
             ''
         ) : (
@@ -202,7 +202,7 @@ const MainLeftMenuTreeNode = props => {
     return (
         <View style={tw`relative`} key={entryGroupIdCurrent}>
             {treePath}
-            {treePtahUpper}
+            {treePathUpper}
 
             <View
                 // ref={drag} border-slate-200 border-l
@@ -246,9 +246,9 @@ const MainLeftMenuTreeNode = props => {
                     ) : (
                         <TouchableOpacity onPress={handleOpenEntryGroup} style={tw`justify-center`}>
                             <Text
-                                style={
-                                    tw`` + (entryGroupId === entryGroupIdCurrent ? ' font-bold text-slate-200' : '')
-                                }>
+                                style={tw`pl-1 ${
+                                    entryGroupId === entryGroupIdCurrent ? ' font-bold text-slate-200' : ''
+                                }`}>
                                 {props.title}
                             </Text>
                         </TouchableOpacity>

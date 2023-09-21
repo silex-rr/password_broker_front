@@ -56,11 +56,13 @@ const EntryGroupUsers = () => {
                         setMasterPasswordState(MASTER_PASSWORD_VALIDATED);
                     },
                     error => {
-                        console.log(error);
-                        if (error.response.data.errors.master_password) {
+                        if (
+                            error.response?.data?.errors?.master_password ||
+                            error.response?.data?.message === 'Unable to read key'
+                        ) {
                             setMasterPassword('');
                             setMasterPasswordState(MASTER_PASSWORD_INVALID);
-                            setMasterPasswordCallback(masterPasswordForCheck => sendRequest);
+                            setMasterPasswordCallback(() => sendRequest);
                             showMasterPasswordModal('MasterPassword is invalid');
                         }
                     },
@@ -89,7 +91,7 @@ const EntryGroupUsers = () => {
                 return (
                     <span
                         key={'add_as_admin_' + user_id}
-                        className="btn btn-warning btn-outline btn-xs"
+                        className="btn btn-warning btn-outline btn-xs mx-1"
                         onClick={onClick}>
                         add as Admin
                     </span>
@@ -102,7 +104,7 @@ const EntryGroupUsers = () => {
                 return (
                     <span
                         key={'add_as_moderator_' + user_id}
-                        className="btn btn-info btn-outline btn-xs"
+                        className="btn btn-info btn-outline btn-xs mx-1"
                         onClick={onClick}>
                         add as Moderator
                     </span>
@@ -115,7 +117,7 @@ const EntryGroupUsers = () => {
                 return (
                     <span
                         key={'add_as_member_' + user_id}
-                        className="btn btn-success btn-outline btn-xs"
+                        className="btn btn-success btn-outline btn-xs mx-1"
                         onClick={onClick}>
                         add as Member
                     </span>
@@ -128,8 +130,8 @@ const EntryGroupUsers = () => {
     if (entryGroupData.role.role === ROLE_ADMIN) {
         remove_th = <th className="bg-slate-900 text-slate-200">Remove user</th>;
         add_user = (
-            <div className="mt-5 p-2">
-                <h3 children="mb-2">Add new user: </h3>
+            <div className="mt-5 bg-slate-700 p-4">
+                <h2 className="mb-2 text-xl">Add new user: </h2>
                 <UserSearch buttons={buttons} />
             </div>
         );

@@ -55,9 +55,9 @@ const UserSearchSuggestions = ({searchTerm, suggestionOnClick, buttons}) => {
                     <li
                         key={suggestion.user_id}
                         onClick={suggestionOnClick}
-                        className="cursor-pointer"
+                        className="flex flex-row "
                         data-user_id={suggestion.user_id}>
-                        {suggestion.name}
+                        <span className="min-w-[175px]">{suggestion.name}</span>
                         {buttons.map(button => button(suggestion.user_id))}
                     </li>
                 ))}

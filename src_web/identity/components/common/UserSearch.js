@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import UserSearchSuggestions from './UserSearchSuggestions';
+import {Input} from 'react-daisyui';
 
 const UserSearch = ({suggestionOnClick = () => {}, buttons = []}) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -11,8 +12,20 @@ const UserSearch = ({suggestionOnClick = () => {}, buttons = []}) => {
     return (
         <React.Fragment>
             <label htmlFor="UserSearch">Search: </label>
-            <input id="UserSearch" type="text" onChange={handleSearchTermChange} value={searchTerm} />
-            <UserSearchSuggestions searchTerm={searchTerm} suggestionOnClick={suggestionOnClick} buttons={buttons} />
+            <Input
+                id="UserSearch"
+                type="text"
+                className="input-sm"
+                onChange={handleSearchTermChange}
+                value={searchTerm}
+            />
+            <div className="mt-2">
+                <UserSearchSuggestions
+                    searchTerm={searchTerm}
+                    suggestionOnClick={suggestionOnClick}
+                    buttons={buttons}
+                />
+            </div>
         </React.Fragment>
     );
 };
