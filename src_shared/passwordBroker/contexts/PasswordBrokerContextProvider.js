@@ -45,7 +45,7 @@ const PasswordBrokerContextProvider = props => {
 
     const [masterPassword, setMasterPassword] = useState('');
     const [masterPasswordState, setMasterPasswordState] = useState(MASTER_PASSWORD_IS_EMPTY);
-    const [masterPasswordCallback, setMasterPasswordCallback] = useState(masterPasswordForCallback => () => {});
+    const [masterPasswordCallback, setMasterPasswordCallback] = useState(() => () => {});
 
     const [moveEntryGroupMode, setMoveEntryGroupMode] = useState(false);
 
