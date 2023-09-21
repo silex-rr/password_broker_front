@@ -1,14 +1,12 @@
 import axios from 'axios';
-import {useContext, useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import AppContext from '../../../AppContext';
-import {FaEdit} from 'react-icons/fa';
 import AdminPanelLoading from '../AdminPanelLoading';
-import {debounce} from 'lodash.debounce';
 
 const UserUpdate = props => {
-    const {userID, userIDparam} = useParams();
-    const {hostURL} = useContext(AppContext);
+    const { userID, userIDparam } = useParams();
+    const { hostURL } = useContext(AppContext);
     const [user, setUser] = useState('');
     const [userRequiresLoading, setUserRequiresLoading] = useState(true);
     const [formData, setFormData] = useState({
@@ -17,6 +15,7 @@ const UserUpdate = props => {
     });
     const [tempName, setTempName] = useState('');
     const [tempEmail, setTempEmail] = useState('');
+    const [updateStatus, setUpdateStatus] = useState('')
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -24,10 +23,12 @@ const UserUpdate = props => {
 
         if (formData['user.email'] != tempEmail || formData['user.name'] != tempName) {
             try {
-                console.log('putting');
+                console.log('putting', userID, formData);
                 await axios.put(hostURL + `/identity/api/user/${userID}`, formData);
+                setUpdateStatus('updated')
             } catch (error) {
-                console.log(error);
+                console.log('error', error);
+                setUpdateStatus('error')
             }
         }
     };
@@ -80,7 +81,7 @@ const UserUpdate = props => {
             {userRequiresLoading === false && (
                 <div className="flex flex-col justify-evenly space-y-4">
                     <span>{tempName}</span>
-                    <div className="min-h-16 h-full basis-2/4">
+                    <div className="min-h-12 h-full basis-2/4">
                         <input
                             type="text"
                             className="user-name-edit h-full w-2/4 text-xl"
@@ -103,13 +104,19 @@ const UserUpdate = props => {
                             placeholder="Modify the email"
                         />
                     </div>
+                    {updateStatus === 'error' &&
+                        <p>An error uccored, try again</p>}
+                    {updateStatus === 'updated' &&
+                        <p>The User was successfully updated</p>}
                     <button
-                        className="edit-button m-3 basis-1/4 bg-green-500 p-2 font-bold text-black hover:bg-green-600 hover:font-extrabold"
+                        className="edit-button m-3 basis-1/4 bg-green-500 p-2 font-bold text-black 
+                            hover:bg-green-600 hover:font-extrabold"
                         onClick={handleSubmit}>
                         Save
                     </button>
                     <button
-                        className="clear-button m-3 basis-1/4 bg-red-400 p-2 font-bold text-black hover:bg-red-500 hover:font-extrabold"
+                        className="clear-button m-3 basis-1/4 bg-red-400 p-2 font-bold text-black 
+                            hover:bg-red-500 hover:font-extrabold"
                         onClick={handleClear}>
                         Clear changes
                     </button>
