@@ -10,8 +10,8 @@ const UserUpdate = props => {
     const [user, setUser] = useState('');
     const [userRequiresLoading, setUserRequiresLoading] = useState(true);
     const [formData, setFormData] = useState({
-        'user.name': '',
-        'user.email': '',
+        username: '',
+        email: '',
     });
     const [tempName, setTempName] = useState('');
     const [tempEmail, setTempEmail] = useState('');
@@ -19,15 +19,15 @@ const UserUpdate = props => {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        console.log(e);
+        // console.log(e);
 
-        if (formData['user.email'] != tempEmail || formData['user.name'] != tempName) {
+        if (formData['email'] != tempEmail || formData['username'] != tempName) {
             try {
                 console.log('putting', userID, formData);
-                await axios.put(hostURL + `/identity/api/user/${userID}`, formData);
+                await axios.put(hostURL + `/identity/api/user/${userID}`, { user: formData });
                 setUpdateStatus('updated')
             } catch (error) {
-                console.log('error', error);
+                // console.log('error', error);
                 setUpdateStatus('error')
             }
         }
@@ -36,7 +36,7 @@ const UserUpdate = props => {
     const handleNameChange = event => {
         setFormData(prevData => ({
             ...prevData,
-            'user.name': event.target.value,
+            'username': event.target.value,
         }));
     };
 
@@ -44,14 +44,14 @@ const UserUpdate = props => {
         console.log(event);
         setFormData(prevData => ({
             ...prevData,
-            'user.email': event.target.value,
+            'email': event.target.value,
         }));
     };
 
     const handleClear = () => {
         setFormData(() => ({
-            'user.name': '',
-            'user.email': '',
+            'username': '',
+            'email': '',
         }));
     };
 
@@ -72,7 +72,7 @@ const UserUpdate = props => {
         );
     }, [setUserRequiresLoading, setUser, setTempName, setTempEmail]);
 
-    console.log(`form data ${formData['user.email']}, ${formData['user.name']}`);
+    console.log(`form data ${formData['email']}, ${formData['username']}`);
     console.log('user ', user);
 
     return (
@@ -85,7 +85,7 @@ const UserUpdate = props => {
                         <input
                             type="text"
                             className="user-name-edit h-full w-2/4 text-xl"
-                            value={formData['user.name']}
+                            value={formData['username']}
                             onChange={e => {
                                 handleNameChange(e);
                             }}
@@ -97,7 +97,7 @@ const UserUpdate = props => {
                         <input
                             type="email"
                             className="user-email-edit h-full w-2/4 text-xl"
-                            value={formData['user.email']}
+                            value={formData['email']}
                             onChange={e => {
                                 handleEmailChange(e);
                             }}
