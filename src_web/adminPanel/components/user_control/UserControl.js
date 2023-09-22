@@ -59,6 +59,7 @@ const UserControl = () => {
                 setUserControlStatus(USER_CONTROL_REQUIRE_LOADING)
             } catch (error) {
                 console.log(error)
+                alert("There has been an error. Try again later")
             }
         }
     }
