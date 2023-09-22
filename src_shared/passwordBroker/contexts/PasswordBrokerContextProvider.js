@@ -1,5 +1,5 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import React, {useCallback, useContext, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {
     ENTRY_GROUP_TREES_LOADED,
     ENTRY_GROUP_TREES_REQUIRED_LOADING,
@@ -23,8 +23,6 @@ const PasswordBrokerContextProvider = props => {
 
     const {hostURL, showMasterPasswordModal} = useContext(AppContext);
     const baseUrl = hostURL + '/passwordBroker/api';
-
-    const {entryGroupId: entryGroupIdParam} = useParams();
 
     const [entryGroupTrees, setEntryGroupTrees] = useState([]);
     const [entryGroupTreesStatus, setEntryGroupTreesStatus] = useState(ENTRY_GROUP_TREES_REQUIRED_LOADING);
@@ -85,14 +83,14 @@ const PasswordBrokerContextProvider = props => {
             setEntryGroupStatus(ENTRY_GROUP_REQUIRED_LOADING);
             setEntryGroupMenu(ENTRY_GROUP_MENU_MAIN);
             setEntryGroupData(null);
-            if (entryGroupIdParam !== entryGroupID) {
-                navigate('/entryGroup/' + entryGroupID);
-            }
+            // if (entryGroupIdParam !== entryGroupID) {
+            navigate('/entryGroup/' + entryGroupID);
+            // }
         },
         [
             setEntryGroupId,
             setEntryGroupStatus,
-            entryGroupIdParam,
+            // entryGroupIdParam,
             navigate,
             loadEntryGroupUsersAbortController,
             loadEntryGroupAbortController,
@@ -199,12 +197,6 @@ const PasswordBrokerContextProvider = props => {
         setMasterPasswordCallback(() => () => {});
         setMasterPasswordState(MASTER_PASSWORD_FILLED_IN);
     };
-
-    useEffect(() => {
-        if (typeof entryGroupIdParam === 'string' && entryGroupIdParam !== '' && entryGroupIdParam !== entryGroupId) {
-            selectEntryGroup(entryGroupIdParam);
-        }
-    }, [entryGroupId, entryGroupIdParam, selectEntryGroup]);
 
     return (
         <PasswordBrokerContext.Provider

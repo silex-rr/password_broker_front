@@ -1,10 +1,11 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {APP_TYPE_WEB} from '../src_shared/constants/AppType';
 import AppContext from './AppContext';
 
 const AppContextProvider = props => {
     const masterPasswordModalVisibilityCheckboxRef = useRef();
     const masterPasswordModalVisibilityErrorRef = useRef();
+    const [masterPasswordModalIsVisible, setMasterPasswordModalIsVisible] = useState(false);
     const showMasterPasswordModal = (errorText = '') => {
         const masterPasswordModalVisibilityCheckbox = masterPasswordModalVisibilityCheckboxRef.current;
         const masterPasswordModalVisibilityError = masterPasswordModalVisibilityErrorRef.current;
@@ -39,6 +40,8 @@ const AppContextProvider = props => {
                 closeMasterPasswordModal: closeMasterPasswordModal,
                 masterPasswordModalVisibilityCheckboxRef: masterPasswordModalVisibilityCheckboxRef,
                 masterPasswordModalVisibilityErrorRef: masterPasswordModalVisibilityErrorRef,
+                masterPasswordModalIsVisible: masterPasswordModalIsVisible,
+                setMasterPasswordModalIsVisible: setMasterPasswordModalIsVisible,
             }}>
             {props.children}
         </AppContext.Provider>

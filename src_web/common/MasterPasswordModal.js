@@ -2,12 +2,20 @@ import React, {useContext, useState} from 'react';
 import PasswordBrokerContext from '../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 import {Button, Input} from 'react-daisyui';
 import AppContext from '../AppContext';
+import {
+    MASTER_PASSWORD_ENTERING_IS_CANCELED,
+    MASTER_PASSWORD_IS_ENTERING,
+} from '../../src_shared/passwordBroker/constants/MasterPasswordStates';
 
 const MasterPasswordModal = () => {
-    const {memorizeMasterPassword} = useContext(PasswordBrokerContext);
+    const {memorizeMasterPassword, setMasterPasswordState, masterPasswordState} = useContext(PasswordBrokerContext);
 
-    const {masterPasswordModalVisibilityCheckboxRef, masterPasswordModalVisibilityErrorRef, closeMasterPasswordModal} =
-        useContext(AppContext);
+    const {
+        masterPasswordModalVisibilityCheckboxRef,
+        masterPasswordModalVisibilityErrorRef,
+        closeMasterPasswordModal,
+        setMasterPasswordModalIsVisible,
+    } = useContext(AppContext);
 
     const [masterPasswordField, setMasterPasswordField] = useState('');
 
@@ -21,6 +29,26 @@ const MasterPasswordModal = () => {
         closeMasterPasswordModal();
     };
 
+    const openCloseModal = e => {
+        if (e.target.checked) {
+            setMasterPasswordState(MASTER_PASSWORD_IS_ENTERING);
+            setMasterPasswordModalIsVisible(true);
+            const masterPasswordInput = document.getElementById('masterPasswordInput');
+            const interval = setInterval(() => {
+                masterPasswordInput.focus();
+                if (document.activeElement === masterPasswordInput) {
+                    clearInterval(interval);
+                }
+            }, 50);
+        } else {
+            setMasterPasswordField('');
+            setMasterPasswordModalIsVisible(false);
+            if (masterPasswordState === MASTER_PASSWORD_IS_ENTERING) {
+                setMasterPasswordState(MASTER_PASSWORD_ENTERING_IS_CANCELED);
+            }
+        }
+    };
+
     return (
         <div className="m-0 p-0">
             <input
@@ -28,17 +56,7 @@ const MasterPasswordModal = () => {
                 id="masterPasswordModal"
                 className="modal-toggle"
                 ref={masterPasswordModalVisibilityCheckboxRef}
-                onChange={e => {
-                    if (e.target.checked) {
-                        const masterPasswordInput = document.getElementById('masterPasswordInput');
-                        const interval = setInterval(() => {
-                            masterPasswordInput.focus();
-                            if (document.activeElement === masterPasswordInput) {
-                                clearInterval(interval);
-                            }
-                        }, 50);
-                    }
-                }}
+                onChange={openCloseModal}
             />
             <label htmlFor="masterPasswordModal" className="modal cursor-pointer">
                 <label className="modal-box relative w-1/3 max-w-none bg-slate-700" htmlFor="">

@@ -22,6 +22,7 @@ import {
 } from '../../../../src_shared/passwordBroker/constants/EntryGroupUsersStatus';
 import EntryGroupUsers from './EntryGroup/EntryGroupUsers';
 import EntryGroupHistory from './EntryGroup/EntryGroupHistory';
+import {useParams} from 'react-router-dom';
 
 const MainBody = () => {
     const passwordBrokerContext = useContext(PasswordBrokerContext);
@@ -40,9 +41,15 @@ const MainBody = () => {
         entryGroupUsersStatus,
         setEntryGroupUsersStatus,
         loadEntryGroupUsers,
+        selectEntryGroup,
     } = passwordBrokerContext;
-
+    const {entryGroupId: entryGroupIdParam} = useParams();
     useEffect(() => {
+        if (typeof entryGroupIdParam === 'string' && entryGroupIdParam !== '' && entryGroupIdParam !== entryGroupId) {
+            selectEntryGroup(entryGroupIdParam);
+            return;
+        }
+
         if (entryGroupStatus === ENTRY_GROUP_REQUIRED_LOADING) {
             setEntryGroupStatus(ENTRY_GROUP_LOADING);
             loadEntryGroup(entryGroupId);
@@ -59,6 +66,8 @@ const MainBody = () => {
         entryGroupUsersStatus,
         setEntryGroupUsersStatus,
         loadEntryGroupUsers,
+        entryGroupIdParam,
+        selectEntryGroup,
     ]);
 
     const menuClickHandler = e => {

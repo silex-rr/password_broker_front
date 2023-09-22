@@ -13,10 +13,23 @@ import {formDataToObject} from '../../utils/formDataToObject';
 import axios from 'axios';
 import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from '../constants/MasterPasswordStates';
 import EntryFieldContext from './EntryFieldContext';
+import {
+    FIELD_EDITING_AWAIT,
+    FIELD_EDITING_EDITING,
+    FIELD_EDITING_IN_PROGRESS,
+} from '../constants/EntryGroupEntryFieldEditingStates';
+import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from '../constants/EntryGroupEntryFieldsStatus';
 
 const EntryFieldContextProvider = props => {
-    const {baseUrl, masterPassword, setMasterPassword, setMasterPasswordState, AppContext} =
-        useContext(PasswordBrokerContext);
+    const {
+        baseUrl,
+        masterPassword,
+        setMasterPassword,
+        setMasterPasswordState,
+        AppContext,
+        entryGroupFieldForEditState,
+        setEntryGroupFieldForEditState,
+    } = useContext(PasswordBrokerContext);
 
     const {appType} = useContext(AppContext);
 
@@ -106,6 +119,91 @@ const EntryFieldContextProvider = props => {
         });
     };
 
+    const updateField = (entryGroupId, entryId, entryGroupFieldForEditId, setEntryFieldsStatus) => {
+        if (entryGroupFieldForEditState !== FIELD_EDITING_EDITING) {
+            return;
+        }
+        let masterPasswordForm = masterPassword;
+        if (masterPassword === '') {
+            setMasterPassword(masterPasswordInput);
+            masterPasswordForm = masterPasswordInput;
+        }
+
+        setEntryGroupFieldForEditState(FIELD_EDITING_IN_PROGRESS);
+
+        const data = new FormData();
+        data.append('title', addingFieldTitle);
+        data.append('master_password', masterPasswordForm);
+        switch (addingFieldType) {
+            default:
+                break;
+            case FIELD_TYPE_PASSWORD:
+                data.append('login', addingFieldLogin);
+            // eslint-disable-next-line no-fallthrough
+            case FIELD_TYPE_LINK:
+            case FIELD_TYPE_NOTE:
+                data.append('value', addingFieldValue);
+                break;
+
+            case FIELD_TYPE_FILE:
+                break;
+        }
+        data.append('_method', 'put');
+        axios
+            .post(
+                baseUrl +
+                    '/entryGroups/' +
+                    entryGroupId +
+                    '/entries/' +
+                    entryId +
+                    '/fields/' +
+                    entryGroupFieldForEditId,
+                data,
+            )
+            .then(
+                () => {
+                    beforeModalOpen();
+                    setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING);
+                    setEntryGroupFieldForEditState(FIELD_EDITING_AWAIT);
+                    // const modalVisibilityCheckbox = modalVisibilityRef.current;
+                    // modalVisibilityCheckbox.checked = false;
+                    setMasterPasswordState(MASTER_PASSWORD_VALIDATED);
+                },
+                error => {
+                    let errMsg = [];
+                    const editFieldErrKey = 'editFieldErr_';
+                    if (error.response.data.errors.master_password) {
+                        if (error.response.data.errors.master_password === 'invalid') {
+                            errMsg.push(<p key={editFieldErrKey + errMsg.length}>MasterPassword is invalid</p>);
+                        } else {
+                            errMsg.push(<p key={editFieldErrKey + errMsg.length}>MasterPassword is missing</p>);
+                        }
+                        setMasterPasswordState(MASTER_PASSWORD_INVALID);
+                        setMasterPassword('');
+                    }
+                    if (error.response.data.errors.value) {
+                        errMsg.push(<p key={editFieldErrKey + errMsg.length}>Field Value is missing</p>);
+                    }
+                    if (error.response.data.errors.title) {
+                        errMsg.push(<p key={editFieldErrKey + errMsg.length}>{error.response.data.errors.title[0]}</p>);
+                    }
+
+                    if (errMsg.length) {
+                        setErrorMessage(errMsg);
+                    } else {
+                        setErrorMessage([error.message]);
+                    }
+                    setEntryGroupFieldForEditState(FIELD_EDITING_AWAIT);
+                },
+            );
+        //     },
+        //     (error) => {
+        //         setErrorMessage(error.message)
+        //         setAddingFieldState(FIELD_ADDING_AWAIT)
+        //     }
+        // )
+    };
+
     const changeType = value => {
         setAddingFieldValue('');
         setAddingFieldFile(null);
@@ -142,6 +240,7 @@ const EntryFieldContextProvider = props => {
         <EntryFieldContext.Provider
             value={{
                 addNewField: addNewField,
+                updateField: updateField,
                 beforeModalOpen: beforeModalOpen,
                 addingFieldType: addingFieldType,
                 changeLogin: changeLogin,

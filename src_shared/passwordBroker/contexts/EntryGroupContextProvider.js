@@ -3,7 +3,11 @@ import PasswordBrokerContext from './PasswordBrokerContext';
 import {ENTRY_GROUP_ADDING_AWAIT, ENTRY_GROUP_ADDING_IN_PROGRESS} from '../constants/EntryGroupAddingStates';
 import axios from 'axios';
 import {ENTRY_GROUP_TREES_REQUIRED_LOADING} from '../constants/EntryGroupTreesStatus';
-import {MASTER_PASSWORD_INVALID, MASTER_PASSWORD_VALIDATED} from '../constants/MasterPasswordStates';
+import {
+    MASTER_PASSWORD_ENTERING_IS_CANCELED,
+    MASTER_PASSWORD_INVALID,
+    MASTER_PASSWORD_VALIDATED,
+} from '../constants/MasterPasswordStates';
 import {Buffer} from 'buffer';
 import {
     FIELD_TYPE_FILE,
@@ -27,6 +31,7 @@ const EntryGroupContextProvider = props => {
 
     const {
         masterPassword,
+        masterPasswordState,
         setMasterPassword,
         setMasterPasswordCallback,
         setMasterPasswordState,
@@ -300,7 +305,10 @@ const EntryGroupContextProvider = props => {
                 }
             };
             const handleEdit = () => {
-                if (entryGroupFieldForEditState !== FIELD_EDITING_AWAIT) {
+                if (
+                    entryGroupFieldForEditState !== FIELD_EDITING_AWAIT &&
+                    masterPasswordState !== MASTER_PASSWORD_ENTERING_IS_CANCELED
+                ) {
                     return;
                 }
                 setEntryGroupFieldForEditState(FIELD_EDITING_LOADING_DATA);
@@ -318,6 +326,7 @@ const EntryGroupContextProvider = props => {
                     icon="FaEdit"
                     colour="text-blue-300"
                     onclick={handleEdit}
+                    loading={buttonLoading === 'edit'}
                     tip="edit"
                 />,
             );
