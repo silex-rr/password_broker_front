@@ -1,5 +1,5 @@
 import Moment from 'react-moment';
-import {useContext, useEffect, useState} from 'react';
+import { useContext, useEffect, useState } from 'react';
 import IdentityContext from '../../../../src_shared/identity/contexts/IdentityContext';
 import {
     USER_CONTROL_REQUIRE_LOADING,
@@ -8,13 +8,15 @@ import {
     USER_CONTROL_LOADING,
 } from './UserControlStatus';
 import AdminPanelLoading from '../AdminPanelLoading';
-import {FaEdit, FaTrashAlt} from 'react-icons/fa';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import PaginationButton from '../Pagination';
 import SearchField from '../SearchField';
 import UserControlNavigation from './UserControlNagivation';
+import AppContext from '../../../AppContext';
+import axios from 'axios';
 
 const UserControl = () => {
-    const {getUsers} = useContext(IdentityContext);
+    const { getUsers } = useContext(IdentityContext);
 
     const [userControlStatus, setUserControlStatus] = useState(USER_CONTROL_REQUIRE_LOADING);
     const [userControlData, setUserControlData] = useState([]);
@@ -22,6 +24,7 @@ const UserControl = () => {
     const [lastPage, setLastPage] = useState();
     const [searchRequest, setSearchRequest] = useState('');
     const [usersPerPage, setUsersPerPage] = useState(20);
+    const { hostURL } = useContext(AppContext);
 
     const getUsersPerPage = () => {
         setUserControlStatus(USER_CONTROL_LOADING);
@@ -44,6 +47,21 @@ const UserControl = () => {
             setUserControlStatus(USER_CONTROL_REQUIRE_LOADING);
         }
     };
+
+    const handleDelete = async (e, user) => {
+        e.preventDefault()
+        console.log('delete handler was triggered', user)
+        if (confirm(`Are you sure you want to delete ${user.name}`) == true) {
+            console.log('confirmed', user.user_id)
+            try {
+                await axios.delete(hostURL + `/identity/api/user/${user.user_id}`)
+                alert('The user has been deleted successfully')
+                setUserControlStatus(USER_CONTROL_REQUIRE_LOADING)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
 
     useEffect(() => {
         if (userControlStatus === USER_CONTROL_LOADED || userControlStatus === USER_CONTROL_LOADING) {
@@ -98,7 +116,9 @@ const UserControl = () => {
                                         />
                                     </td>
                                     <td>
-                                        <FaTrashAlt />
+                                        <button onClick={(e) => handleDelete(e, user)}>
+                                            <FaTrashAlt />
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
