@@ -4,6 +4,7 @@ import {appUUIDFromStorage} from '../src_shared/utils/native/appUUIDFromStorage'
 import MasterPasswordModal from './passwordBroker/components/MasterPasswordModal';
 import {APP_TYPE_WIN} from '../src_shared/constants/AppType';
 import AppContext from './AppContext';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const AppContextProvider = props => {
     const hostURL = 'http://dev-back.jrvs.ru';
@@ -40,6 +41,10 @@ const AppContextProvider = props => {
         modalClose();
     };
 
+    const copyToClipboard = text => {
+        Clipboard.setString(text);
+    };
+
     return (
         <AppContext.Provider
             value={{
@@ -55,6 +60,8 @@ const AppContextProvider = props => {
 
                 showMasterPasswordModal: showMasterPasswordModal,
                 closeMasterPasswordModal: closeMasterPasswordModal,
+
+                copyToClipboard: copyToClipboard,
             }}>
             {props.children}
         </AppContext.Provider>

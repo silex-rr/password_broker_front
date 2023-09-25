@@ -5,12 +5,16 @@ import {
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
 } from '../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
-import {Button, Input, Textarea} from 'react-daisyui';
+import {Button, Input} from 'react-daisyui';
 import {FIELD_ADDING_AWAIT} from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
 import EntryFieldContext from '../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
 import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 // eslint-disable-next-line max-len
 import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus';
+import Link from './EntryFieldTypes/Edit/Link';
+import Note from './EntryFieldTypes/Edit/Note';
+import Password from './EntryFieldTypes/Edit/Password';
+import File from './EntryFieldTypes/Edit/File';
 
 const EntryFieldsAdd = props => {
     const {masterPassword} = useContext(PasswordBrokerContext);
@@ -53,94 +57,23 @@ const EntryFieldsAdd = props => {
             break;
         case FIELD_TYPE_PASSWORD:
             value = (
-                <div className="items-center py-1.5">
-                    <div className="flex flex-row ">
-                        <label
-                            htmlFor={'add-field-for-' + entryId + '-login'}
-                            className="inline-block basis-1/3 text-lg">
-                            Login:
-                        </label>
-                        <Input
-                            id={'add-field-for-' + entryId + '-login'}
-                            className={
-                                'input-bordered input-sm basis-2/3 bg-slate-800' +
-                                ' text-slate-200 placeholder-slate-300'
-                            }
-                            onChange={e => changeLogin(e.target.value)}
-                            placeholder="type new login"
-                            type="text"
-                            value={addingFieldLogin}
-                        />
-                    </div>
-                    <div className="flex flex-row ">
-                        <label
-                            htmlFor={'add-field-for-' + entryId + '-value'}
-                            className="inline-block basis-1/3 text-lg">
-                            Password:
-                        </label>
-                        <Input
-                            id={'add-field-for-' + entryId + '-value'}
-                            className={
-                                'input-bordered input-sm basis-2/3 bg-slate-800' +
-                                ' text-slate-200 placeholder-slate-300'
-                            }
-                            onChange={e => changeValue(e.target.value)}
-                            placeholder="type new password"
-                            type="password"
-                            value={addingFieldValue}
-                        />
-                    </div>
-                </div>
+                <Password
+                    entryId={entryId}
+                    fieldLogin={addingFieldLogin}
+                    fieldValue={addingFieldValue}
+                    changeLogin={changeLogin}
+                    changeValue={changeValue}
+                />
             );
             break;
         case FIELD_TYPE_NOTE:
-            value = (
-                <div className="items-center py-1.5">
-                    <Textarea
-                        onChange={e => changeValue(e.target.value)}
-                        placeholder="type new note"
-                        value={addingFieldValue}
-                        className="textarea-bordered w-full bg-slate-800 text-slate-200 placeholder-slate-300"
-                    />
-                </div>
-            );
+            value = <Note fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
         case FIELD_TYPE_LINK:
-            value = (
-                <div className="flex flex-row items-center py-1.5">
-                    <label htmlFor={'add-field-for-' + entryId + '-value'} className="inline-block basis-1/3 text-lg">
-                        Link:
-                    </label>
-                    <Input
-                        id={'add-field-for-' + entryId + '-value'}
-                        className="input-bordered input-sm basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
-                        onChange={e => changeValue(e.target.value)}
-                        placeholder="put new link"
-                        type="text"
-                        value={addingFieldValue}
-                    />
-                </div>
-            );
+            value = <Link entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
         case FIELD_TYPE_FILE:
-            value = (
-                <div className="flex flex-row items-center py-1.5">
-                    <label htmlFor={'add-field-for-' + entryId + '-value'} className="inline-block basis-1/3 text-lg">
-                        File:
-                    </label>
-                    <Input
-                        id={'add-field-for-' + entryId + '-value'}
-                        className={
-                            'file-input file-input-bordered file-input-sm w-full ' +
-                            'basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300'
-                        }
-                        onChange={e => changeValue(e.target.value, e.target.files[0])}
-                        placeholder="add a file"
-                        type="file"
-                        value={addingFieldValue}
-                    />
-                </div>
-            );
+            value = <File entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
     }
 
@@ -251,7 +184,7 @@ const EntryFieldsAdd = props => {
                                 close
                             </label>
                         </div>
-                        {errorMessage === '' ? (
+                        {errorMessage.length === 0 ? (
                             ''
                         ) : (
                             <div className="mt-8 w-full bg-red-700 py-1.5 text-center text-slate-100">

@@ -2,15 +2,13 @@ import Entry from './Entry';
 import EntryAdd from './EntryAdd';
 import {ROLE_CAN_EDIT} from '../../../../../src_shared/passwordBroker/constants/EntryGroupRole';
 import EntryGroupAdd from './EntryGroupAdd';
-import {useContext} from 'react';
+import React, {useContext} from 'react';
 import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
-import React from 'react';
 import EntryContextProvider from '../../../../../src_shared/passwordBroker/contexts/EntryContextProvider';
 import EntryFieldContextProvider from '../../../../../src_shared/passwordBroker/contexts/EntryFieldContextProvider';
 
 const EntryGroup = props => {
-    const passwordBrokerContext = useContext(PasswordBrokerContext);
-    const {entryGroupId} = passwordBrokerContext;
+    const {entryGroupId} = useContext(PasswordBrokerContext);
 
     const entries = [];
     for (let i = 0; i < props.entries.length; i++) {
@@ -27,8 +25,6 @@ const EntryGroup = props => {
             </tr>,
         );
     }
-
-    // const entryGroupAddButton =
 
     return (
         <div className="overflow-x-auto">

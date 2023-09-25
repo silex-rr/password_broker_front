@@ -1,12 +1,16 @@
-import React from 'react';
-// import EntryFieldsAdd from "./EntryFieldsAdd";
+import React, {useContext, useEffect} from 'react';
 import EntryField from './EntryField';
-// import EntryFieldsEdit from "./EntryFieldsEdit";
 import {Text, View} from 'react-native-windows';
-// import {DataTable} from 'react-native-paper';
 import tw from 'twrnc';
 import EntryFieldAddButton from './EntryFieldAddButton';
-//import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
+// eslint-disable-next-line max-len
+import {FIELD_EDITING_EDITING} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
+import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
+// eslint-disable-next-line max-len
+import {FIELD_TYPE_PASSWORD} from '../../../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
+import AppContext from '../../../../../../AppContext';
+import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
+import EntryFieldEdit from './EntryFieldEdit';
 
 const EntryFields = ({
     fields,
@@ -21,6 +25,74 @@ const EntryFields = ({
     for (let i = 0; i < fields.length; i++) {
         fieldComponents.push(EntryField(fields[i]));
     }
+
+    const {entryGroupFieldForEditId, entryGroupFieldForEditDecryptedValue, entryGroupFieldForEditState} =
+        useContext(PasswordBrokerContext);
+
+    const {modalClose, modalVisible, modalShow} = useContext(AppContext);
+    const {addingFieldType, changeLogin, changeValue, changeTitle, changeType, beforeModalOpen} =
+        useContext(EntryFieldContext);
+
+    useEffect(() => {
+        if (!entryGroupFieldForEditId || modalVisible || entryGroupFieldForEditState !== FIELD_EDITING_EDITING) {
+            return;
+        }
+        let field = null;
+
+        if (entryGroupFieldForEditId !== '') {
+            for (let i = 0; i < fields.length; i++) {
+                if (fields[i].field_id === entryGroupFieldForEditId) {
+                    field = fields[i];
+                    break;
+                }
+            }
+        }
+
+        if (!field) {
+            return;
+        }
+
+        const fieldTypeDefault = field.type;
+        const fieldTitleDefault = field.title;
+        const fieldLoginDefault = fieldTypeDefault !== FIELD_TYPE_PASSWORD ? '' : field.login;
+        const fieldValueDefault = entryGroupFieldForEditDecryptedValue;
+
+        if (fieldTypeDefault !== addingFieldType) {
+            changeType(fieldTypeDefault);
+        }
+
+        beforeModalOpen();
+        changeValue(fieldValueDefault);
+        changeTitle(fieldTitleDefault);
+        changeLogin(fieldLoginDefault);
+        modalShow(
+            <EntryFieldEdit
+                entryGroupId={entryGroupId}
+                entryId={entryId}
+                entryTitle={entryTitle}
+                setEntryFieldsStatus={setEntryFieldsStatus}
+            />,
+            {width: 700},
+        );
+    }, [
+        entryGroupFieldForEditState,
+        changeValue,
+        changeTitle,
+        changeLogin,
+        addingFieldType,
+        changeType,
+        entryGroupFieldForEditId,
+        entryGroupFieldForEditDecryptedValue,
+        modalVisible,
+        fields,
+        beforeModalOpen,
+        modalShow,
+        entryGroupId,
+        entryId,
+        entryTitle,
+        setEntryFieldsStatus,
+        modalClose,
+    ]);
 
     return (
         <React.Fragment key={entryId + '_fields'}>
@@ -44,21 +116,6 @@ const EntryFields = ({
                     </View>
                 </View>
             </EntryFieldAddButton>
-
-            {/*<EntryFieldsEdit*/}
-            {/*    entryGroupId={entryGroupId}*/}
-            {/*    entryId={entryId}*/}
-            {/*    entryTitle={props.entryTitle}*/}
-            {/*    fields={props.fields}*/}
-            {/*    setEntryFieldsStatus = {props.setEntryFieldsStatus}*/}
-            {/*/>*/}
-
-            {/*<EntryFieldsAdd*/}
-            {/*    entryGroupId={entryGroupId}*/}
-            {/*    entryId={entryId}*/}
-            {/*    entryTitle={props.entryTitle}*/}
-            {/*    setEntryFieldsStatus = {props.setEntryFieldsStatus}*/}
-            {/*/>*/}
         </React.Fragment>
     );
 };
