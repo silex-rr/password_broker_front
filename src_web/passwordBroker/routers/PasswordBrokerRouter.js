@@ -25,7 +25,7 @@ const PasswordBrokerRouter = () => {
                 copyToCliboard={copy}>
                 <Routes>
                     <Route path="/entryGroup/:entryGroupId" element={<PasswordBrokerContainer />} />
-                    {/*<Route path="/" element={<PasswordBrokerContainer />} />*/}
+                    <Route path="/" element={<PasswordBrokerContainer />} />
                 </Routes>
             </EntryGroupContextProvider>
         </PasswordBrokerContextProvider>
