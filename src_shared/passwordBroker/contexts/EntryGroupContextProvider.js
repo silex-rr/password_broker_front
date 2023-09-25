@@ -27,7 +27,7 @@ import EntryGroupContext from './EntryGroupContext';
 const EntryGroupContextProvider = props => {
     const {Link, Password, Note, File} = props.entryFieldTypes;
     const EntryFieldButton = props.EntryFieldButton;
-    const copy = props.copyToCliboard;
+    const copy = props.copyToClipboard;
 
     const {
         masterPassword,

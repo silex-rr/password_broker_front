@@ -5,10 +5,12 @@ import {
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
 } from '../../../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
+
 // eslint-disable-next-line max-len
 import {FIELD_ADDING_AWAIT} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
 import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
 import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
+
 // eslint-disable-next-line max-len
 import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus';
 import {ActivityIndicator, Pressable, Text, TextInput, View} from 'react-native-windows';
@@ -16,6 +18,10 @@ import tw from 'twrnc';
 import {Picker} from '@react-native-picker/picker';
 // import WebView from "react-native-webview";
 import AppContext from '../../../../../../AppContext';
+import Password from '../EntryFieldTypes/Edit/Password';
+import Note from '../EntryFieldTypes/Edit/Note';
+import Link from '../EntryFieldTypes/Edit/Link';
+import File from '../EntryFieldTypes/Edit/File';
 // import * as DocumentPicker from "react-native-document-picker";
 
 const EntryFieldAdd = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus}) => {
@@ -45,97 +51,23 @@ const EntryFieldAdd = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus}
             break;
         case FIELD_TYPE_PASSWORD:
             value = (
-                <View style={tw`py-1.5 items-center`}>
-                    <View style={tw`flex flex-row `}>
-                        <Text
-                            htmlFor={'add-field-for-' + entryId + '-login'}
-                            style={tw`inline-block basis-1/3 text-lg`}>
-                            Login:
-                        </Text>
-                        <TextInput
-                            id={'add-field-for-' + entryId + '-login'}
-                            style={tw`input-sm input-bordered basis-2/3 bg-slate-800
-                             text-slate-200 placeholder-slate-300`}
-                            onChangeText={changeLogin}
-                            placeholder="type new login"
-                            value={addingFieldLogin}
-                        />
-                    </View>
-                    <View style={tw`flex flex-row `}>
-                        <Text
-                            htmlFor={'add-field-for-' + entryId + '-value'}
-                            style={tw`inline-block basis-1/3 text-lg`}>
-                            Password:
-                        </Text>
-                        <TextInput
-                            id={'add-field-for-' + entryId + '-value'}
-                            style={tw`input-sm input-bordered basis-2/3 bg-slate-800 
-                                text-slate-200 placeholder-slate-300`}
-                            onChangeText={changeValue}
-                            placeholder="type new password"
-                            secureTextEntry={true}
-                            value={addingFieldValue}
-                        />
-                    </View>
-                </View>
+                <Password
+                    entryId={entryId}
+                    fieldLogin={addingFieldLogin}
+                    fieldValue={addingFieldValue}
+                    changeLogin={changeLogin}
+                    changeValue={changeValue}
+                />
             );
             break;
         case FIELD_TYPE_NOTE:
-            value = (
-                <View style={tw`py-1.5 items-center`}>
-                    <TextInput
-                        onChangeText={changeValue}
-                        placeholder="type new note"
-                        value={addingFieldValue}
-                        style={tw`textarea-bordered w-full bg-slate-800 text-slate-200 placeholder-slate-300`}
-                    />
-                </View>
-            );
+            value = <Note fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
         case FIELD_TYPE_LINK:
-            value = (
-                <View style={tw`flex flex-row py-1.5 items-center`}>
-                    <Text htmlFor={'add-field-for-' + entryId + '-value'} style={tw`inline-block basis-1/3 text-lg`}>
-                        Link:
-                    </Text>
-                    <TextInput
-                        id={'add-field-for-' + entryId + '-value'}
-                        style={tw`input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}
-                        onChangeText={changeValue}
-                        placeholder="put new link"
-                        value={addingFieldValue}
-                    />
-                </View>
-            );
+            value = <Link entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
         case FIELD_TYPE_FILE:
-            value = (
-                <View style={tw`flex flex-row py-1.5 items-center`}>
-                    <Text htmlFor={'add-field-for-' + entryId + '-value'} style={tw`inline-block basis-1/3 text-lg`}>
-                        File:
-                    </Text>
-                    <Text>Does not support on Windows</Text>
-                    {/*<Button*/}
-                    {/*    id={"add-field-for-" + entryId + "-value"}*/}
-                    {/*    style={tw`w-full basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}*/}
-
-                    {/*    title="open picker for single file selection"*/}
-                    {/*    onPress={async () => {*/}
-                    {/*        try {*/}
-                    {/*            // const pickerResult = await DocumentPicker.pickSingle({*/}
-                    {/*            //     presentationStyle: 'fullScreen',*/}
-                    {/*            //     copyTo: 'cachesDirectory',*/}
-                    {/*            // })*/}
-                    {/*            // console.log([pickerResult])*/}
-                    {/*        } catch (e) {*/}
-                    {/*            // handleError(e)*/}
-                    {/*        }*/}
-                    {/*    }}*/}
-                    {/*>*/}
-                    {/*    <Text>pick a file {addingFieldValue !== '' ? '[' + addingFieldValue + ']' : ''}</Text>*/}
-                    {/*</Button>*/}
-                </View>
-            );
+            value = <File entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
     }
 
@@ -162,7 +94,7 @@ const EntryFieldAdd = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus}
                     value={masterPasswordInput}
                     onChangeText={changeMasterPassword}
                     placeholder="type your master password"
-                    style={tw`input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}
+                    style={tw`basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}
                 />
             </View>
         );

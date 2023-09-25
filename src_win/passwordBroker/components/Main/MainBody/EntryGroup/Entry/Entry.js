@@ -9,34 +9,37 @@ import {
     ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING,
 } from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus';
 import EntryFields from './EntryFields';
-// import {EntryContext} from '../../../../../../../src_shared/passwordBroker/contexts/EntryContext';
 import {Text, View} from 'react-native-windows';
 import {DataTable} from 'react-native-paper';
 import tw from 'twrnc';
+// eslint-disable-next-line max-len
+import {FIELD_EDITING_AWAIT} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
+// eslint-disable-next-line max-len
+import {FIELD_ADDING_AWAIT} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
+import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
+import AppContext from '../../../../../../AppContext';
 
 const Entry = props => {
     const entryGroupId = props.entry_group_id;
     const entryId = props.entry_id;
 
-    const passwordBrokerContext = useContext(PasswordBrokerContext);
-    const {baseUrl} = passwordBrokerContext;
+    const {baseUrl, entryGroupFieldForEditState} = useContext(PasswordBrokerContext);
 
-    // const entryContext = useContext(EntryContext)
-    //
-    // const {
-    //     entryFieldsStatus,
-    //     setEntryFieldsStatus,
-    //     entryFieldsData,
-    //     setEntryFieldsData,
-    //     entryFieldsIsVisible,
-    //     setEntryFieldVisible
-    // } = entryContext
-
+    const {addingFieldState} = useContext(EntryFieldContext);
+    const {modalClose, modalVisible} = useContext(AppContext);
     const [entryFieldsStatus, setEntryFieldsStatus] = useState(ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED);
     const [entryFieldsData, setEntryFieldsData] = useState([]);
     const [entryFieldsIsVisible, setEntryFieldVisible] = useState(false);
 
     useEffect(() => {
+        if (
+            modalVisible &&
+            entryGroupFieldForEditState === FIELD_EDITING_AWAIT &&
+            addingFieldState === FIELD_ADDING_AWAIT
+        ) {
+            modalClose();
+        }
+
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING) {
             setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADING);
             axios.get(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields').then(response => {
@@ -44,7 +47,18 @@ const Entry = props => {
                 setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADED);
             });
         }
-    }, [entryFieldsStatus, baseUrl, entryGroupId, entryId, setEntryFieldsStatus, setEntryFieldsData]);
+    }, [
+        entryFieldsStatus,
+        baseUrl,
+        entryGroupId,
+        entryId,
+        setEntryFieldsStatus,
+        setEntryFieldsData,
+        modalVisible,
+        entryGroupFieldForEditState,
+        addingFieldState,
+        modalClose,
+    ]);
 
     const entryFieldsVisibility = () => {
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED) {

@@ -131,7 +131,7 @@ const EntryFieldContextProvider = props => {
 
         setEntryGroupFieldForEditState(FIELD_EDITING_IN_PROGRESS);
 
-        const data = new FormData();
+        let data = new FormData();
         data.append('title', addingFieldTitle);
         data.append('master_password', masterPasswordForm);
         switch (addingFieldType) {
@@ -149,6 +149,9 @@ const EntryFieldContextProvider = props => {
                 break;
         }
         data.append('_method', 'put');
+        if (appType === APP_TYPE_WIN) {
+            data = formDataToObject(data);
+        }
         axios
             .post(
                 baseUrl +
@@ -165,8 +168,6 @@ const EntryFieldContextProvider = props => {
                     beforeModalOpen();
                     setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING);
                     setEntryGroupFieldForEditState(FIELD_EDITING_AWAIT);
-                    // const modalVisibilityCheckbox = modalVisibilityRef.current;
-                    // modalVisibilityCheckbox.checked = false;
                     setMasterPasswordState(MASTER_PASSWORD_VALIDATED);
                 },
                 error => {
