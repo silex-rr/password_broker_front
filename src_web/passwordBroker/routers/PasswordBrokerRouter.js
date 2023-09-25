@@ -22,7 +22,7 @@ const PasswordBrokerRouter = () => {
                     File: File,
                 }}
                 EntryFieldButton={EntryFieldButton}
-                copyToCliboard={copy}>
+                copyToClipboard={copy}>
                 <Routes>
                     <Route path="/entryGroup/:entryGroupId" element={<PasswordBrokerContainer />} />
                     <Route path="/" element={<PasswordBrokerContainer />} />
