@@ -1,6 +1,10 @@
 import React, {useContext, useState} from 'react';
 import PasswordBrokerContext from './PasswordBrokerContext';
-import {FIELD_ADDING_AWAIT, FIELD_ADDING_IN_PROGRESS} from '../constants/EntryGroupEntryFieldAddingStates';
+import {
+    FIELD_ADDING_AWAIT,
+    FIELD_ADDING_EDITING,
+    FIELD_ADDING_IN_PROGRESS,
+} from '../constants/EntryGroupEntryFieldAddingStates';
 import {
     FIELD_TYPE_FILE,
     FIELD_TYPE_LINK,
@@ -44,7 +48,7 @@ const EntryFieldContextProvider = props => {
     const [errorMessage, setErrorMessage] = useState([]);
 
     const addNewField = (entryGroupId, entryId) => {
-        if (addingFieldState !== FIELD_ADDING_AWAIT) {
+        if (addingFieldState !== FIELD_ADDING_EDITING) {
             return;
         }
         let masterPasswordForm = masterPassword;
@@ -254,6 +258,7 @@ const EntryFieldContextProvider = props => {
                 changeTitle: changeTitle,
                 changeType: changeType,
                 addingFieldState: addingFieldState,
+                setAddingFieldState: setAddingFieldState,
                 errorMessage: errorMessage,
             }}>
             {props.children}
