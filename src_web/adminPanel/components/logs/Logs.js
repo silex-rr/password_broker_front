@@ -3,7 +3,8 @@ import { useEffect, useState, useContext } from "react";
 import AppContext from "../../../AppContext";
 import AdminPanelLoading from "../AdminPanelLoading";
 import Moment from "react-moment";
-import PaginationButton from '../Pagination'
+import PaginationButton from '../Pagination';
+import SearchField from "../SearchField";
 
 const Logs = props => {
     const [requireLoading, setRequireLoading] = useState(true);
@@ -40,6 +41,15 @@ const Logs = props => {
         setRequireLoading(true)
     }
 
+    const handleSearch = (e) => {
+        e.preventDefault()
+        console.log(searchRequest)
+        if (searchRequest.trim() != '') {
+            setCurrentPage(1);
+            setRequireLoading(true)
+        }
+    }
+
     useEffect(() => {
         if (requireLoading) {
             getLogsPerPage(currentPage).then(data => {
@@ -59,7 +69,14 @@ const Logs = props => {
     }
     // console.log('logs', logs.length, requireLoading, logsData)
     return (
-        <div>
+        <div className="mx-auto overflow-x-auto">
+            <div className="navbar bg-base-100">
+                <SearchField
+                    handleSearch={handleSearch}
+                    searchRequest={searchRequest}
+                    setSearchRequest={setSearchRequest}
+                />
+            </div>
             {requireLoading && <AdminPanelLoading />}
             {!requireLoading && (
                 <div className="overflow-x-auto">
