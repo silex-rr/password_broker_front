@@ -1,8 +1,8 @@
 import React from 'react';
 import {Text, View} from 'react-native-windows';
 import tw from 'twrnc';
-
-export const File = ({entryId, fieldValue, changeValue}) => {
+//, fieldValue, changeValue
+export const File = ({entryId}) => {
     return (
         <View style={tw`flex flex-row py-1.5 items-center`}>
             <Text htmlFor={'add-field-for-' + entryId + '-value'} style={tw`inline-block basis-1/3 text-lg`}>
