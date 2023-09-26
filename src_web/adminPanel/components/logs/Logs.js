@@ -3,6 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import AppContext from "../../../AppContext";
 import AdminPanelLoading from "../AdminPanelLoading";
 import Moment from "react-moment";
+import PaginationButton from '../Pagination'
 
 const Logs = props => {
     const [requireLoading, setRequireLoading] = useState(true);
@@ -10,6 +11,7 @@ const Logs = props => {
     const [searchRequest, setSearchRequest] = useState('');
     const [logsData, setLogsData] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
+    const [lastPage, setLastPage] = useState(1)
     const [perPage, setPerPage] = useState(20)
 
     const getLogsPerPage = (page) => {
@@ -28,20 +30,26 @@ const Logs = props => {
 
         return new Promise((resolve, reject) => {
             axios.get(url).then(response => {
-                resolve(response.data.data, console.log("resolved"))
+                resolve(response.data)
             }, reject);
         });
+    }
+
+    const handlePagination = page => {
+        setCurrentPage(page);
+        setRequireLoading(true)
     }
 
     useEffect(() => {
         if (requireLoading) {
             getLogsPerPage(currentPage).then(data => {
-                setLogsData(data);
+                setLogsData(data.data);
+                setLastPage(data.last_page)
                 setRequireLoading(false)
             })
 
         } else {
-            return console.log("else");
+            return;
         }
     }, [requireLoading, currentPage])
 
@@ -49,7 +57,7 @@ const Logs = props => {
     if (!requireLoading) {
         logsData.forEach((log) => logs.push(log))
     }
-    console.log('logs', logs.length, requireLoading, logsData)
+    // console.log('logs', logs.length, requireLoading, logsData)
     return (
         <div>
             {requireLoading && <AdminPanelLoading />}
@@ -75,6 +83,11 @@ const Logs = props => {
                             ))}
                         </tbody>
                     </table>
+                    <PaginationButton
+                        currentPage={currentPage}
+                        lastPage={lastPage}
+                        handlePagination={handlePagination}
+                    />
                 </div>
             )}
         </div>
