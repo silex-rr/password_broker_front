@@ -7,7 +7,7 @@ import {
 } from '../../../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
 
 // eslint-disable-next-line max-len
-import {FIELD_ADDING_AWAIT} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
+import {FIELD_ADDING_IN_PROGRESS} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
 import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
 import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 
@@ -18,10 +18,10 @@ import tw from 'twrnc';
 import {Picker} from '@react-native-picker/picker';
 // import WebView from "react-native-webview";
 import AppContext from '../../../../../../AppContext';
-import Password from '../EntryFieldTypes/Edit/Password';
-import Note from '../EntryFieldTypes/Edit/Note';
-import Link from '../EntryFieldTypes/Edit/Link';
-import File from '../EntryFieldTypes/Edit/File';
+import Password from './EntryFieldTypes/Edit/Password';
+import Note from './EntryFieldTypes/Edit/Note';
+import Link from './EntryFieldTypes/Edit/Link';
+import File from './EntryFieldTypes/Edit/File';
 // import * as DocumentPicker from "react-native-document-picker";
 
 const EntryFieldAdd = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus}) => {
@@ -70,7 +70,6 @@ const EntryFieldAdd = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus}
             value = <File entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
     }
-
     const sendFormHandler = () => {
         addNewField(entryGroupId, entryId).then(
             () => {
@@ -144,7 +143,7 @@ const EntryFieldAdd = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus}
                 <View style={tw`flex flex-row justify-around w-full mt-12`}>
                     <Pressable onPress={sendFormHandler} style={addButtonStyle}>
                         <View>
-                            {addingFieldState === FIELD_ADDING_AWAIT ? (
+                            {addingFieldState !== FIELD_ADDING_IN_PROGRESS ? (
                                 <Text style={tw`text-slate-700 text-center w-full font-bold`}>ADD</Text>
                             ) : (
                                 <ActivityIndicator size="small" color="#e2e8f0" />

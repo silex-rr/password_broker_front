@@ -9,9 +9,9 @@ import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroke
 // eslint-disable-next-line max-len
 import {FIELD_EDITING_IN_PROGRESS} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
 import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
-import Password from './../EntryFieldTypes/Edit/Password';
-import Note from './../EntryFieldTypes/Edit/Note';
-import Link from './../EntryFieldTypes/Edit/Link';
+import Password from './EntryFieldTypes/Edit/Password';
+import Note from './EntryFieldTypes/Edit/Note';
+import Link from './EntryFieldTypes/Edit/Link';
 import {ActivityIndicator, Pressable, Text, TextInput, View} from 'react-native-windows';
 import tw from 'twrnc';
 import AppContext from '../../../../../../AppContext';
@@ -92,7 +92,7 @@ const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle
                     <Pressable onPress={saveClickHandler} style={addButtonStyle}>
                         <View>
                             {entryGroupFieldForEditState !== FIELD_EDITING_IN_PROGRESS ? (
-                                <Text style={tw`text-slate-700 text-center w-full font-bold`}>save changes</Text>
+                                <Text style={tw`text-slate-700 text-center w-full font-bold`}>SAVE CHANGES</Text>
                             ) : (
                                 <ActivityIndicator size="small" color="#e2e8f0" />
                             )}
