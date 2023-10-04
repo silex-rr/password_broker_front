@@ -14,7 +14,7 @@ import EntryFieldContextProvider from '../../../src_shared/passwordBroker/contex
 import EntryGroupContextProvider from '../../../src_shared/passwordBroker/contexts/EntryGroupContextProvider';
 
 const PasswordBrokerRouter = () => {
-    const {copyToClipboard} = useContext(AppContext);
+    const {copyToClipboard, writeFile} = useContext(AppContext);
     return (
         <PasswordBrokerContextProvider AppContext={AppContext}>
             <EntryGroupContextProvider
@@ -25,7 +25,8 @@ const PasswordBrokerRouter = () => {
                     File: File,
                 }}
                 EntryFieldButton={EntryFieldButton}
-                copyToClipboard={copyToClipboard}>
+                copyToClipboard={copyToClipboard}
+                writeFile={writeFile}>
                 <EntryFieldContextProvider>
                     <Routes>
                         <Route path="/entryGroup/:entryGroupId" element={<PasswordBrokerContainer />} />

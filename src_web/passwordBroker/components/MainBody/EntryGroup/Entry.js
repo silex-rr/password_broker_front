@@ -10,13 +10,16 @@ import {
 } from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldsStatus';
 import EntryFields from './EntryFields';
 import EntryContext from '../../../../../src_shared/passwordBroker/contexts/EntryContext';
+import {
+    FIELD_EDITING_AWAIT,
+    FIELD_EDITING_MODAL_SHOULD_BE_CLOSE,
+} from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
 
 const Entry = props => {
     const entryGroupId = props.entry_group_id;
     const entryId = props.entry_id;
 
-    const passwordBrokerContext = useContext(PasswordBrokerContext);
-    const {baseUrl} = passwordBrokerContext;
+    const {baseUrl, entryGroupFieldForEditState, setEntryGroupFieldForEditState} = useContext(PasswordBrokerContext);
 
     const entryContext = useContext(EntryContext);
 
@@ -30,6 +33,9 @@ const Entry = props => {
     } = entryContext;
 
     useEffect(() => {
+        if (entryGroupFieldForEditState === FIELD_EDITING_MODAL_SHOULD_BE_CLOSE) {
+            setEntryGroupFieldForEditState(FIELD_EDITING_AWAIT);
+        }
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING) {
             setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADING);
             axios.get(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields').then(response => {
@@ -37,7 +43,16 @@ const Entry = props => {
                 setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADED);
             });
         }
-    }, [entryFieldsStatus, baseUrl, entryGroupId, entryId, setEntryFieldsStatus, setEntryFieldsData]);
+    }, [
+        entryFieldsStatus,
+        baseUrl,
+        entryGroupId,
+        entryId,
+        setEntryFieldsStatus,
+        setEntryFieldsData,
+        entryGroupFieldForEditState,
+        setEntryGroupFieldForEditState,
+    ]);
 
     const EntryFieldsVisibility = () => {
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_NOT_LOADED) {

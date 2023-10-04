@@ -5,6 +5,8 @@ import MasterPasswordModal from './passwordBroker/components/MasterPasswordModal
 import {APP_TYPE_WIN} from '../src_shared/constants/AppType';
 import AppContext from './AppContext';
 import Clipboard from '@react-native-clipboard/clipboard';
+import * as RNFS from 'react-native-fs';
+import URI from 'uri-js';
 
 const AppContextProvider = props => {
     const hostURL = 'http://dev-back.jrvs.ru';
@@ -45,6 +47,28 @@ const AppContextProvider = props => {
         Clipboard.setString(text);
     };
 
+    const downloadFile = (uri, fileName = '', storageDirectory = '') => {
+        const downloadDir = RNFS.DownloadDirectoryPath;
+        if (fileName.length === 0) {
+            const {path} = URI.parse(uri);
+            fileName = path.split('/').pop();
+        }
+        return RNFS.downloadFile({
+            fromUrl: uri,
+            toFile: storageDirectory + fileName,
+        }).promise;
+    };
+
+    const writeFile = (content, fileName, fileMime = '', storageDirectory = 'D:\\\\') => {
+        storageDirectory = storageDirectory.replace('/', '\\');
+        const path =
+            storageDirectory +
+            (storageDirectory.length === 0 || storageDirectory.slice(-1) !== '\\' ? '/' : '') +
+            fileName;
+        console.log(path);
+        return RNFS.writeFile(path, content);
+    };
+
     return (
         <AppContext.Provider
             value={{
@@ -62,6 +86,9 @@ const AppContextProvider = props => {
                 closeMasterPasswordModal: closeMasterPasswordModal,
 
                 copyToClipboard: copyToClipboard,
+
+                writeFile: writeFile,
+                downloadFile: downloadFile,
             }}>
             {props.children}
         </AppContext.Provider>

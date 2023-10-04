@@ -15,7 +15,6 @@ import {
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
 } from '../constants/MainBodyEntryGroupEntryFieldTypes';
-import {stringToBlob} from '../../utils/stringToBlob';
 import {ROLE_CAN_EDIT} from '../constants/EntryGroupRole';
 import {
     FIELD_EDITING_AWAIT,
@@ -28,6 +27,7 @@ const EntryGroupContextProvider = props => {
     const {Link, Password, Note, File} = props.entryFieldTypes;
     const EntryFieldButton = props.EntryFieldButton;
     const copy = props.copyToClipboard;
+    const writeFile = props.writeFile;
 
     const {
         masterPassword,
@@ -172,16 +172,19 @@ const EntryGroupContextProvider = props => {
         };
 
         const handleDownload = () => {
+            console.log('downloading');
             loadDecryptedValue(decoded => {
-                const blob = stringToBlob(decoded, fileMime);
-                const href = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = href;
-                link.setAttribute('download', fileName);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(href);
+                console.log('decoded');
+                writeFile(decoded, fileName, fileMime);
+                // const blob = stringToBlob(decoded, fileMime);
+                // const href = URL.createObjectURL(blob);
+                // const link = document.createElement('a');
+                // link.href = href;
+                // link.setAttribute('download', fileName);
+                // document.body.appendChild(link);
+                // link.click();
+                // document.body.removeChild(link);
+                // URL.revokeObjectURL(href);
             }, 'download');
         };
 

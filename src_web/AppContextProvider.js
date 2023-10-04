@@ -1,6 +1,7 @@
 import React, {useRef, useState} from 'react';
 import {APP_TYPE_WEB} from '../src_shared/constants/AppType';
 import AppContext from './AppContext';
+import {stringToBlob} from '../src_shared/utils/stringToBlob';
 
 const AppContextProvider = props => {
     const masterPasswordModalVisibilityCheckboxRef = useRef();
@@ -31,6 +32,18 @@ const AppContextProvider = props => {
         masterPasswordModalVisibilityError.text = '';
     };
 
+    const writeFile = (content, fileName, fileMime = '', storageDirectory = '') => {
+        const blob = stringToBlob(content, fileMime);
+        const href = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = href;
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+    };
+
     return (
         <AppContext.Provider
             value={{
@@ -42,6 +55,8 @@ const AppContextProvider = props => {
                 masterPasswordModalVisibilityErrorRef: masterPasswordModalVisibilityErrorRef,
                 masterPasswordModalIsVisible: masterPasswordModalIsVisible,
                 setMasterPasswordModalIsVisible: setMasterPasswordModalIsVisible,
+
+                writeFile: writeFile,
             }}>
             {props.children}
         </AppContext.Provider>
