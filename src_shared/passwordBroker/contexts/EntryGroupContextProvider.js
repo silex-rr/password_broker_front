@@ -172,9 +172,7 @@ const EntryGroupContextProvider = props => {
         };
 
         const handleDownload = () => {
-            console.log('downloading');
             loadDecryptedValue(decoded => {
-                console.log('decoded');
                 writeFile(decoded, fileName, fileMime);
                 // const blob = stringToBlob(decoded, fileMime);
                 // const href = URL.createObjectURL(blob);

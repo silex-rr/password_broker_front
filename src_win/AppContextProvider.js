@@ -5,9 +5,10 @@ import MasterPasswordModal from './passwordBroker/components/MasterPasswordModal
 import {APP_TYPE_WIN} from '../src_shared/constants/AppType';
 import AppContext from './AppContext';
 import Clipboard from '@react-native-clipboard/clipboard';
-import * as RNFS from 'react-native-fs';
+//import * as RNFS from 'react-native-fs';
+import * as RNFS from '@dr.pogodin/react-native-fs';
 import URI from 'uri-js';
-
+//    "react-native-fs": "github:silex-rr/react-native-fs#dev",
 const AppContextProvider = props => {
     const hostURL = 'http://dev-back.jrvs.ru';
     const [modalContent, setModalContent] = useState(<View />);
@@ -48,7 +49,9 @@ const AppContextProvider = props => {
     };
 
     const downloadFile = (uri, fileName = '', storageDirectory = '') => {
-        const downloadDir = RNFS.DownloadDirectoryPath;
+        if (storageDirectory === '') {
+            storageDirectory = RNFS.DownloadDirectoryPath;
+        }
         if (fileName.length === 0) {
             const {path} = URI.parse(uri);
             fileName = path.split('/').pop();
@@ -59,11 +62,14 @@ const AppContextProvider = props => {
         }).promise;
     };
 
-    const writeFile = (content, fileName, fileMime = '', storageDirectory = 'D:\\\\') => {
-        storageDirectory = storageDirectory.replace('/', '\\');
+    const writeFile = (content, fileName, fileMime = '', storageDirectory = '') => {
+        if (storageDirectory === '') {
+            storageDirectory = RNFS.DocumentDirectoryPath; //RNFS.DownloadDirectoryPath;
+        }
+        // storageDirectory = storageDirectory.replace('/', '\\');
         const path =
             storageDirectory +
-            (storageDirectory.length === 0 || storageDirectory.slice(-1) !== '\\' ? '/' : '') +
+            (storageDirectory.length === 0 || storageDirectory.slice(-1) !== '\\' ? '\\' : '') +
             fileName;
         console.log(path);
         return RNFS.writeFile(path, content);
