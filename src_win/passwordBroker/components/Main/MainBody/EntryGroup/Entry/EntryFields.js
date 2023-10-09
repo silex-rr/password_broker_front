@@ -56,12 +56,12 @@ const EntryFields = ({
         const fieldTitleDefault = field.title;
         const fieldLoginDefault = fieldTypeDefault !== FIELD_TYPE_PASSWORD ? '' : field.login;
         const fieldValueDefault = entryGroupFieldForEditDecryptedValue;
+        beforeModalOpen();
 
         if (fieldTypeDefault !== addingFieldType) {
             changeType(fieldTypeDefault);
         }
 
-        beforeModalOpen();
         changeValue(fieldValueDefault);
         changeTitle(fieldTitleDefault);
         changeLogin(fieldLoginDefault);
