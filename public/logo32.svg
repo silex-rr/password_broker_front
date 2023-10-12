@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="84.687943mm"
+   height="89.44046mm"
+   viewBox="0 0 84.687943 89.44046"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="logo32.svg"
+   inkscape:export-filename="logo32.png"
+   inkscape:export-xdpi="9.0876102"
+   inkscape:export-ydpi="9.0876102"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     showborder="false"
+     showgrid="false"
+     inkscape:zoom="0.5"
+     inkscape:cx="130"
+     inkscape:cy="417"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="-235.85757"
+       originy="-384.8269"
+       spacingx="0.26458333"
+       spacingy="0.26458334"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       dotted="false"
+       gridanglex="30"
+       gridanglez="30"
+       visible="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-62.403982,-101.81878)">
+    <g
+       id="path2"
+       transform="matrix(1.1794852,0,0,1.200768,-53.587964,-7.229156)"
+       style="fill:#4d4d4d;stroke:#000000;stroke-width:2.64583;stroke-opacity:0.504386">
+      <g
+         id="path10"
+         transform="matrix(1.0530633,0,0,1.0332708,-4.5248352,-33.061633)"
+         style="fill:#475569;fill-opacity:1;stroke:#0f172a;stroke-opacity:0.505882"
+         inkscape:export-filename="logo32.svg"
+         inkscape:export-xdpi="9.0876102"
+         inkscape:export-ydpi="9.0876102">
+        <path
+           style="color:#000000;fill:#475569;fill-opacity:1;stroke:#0f172a;stroke-opacity:0.505882;-inkscape-stroke:none"
+           d="m 131.79167,122.53413 a 83.413178,82.295552 0 0 0 -31.37247,6.23046 83.413178,82.295552 0 0 0 30.76122,59.8487 83.413178,82.295552 0 0 0 31.93159,-60.04212 83.413178,82.295552 0 0 0 -31.32034,-6.03704 z"
+           id="path5" />
+        <path
+           style="color:#000000;fill:#475569;fill-opacity:1;stroke:#0f172a;stroke-opacity:0.505882;-inkscape-stroke:none"
+           d="m 131.78516,121.21094 c -10.93551,0.0606 -21.75674,2.20926 -31.865238,6.32812 l -0.869141,0.35547 0.04687,0.93555 c 1.188779,23.73507 12.557419,45.85085 31.255859,60.8164 l 0.81054,0.64844 0.82422,-0.63281 c 19.19416,-14.78783 31.01648,-37.01659 32.44336,-61.01172 l 0.0566,-0.95312 -0.88476,-0.35352 c -10.10555,-4.04496 -20.90595,-6.12785 -31.81055,-6.13281 h -0.004 z m 0.006,2.64648 h 0.008 c 10.2326,0.006 20.35899,1.93648 29.88086,5.61524 -1.61717,22.48828 -12.65666,43.26925 -30.48242,57.38476 -17.35643,-14.27469 -27.97137,-34.9474 -29.35743,-57.19336 9.53126,-3.75273 19.68248,-5.74878 29.95118,-5.80664 z"
+           id="path4" />
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:28.5746px;font-family:Kirsty;-inkscape-font-specification:'Kirsty, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#b8c3d4;fill-opacity:1;stroke:none;stroke-width:23.8124;stroke-dasharray:none;stroke-opacity:0.504386"
+         x="143.07469"
+         y="112.12939"
+         id="text15"
+         transform="scale(0.83106626,1.2032735)"><tspan
+           sodipodi:role="line"
+           id="tspan15"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:28.5746px;font-family:Kirsty;-inkscape-font-specification:'Kirsty, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#b8c3d4;fill-opacity:1;stroke:none;stroke-width:23.8124;stroke-dasharray:none"
+           x="143.07469"
+           y="112.12939">PB</tspan></text>
+    </g>
+  </g>
+</svg>
