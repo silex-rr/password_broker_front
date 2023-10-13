@@ -20,6 +20,7 @@ namespace winrt::PasswordBroker::implementation
 /// </summary>
 App::App() noexcept
 {
+//Comment next line and else block for compile standalone APP
 #if BUNDLE
     JavaScriptBundleFile(L"index.windows");
     InstanceSettings().UseWebDebugger(false);
