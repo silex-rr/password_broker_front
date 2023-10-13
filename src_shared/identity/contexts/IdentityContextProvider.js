@@ -5,6 +5,7 @@ import {LOADING, LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM} from '../constants/AuthSt
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import IdentityContext from './IdentityContext';
+import {useNavigate} from 'react-router-dom';
 
 const IdentityContextProvider = props => {
     const getAppUUId = props.getAppUUId
@@ -32,6 +33,7 @@ const IdentityContextProvider = props => {
     const [authMode, setAuthMode] = useState(props.tokenMode ? AUTH_MODE_BEARER_TOKEN : AUTH_MODE_COOKIE);
     const [hostURL, setHostURL] = useState(hostURLDefault);
     const [authLoginStatus, setAuthLoginStatus] = useState(AUTH_LOGIN_AWAIT);
+    const navigate = useNavigate();
 
     const changeAuthMode = newAuthMode => {
         if (![AUTH_MODE_BEARER_TOKEN, AUTH_MODE_COOKIE].includes(newAuthMode)) {
@@ -175,8 +177,6 @@ const IdentityContextProvider = props => {
             return;
         }
 
-        setAuthLoginStatus(AUTH_LOGIN_IN_PROCESS);
-
         const errorMessages = [];
         if (hostURL === '') {
             errorMessages.push('Field: Server URL should be filled in');
@@ -191,6 +191,9 @@ const IdentityContextProvider = props => {
             setErrorMessage(errorMessages.join('\r\n'));
             return;
         }
+        setErrorMessage('');
+        setAuthLoginStatus(AUTH_LOGIN_IN_PROCESS);
+
         CSRF().then(
             () => {
                 // console.log('.login')
@@ -205,9 +208,10 @@ const IdentityContextProvider = props => {
                     })
                     .then(
                         () => {
-                            // console.log('login', response)
+                            console.log('logged');
                             setAuthLoginStatus(AUTH_LOGIN_AWAIT);
-                            getUser();
+                            setAuthStatus('');
+                            navigate('/identity/loading');
                         },
                         // LOGIN ERROR
                         error => {
@@ -220,9 +224,14 @@ const IdentityContextProvider = props => {
                         },
                     );
             },
-            // COOKIE ERROR
-            () => {
+            // COOKIE ERROR{
+            error => {
                 setAuthLoginStatus(AUTH_LOGIN_AWAIT);
+                console.log('csrf', error);
+                if (error.code === 'ERR_NETWORK') {
+                    setErrorMessage('Cannot establish connection with ' + hostURL);
+                    return;
+                }
                 setErrorMessage('Could not complete the login');
             },
         );
@@ -238,7 +247,7 @@ const IdentityContextProvider = props => {
         });
     };
 
-    async function logout(navigate) {
+    async function logout(navigateFn) {
         axios.get(hostURL + '/identity/api/logout').then(() => {
             if (authMode === AUTH_MODE_COOKIE) {
                 Cookies.remove('XSRF-TOKEN');
@@ -253,7 +262,7 @@ const IdentityContextProvider = props => {
             setUserEmail('');
             setUserPassword('');
             setAuthStatus('');
-            navigate('/');
+            navigateFn('/');
         });
     }
 
@@ -291,6 +300,7 @@ const IdentityContextProvider = props => {
             },
             error => {
                 console.log('identityContext.getUser error', error);
+                navigate('/identity/login');
             },
         );
     };
