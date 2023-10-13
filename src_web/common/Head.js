@@ -8,6 +8,7 @@ import {
     MASTER_PASSWORD_VALIDATED,
 } from '../../src_shared/passwordBroker/constants/MasterPasswordStates';
 import {MdOutlineKey, MdOutlineKeyOff} from 'react-icons/md';
+import {Link} from 'react-router-dom';
 
 const Head = () => {
     const identityContext = useContext(IdentityContext);
@@ -58,14 +59,14 @@ const Head = () => {
     return (
         <header className="px16 flex w-full flex-row justify-between bg-slate-700 text-slate-300">
             <div className="flex justify-start px-5 py-2">
-                <a href="/" className="btn btn-ghost text-3xl normal-case">
+                <Link to="/" className="btn btn-ghost text-3xl normal-case">
                     PasswordBroker
-                </a>
+                </Link>
             </div>
             <nav className="flex justify-end px-5">
                 <ul className="menu menu-horizontal flex self-center p-0 align-middle font-bold">
                     <li>
-                        <a href="/admin/">Admin Panel</a>
+                        <Link to={'/admin'}>Admin Panel</Link>
                     </li>
                     <li className="" onClick={masterPasswordIconClickHandler}>
                         {masterPasswordIcon}
@@ -74,7 +75,7 @@ const Head = () => {
                         <span>{userName}</span>
                     </li>
                     <li className="px-2">
-                        <a href="/identity/logout">logout</a>
+                        <Link to={'/identity/logout'}>logout</Link>
                     </li>
                 </ul>
             </nav>
