@@ -8,8 +8,8 @@
 
   <Identity
     Name="1275fdff-dc2d-48aa-9d9e-b2c1a5c591ee"
-    Publisher="CN=silex"
-    Version="1.0.0.0" />
+    Publisher="CN=BLSV"
+    Version="1.0.3.0" />
 
   <mp:PhoneIdentity PhoneProductId="1275fdff-dc2d-48aa-9d9e-b2c1a5c591ee" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

@@ -10,7 +10,7 @@ import {Navigate, useLocation} from 'react-router-native';
 import {Text, View} from 'react-native-windows';
 import tw from 'twrnc';
 
-const AuthLoading = ({children}) => {
+const AuthLoading = () => {
     const location = useLocation();
     const identityContext = useContext(IdentityContext);
 
@@ -24,13 +24,14 @@ const AuthLoading = ({children}) => {
             getUser(location);
         }
     }, [authStatus, getUser, location]);
-
+    console.log(authStatus);
     switch (authStatus) {
         case LOGGED_IN:
             let path = '/';
             if (location?.state?.from?.pathname) {
                 path = location.state.from.pathname;
             }
+            console.log(path);
             return <Navigate to={path} replace={true} />;
         case LOG_IN_FORM:
             return <Navigate to="/identity/login" replace={true} />;

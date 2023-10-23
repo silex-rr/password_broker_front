@@ -3,6 +3,9 @@
 #include "pch.h"
 #include "AutolinkedNativeModules.g.h"
 
+// Includes from @dr.pogodin/react-native-fs
+#include <winrt/ReactNativeFs.h>
+
 // Includes from @react-native-async-storage/async-storage
 #include <winrt/ReactNativeAsyncStorage.h>
 
@@ -12,22 +15,19 @@
 // Includes from @react-native-picker/picker
 #include <winrt/ReactNativePicker.h>
 
-// Includes from @dr.pogodin/react-native-fs
-#include <winrt/ReactNativeFs.h>
-
 namespace winrt::Microsoft::ReactNative
 {
 
 void RegisterAutolinkedNativeModulePackages(winrt::Windows::Foundation::Collections::IVector<winrt::Microsoft::ReactNative::IReactPackageProvider> const& packageProviders)
 { 
+    // IReactPackageProviders from @dr.pogodin/react-native-fs
+    packageProviders.Append(winrt::ReactNativeFs::ReactPackageProvider());
     // IReactPackageProviders from @react-native-async-storage/async-storage
     packageProviders.Append(winrt::ReactNativeAsyncStorage::ReactPackageProvider());
     // IReactPackageProviders from @react-native-clipboard/clipboard
     packageProviders.Append(winrt::NativeClipboard::ReactPackageProvider());
     // IReactPackageProviders from @react-native-picker/picker
     packageProviders.Append(winrt::ReactNativePicker::ReactPackageProvider());
-    // IReactPackageProviders from @dr.pogodin/react-native-fs
-    packageProviders.Append(winrt::ReactNativeFs::ReactPackageProvider());
 }
 
 }

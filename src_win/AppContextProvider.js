@@ -1,27 +1,27 @@
 import React, {useState} from 'react';
 import {View} from 'react-native-windows';
-import {appUUIDFromStorage} from '../src_shared/utils/native/appUUIDFromStorage';
+import {appClientIdFromStorage} from '../src_shared/utils/native/appClientIdFromStorage';
 import MasterPasswordModal from './passwordBroker/components/MasterPasswordModal';
 import {APP_TYPE_WIN} from '../src_shared/constants/AppType';
 import AppContext from './AppContext';
 import Clipboard from '@react-native-clipboard/clipboard';
-//import * as RNFS from 'react-native-fs';
-import * as RNFS from '@dr.pogodin/react-native-fs';
+import * as RNFS from '@dr.pogodin/react-native-fs'; //'react-native-fs';
 import URI from 'uri-js';
-//    "react-native-fs": "github:silex-rr/react-native-fs#dev",
+import {OfflineDatabaseService} from '../src_shared/utils/native/OfflineDatabaseService';
 const AppContextProvider = props => {
     const hostURL = 'http://dev-back.jrvs.ru';
     const [modalContent, setModalContent] = useState(<View />);
     const [modalStyle, setModalStyle] = useState({});
     const [modalVisible, setModalVisible] = useState(false);
-    const [appUUID, setAppUUID] = useState(null);
+    const [clientId, setClientId] = useState(null);
+    const offlineDatabaseService = new OfflineDatabaseService();
 
-    const getAppUUId = async () => {
-        if (appUUID) {
-            return appUUID;
+    const getClientId = async () => {
+        if (clientId) {
+            return clientId;
         }
-        const uuid = await appUUIDFromStorage();
-        setAppUUID(uuid);
+        const uuid = await appClientIdFromStorage();
+        setClientId(uuid);
 
         return uuid;
     };
@@ -71,7 +71,7 @@ const AppContextProvider = props => {
             storageDirectory +
             (storageDirectory.length === 0 || storageDirectory.slice(-1) !== '\\' ? '\\' : '') +
             fileName;
-        console.log(path);
+        // console.log(path);
         return RNFS.writeFile(path, content);
     };
 
@@ -86,7 +86,7 @@ const AppContextProvider = props => {
                 modalVisible: modalVisible,
                 modalShow: modalShow,
                 modalClose: modalClose,
-                getAppUUId: getAppUUId,
+                getClientId: getClientId,
 
                 showMasterPasswordModal: showMasterPasswordModal,
                 closeMasterPasswordModal: closeMasterPasswordModal,
@@ -95,6 +95,8 @@ const AppContextProvider = props => {
 
                 writeFile: writeFile,
                 downloadFile: downloadFile,
+
+                offlineDatabaseService,
             }}>
             {props.children}
         </AppContext.Provider>

@@ -8,8 +8,8 @@ import IdentityContext from './IdentityContext';
 import {useNavigate} from 'react-router-dom';
 
 const IdentityContextProvider = props => {
-    const getAppUUId = props.getAppUUId
-        ? props.getAppUUId
+    const getClientId = props.getClientId
+        ? props.getClientId
         : async () => {
               return '';
           };
@@ -134,10 +134,10 @@ const IdentityContextProvider = props => {
     };
 
     const getUserToken = async login => {
-        const appUUID = await getAppUUId();
+        const clientId = await getClientId();
         axios
             .post(hostURL + '/identity/api/token', {
-                token_name: appUUID,
+                token_name: clientId,
             })
             .then(
                 response => {
@@ -208,7 +208,7 @@ const IdentityContextProvider = props => {
                     })
                     .then(
                         () => {
-                            console.log('logged');
+                            console.log('login', 'logged');
                             setAuthLoginStatus(AUTH_LOGIN_AWAIT);
                             setAuthStatus('');
                             navigate('/identity/loading');

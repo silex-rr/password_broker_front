@@ -17,9 +17,14 @@ import {ENTRY_GROUP_MENU_MAIN} from '../constants/EntryGroupMenu';
 import {MASTER_PASSWORD_FILLED_IN, MASTER_PASSWORD_IS_EMPTY} from '../constants/MasterPasswordStates';
 import axios from 'axios';
 import PasswordBrokerContext from './PasswordBrokerContext';
+import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 
 const PasswordBrokerContextProvider = props => {
     const AppContext = props.AppContext;
+    /**
+     * @var {OfflineDatabaseService} offlineDatabaseService
+     */
+    const offlineDatabaseService = props.offlineDatabaseService ? props.offlineDatabaseService : null;
 
     const {hostURL, showMasterPasswordModal} = useContext(AppContext);
     const baseUrl = hostURL + '/passwordBroker/api';
@@ -54,6 +59,47 @@ const PasswordBrokerContextProvider = props => {
 
     const handleMoveEntryGroupMode = () => {
         setMoveEntryGroupMode(!moveEntryGroupMode);
+    };
+
+    /**
+     * @param {AppToken} AppToken
+     */
+    const updateOfflineDatabase = AppToken => {
+        axios.get(baseUrl + '/entryGroupsWithFields').then(
+            response => {
+                offlineDatabaseService.saveDatabaseByToken(AppToken, response).then(
+                    () => {
+                        console.log('offline DB saved');
+                    },
+                    () => {
+                        console.log('offline DB saving is failed');
+                    },
+                );
+            },
+            error => {
+                console.log(error);
+            },
+        );
+    };
+    /**
+     * @param {AppToken} AppToken
+     */
+    const updateOfflineDatabaseKey = AppToken => {
+        axios.get(hostURL + '/identity/api/getPrivateRsa').then(
+            response => {
+                offlineDatabaseService.saveKeyByToken(AppToken, response).then(
+                    () => {
+                        console.log('offline DB Key saved');
+                    },
+                    () => {
+                        console.log('offline DB Key saving is failed');
+                    },
+                );
+            },
+            error => {
+                console.log(error);
+            },
+        );
     };
 
     const loadEntryGroupTrees = () => {
@@ -250,6 +296,9 @@ const PasswordBrokerContextProvider = props => {
                 setMoveEntryGroupMode: setMoveEntryGroupMode,
                 handleMoveEntryGroupMode: handleMoveEntryGroupMode,
                 AppContext: AppContext,
+
+                updateOfflineDatabase: updateOfflineDatabase,
+                updateOfflineDatabaseKey: updateOfflineDatabaseKey,
             }}>
             {props.children}
         </PasswordBrokerContext.Provider>

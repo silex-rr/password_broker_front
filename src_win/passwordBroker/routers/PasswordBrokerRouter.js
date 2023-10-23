@@ -14,9 +14,9 @@ import EntryFieldContextProvider from '../../../src_shared/passwordBroker/contex
 import EntryGroupContextProvider from '../../../src_shared/passwordBroker/contexts/EntryGroupContextProvider';
 
 const PasswordBrokerRouter = () => {
-    const {copyToClipboard, writeFile} = useContext(AppContext);
+    const {copyToClipboard, writeFile, offlineDatabaseService} = useContext(AppContext);
     return (
-        <PasswordBrokerContextProvider AppContext={AppContext}>
+        <PasswordBrokerContextProvider AppContext={AppContext} offlineDatabaseService={offlineDatabaseService}>
             <EntryGroupContextProvider
                 entryFieldTypes={{
                     Link: Link,

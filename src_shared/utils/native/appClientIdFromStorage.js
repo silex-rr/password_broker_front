@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {v4 as UUIDv4, validate} from 'uuid';
-export const appUUIDFromStorage = async () => {
-    const uuid_key = 'APPLICATION_UUID';
+export const appClientIdFromStorage = async () => {
+    const uuid_key = 'CLIENT_ID';
     let uuid = null;
     try {
         uuid = await AsyncStorage.getItem(uuid_key);
