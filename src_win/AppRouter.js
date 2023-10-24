@@ -4,12 +4,11 @@ import PasswordBrokerRouter from './passwordBroker/routers/PasswordBrokerRouter'
 import IdentityRouter from './identity/routers/IdentityRouter';
 import React, {useContext} from 'react';
 import AppContext from './AppContext';
-import {AppTokensService} from '../src_shared/utils/native/AppTokensService';
 import IdentityContextProvider from '../src_shared/identity/contexts/IdentityContextProvider';
 import UserApplicationContextProvider from '../src_shared/identity/contexts/UserApplicationContextProvider';
 
 const AppRouter = () => {
-    const {hostURL, getClientId} = useContext(AppContext);
+    const {hostURL, getClientId, offlineDatabaseService, appTokensService} = useContext(AppContext);
 
     return (
         <NativeRouter>
@@ -17,8 +16,11 @@ const AppRouter = () => {
                 hostURL={hostURL}
                 tokenMode={true}
                 getClientId={getClientId}
-                AppTokensService={new AppTokensService()}>
-                <UserApplicationContextProvider getClientId={getClientId} hostURL={hostURL}>
+                appTokensService={appTokensService}>
+                <UserApplicationContextProvider
+                    getClientId={getClientId}
+                    hostURL={hostURL}
+                    offlineDatabaseService={offlineDatabaseService}>
                     <Routes>
                         <Route
                             path={'/*'}

@@ -106,9 +106,15 @@ export class OfflineDatabaseService {
         }
         this.loadedDatabaseName = databaseName;
         this.databaseStatus = this.constructor.STATUS_LOADING;
-        const database = await AsyncStorage.getItem(databaseName);
+        let database = '';
+        try {
+            database = await AsyncStorage.getItem(databaseName);
+        } catch (error) {
+            this.databaseStatus = this.constructor.STATUS_CORRUPTED;
+            return;
+        }
         if (this.loadedDatabaseName !== databaseName) {
-            //Another loading has been started
+            //Another loading is working
             return;
         }
         if (database === null) {

@@ -13,10 +13,6 @@ import tw from 'twrnc';
 const AuthLoading = () => {
     const location = useLocation();
     const identityContext = useContext(IdentityContext);
-
-    /**
-     * @var AppTokenService appTokensService
-     */
     const {getUser, authStatus} = identityContext;
 
     useEffect(() => {

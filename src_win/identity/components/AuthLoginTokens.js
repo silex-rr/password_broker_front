@@ -16,7 +16,7 @@ const AuthLoginTokens = ({tokens, setTokens}) => {
             // console.log('login by token', tokens[i].token)
             changeAuthStatusLoading();
             navigate('/identity/loading', location);
-            loginByToken(tokens[i].token);
+            loginByToken(tokens[i]);
             // return (<Navigate to="/identity/loading" replace />)
         };
         const remove = () => {

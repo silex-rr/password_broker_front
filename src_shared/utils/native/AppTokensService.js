@@ -76,7 +76,6 @@ export class AppTokensService {
         // console.log('set', appTokens, appToken, appToken.url, appToken.login, appToken.token)
         await this.load(true);
     }
-
     async addTokenByParams(login, url, token) {
         await this.addToken(new AppToken(login, url, token));
     }

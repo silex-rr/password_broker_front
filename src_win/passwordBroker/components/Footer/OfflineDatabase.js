@@ -4,47 +4,64 @@ import React, {useContext, useEffect} from 'react';
 import tw from 'twrnc';
 import UserApplicationContext from '../../../../src_shared/identity/contexts/UserApplicationContext';
 import {
-    OFFLINE_DATABASE_MODE_AWAIT,
-    OFFLINE_DATABASE_MODE_DISABLE,
-    OFFLINE_DATABASE_MODE_ENABLE,
-    OFFLINE_DATABASE_MODE_LOADING,
-    OFFLINE_DATABASE_MODE_UPDATING,
-} from '../../../../src_shared/identity/constants/OfflineDatabaseModeStates';
+    OFFLINE_DATABASE_SYNC_MODE_AWAIT,
+    OFFLINE_DATABASE_SYNC_MODE_DISABLE,
+    OFFLINE_DATABASE_SYNC_MODE_ENABLE,
+    OFFLINE_DATABASE_SYNC_MODE_LOADING,
+    OFFLINE_DATABASE_SYNC_MODE_UPDATING,
+} from '../../../../src_shared/identity/constants/OfflineDatabaseSyncModeStates';
 import {
     APPLICATION_ERROR,
     APPLICATION_LOADED,
     APPLICATION_LOADING,
     APPLICATION_NOT_LOADED,
 } from '../../../../src_shared/identity/constants/ApplicationStates';
+import {
+    DATABASE_MODE_OFFLINE,
+    DATABASE_MODE_ONLINE,
+} from '../../../../src_shared/identity/constants/DatabaseModeStates';
 
 const OfflineDatabase = () => {
     const {
         applicationIdState,
-        offlineDatabaseMode,
+        offlineDatabaseSyncMode,
+        databaseMode,
 
         loadUserApplication,
-        getOfflineDatabaseMode,
-        enableOfflineDatabaseMode,
-        disableOfflineDatabaseMode,
+        getOfflineDatabaseSyncMode,
+        enableOfflineDatabaseSyncMode,
+        disableOfflineDatabaseSyncMode,
         reloadApplication,
+        switchDatabaseToOffline,
+        switchDatabaseToOnline,
     } = useContext(UserApplicationContext);
 
-    const toggleIcon =
-        offlineDatabaseMode === OFFLINE_DATABASE_MODE_ENABLE ? 'toggle-switch' : 'toggle-switch-off-outline';
+    const toggleSyncIcon =
+        offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? 'toggle-switch' : 'toggle-switch-off-outline';
+    const toggleIsOfflineIcon = databaseMode === DATABASE_MODE_OFFLINE ? 'toggle-switch' : 'toggle-switch-off-outline';
     const iconSize = 21;
-    const iconColor = offlineDatabaseMode === OFFLINE_DATABASE_MODE_ENABLE ? '#61e635' : '#CCCCCC';
+    const iconSyncColor = offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? '#61e635' : '#CCCCCC';
+    const iconDatabaseIsOfflineColor = databaseMode === DATABASE_MODE_OFFLINE ? '#61e635' : '#CCCCCC';
 
     const offlineSyncModePressHandles = () => {
-        switch (offlineDatabaseMode) {
-            case OFFLINE_DATABASE_MODE_ENABLE:
-                disableOfflineDatabaseMode();
+        switch (offlineDatabaseSyncMode) {
+            case OFFLINE_DATABASE_SYNC_MODE_ENABLE:
+                disableOfflineDatabaseSyncMode();
                 break;
-            case OFFLINE_DATABASE_MODE_DISABLE:
-                enableOfflineDatabaseMode();
+            case OFFLINE_DATABASE_SYNC_MODE_DISABLE:
+                enableOfflineDatabaseSyncMode();
                 break;
             default:
             //
         }
+    };
+
+    const toggleDatabaseMode = () => {
+        if (databaseMode === DATABASE_MODE_ONLINE) {
+            switchDatabaseToOffline();
+            return;
+        }
+        switchDatabaseToOnline();
     };
 
     const reloadApplicationPressHandler = () => {
@@ -59,16 +76,16 @@ const OfflineDatabase = () => {
             return;
         }
 
-        if (offlineDatabaseMode !== OFFLINE_DATABASE_MODE_AWAIT) {
+        if (offlineDatabaseSyncMode !== OFFLINE_DATABASE_SYNC_MODE_AWAIT) {
             return;
         }
-        getOfflineDatabaseMode();
-    }, [offlineDatabaseMode, getOfflineDatabaseMode, applicationIdState, loadUserApplication]);
+        getOfflineDatabaseSyncMode();
+    }, [offlineDatabaseSyncMode, getOfflineDatabaseSyncMode, applicationIdState, loadUserApplication]);
 
     if (
         applicationIdState === APPLICATION_LOADING ||
-        offlineDatabaseMode === OFFLINE_DATABASE_MODE_LOADING ||
-        offlineDatabaseMode === OFFLINE_DATABASE_MODE_UPDATING
+        offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_LOADING ||
+        offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_UPDATING
     ) {
         return (
             <View style={tw`flex flex-row justify-between items-start`}>
@@ -99,11 +116,11 @@ const OfflineDatabase = () => {
         <View style={tw`flex flex-row justify-between items-start`}>
             <Text style={tw``}>Sync Offline:</Text>
             <Text style={tw`pl-1`} onPress={offlineSyncModePressHandles}>
-                <MaterialCommunityIcons name={toggleIcon} size={iconSize} color={iconColor} />
+                <MaterialCommunityIcons name={toggleSyncIcon} size={iconSize} color={iconSyncColor} />
             </Text>
             <Text style={tw`pl-2`}>Offline mode:</Text>
-            <Text style={tw`pl-1`}>
-                <MaterialCommunityIcons name={toggleIcon} size={iconSize} color={iconColor} />
+            <Text style={tw`pl-1`} onPress={toggleDatabaseMode}>
+                <MaterialCommunityIcons name={toggleIsOfflineIcon} size={iconSize} color={iconDatabaseIsOfflineColor} />
             </Text>
         </View>
     );

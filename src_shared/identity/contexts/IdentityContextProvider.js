@@ -6,6 +6,9 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import IdentityContext from './IdentityContext';
 import {useNavigate} from 'react-router-dom';
+// eslint-disable-next-line no-unused-vars
+import {AppTokensService} from '../../utils/native/AppTokensService';
+import {AppToken} from '../../utils/native/AppToken';
 
 const IdentityContextProvider = props => {
     const getClientId = props.getClientId
@@ -13,7 +16,10 @@ const IdentityContextProvider = props => {
         : async () => {
               return '';
           };
-    const appTokensService = props.AppTokensService ? props.AppTokensService : null;
+    /**
+     * @var {AppTokensService} appTokensService
+     */
+    const appTokensService = props.appTokensService ? props.appTokensService : null;
 
     let hostURLDefault = '';
     if (props.hostURL) {
@@ -30,6 +36,10 @@ const IdentityContextProvider = props => {
     const [userEmail, setUserEmail] = useState('');
     const [userPassword, setUserPassword] = useState('');
     const [userToken, setUserToken] = useState('');
+    /**
+     * @var {AppToken} userAppToken
+     */
+    const [userAppToken, setUserAppToken] = useState(null);
     const [authMode, setAuthMode] = useState(props.tokenMode ? AUTH_MODE_BEARER_TOKEN : AUTH_MODE_COOKIE);
     const [hostURL, setHostURL] = useState(hostURLDefault);
     const [authLoginStatus, setAuthLoginStatus] = useState(AUTH_LOGIN_AWAIT);
@@ -120,9 +130,13 @@ const IdentityContextProvider = props => {
             },
         );
     };
-    const activateUserToken = token => {
-        setUserToken(token);
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+    /**
+     * @param {AppToken} appToken
+     */
+    const activateUserToken = appToken => {
+        setUserToken(appToken.token);
+        setUserAppToken(appToken);
+        axios.defaults.headers.common.Authorization = `Bearer ${appToken.token}`;
         // axios.interceptors.request.use((config) => {
         //     config.headers = {...config.headers, Authorization: `Bearer ${token}`}
         // })
@@ -142,8 +156,9 @@ const IdentityContextProvider = props => {
             .then(
                 response => {
                     const token = response.data.token;
-                    appTokensService.addTokenByParams(login, hostURL, token);
-                    activateUserToken(token);
+                    const appToken = new AppToken(login, hostURL, token);
+                    appTokensService.addToken(appToken);
+                    activateUserToken(appToken);
                     // console.log(response)
                     setAuthStatus(LOGGED_IN);
                     // console.log('cookies', Cookies.get())
@@ -237,9 +252,12 @@ const IdentityContextProvider = props => {
         );
     };
 
-    const loginByToken = token => {
+    /**
+     * @param {AppToken} appToken
+     */
+    const loginByToken = appToken => {
         // console.log('aad')
-        activateUserToken(token);
+        activateUserToken(appToken);
         // console.log(axios)
         CSRF().then(() => {
             // console.log('csrf getUser')
@@ -329,6 +347,7 @@ const IdentityContextProvider = props => {
     return (
         <IdentityContext.Provider
             value={{
+                userAppToken,
                 authStatus,
                 changeAuthStatusLogin,
                 changeAuthStatusSignup,

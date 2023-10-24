@@ -8,6 +8,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import * as RNFS from '@dr.pogodin/react-native-fs'; //'react-native-fs';
 import URI from 'uri-js';
 import {OfflineDatabaseService} from '../src_shared/utils/native/OfflineDatabaseService';
+import {AppTokensService} from '../src_shared/utils/native/AppTokensService';
 const AppContextProvider = props => {
     const hostURL = 'http://dev-back.jrvs.ru';
     const [modalContent, setModalContent] = useState(<View />);
@@ -15,6 +16,7 @@ const AppContextProvider = props => {
     const [modalVisible, setModalVisible] = useState(false);
     const [clientId, setClientId] = useState(null);
     const offlineDatabaseService = new OfflineDatabaseService();
+    const appTokensService = new AppTokensService();
 
     const getClientId = async () => {
         if (clientId) {
@@ -97,6 +99,7 @@ const AppContextProvider = props => {
                 downloadFile: downloadFile,
 
                 offlineDatabaseService,
+                appTokensService,
             }}>
             {props.children}
         </AppContext.Provider>
