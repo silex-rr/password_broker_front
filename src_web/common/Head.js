@@ -60,6 +60,7 @@ const Head = () => {
         <header className="px16 flex w-full flex-row justify-between bg-slate-700 text-slate-300">
             <div className="flex justify-start px-5 py-2">
                 <Link to="/" className="btn btn-ghost text-3xl normal-case">
+                    <img src="/logo/favicon_128_128.png" className="h-8" />
                     PasswordBroker
                 </Link>
             </div>
