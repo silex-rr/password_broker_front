@@ -14,14 +14,35 @@ export class OfflineDatabaseService {
     databaseStatus = '';
     loadedDatabaseName = '';
     databaseTimestamp = 0;
-    keyTimestamp = 0;
     keyStatus = '';
+    loadedKeyName = '';
+    keyTimestamp = 0;
     database = {};
     key = '';
     pinCode = '';
     constructor() {
         this.databaseStatus = this.constructor.STATUS_AWAIT;
         this.keyStatus = this.constructor.STATUS_AWAIT;
+    }
+
+    /**
+     * @param {AppToken} appToken
+     * @param {boolean} force
+     * @return {Promise<void>}
+     */
+    async loadDataBaseByToken(appToken, force = false) {
+        const databaseName = this.getDatabaseNameByAppToken(appToken);
+        await this.loadDatabase(databaseName, force);
+    }
+
+    /**
+     * @param {AppToken} appToken
+     * @param {boolean} force
+     * @return {Promise<void>}
+     */
+    async loadKeyByToken(appToken, force = false) {
+        const databaseKeyName = this.getDatabaseKeyNameByAppToken(appToken);
+        await this.loadDatabaseKey(databaseKeyName, force);
     }
 
     /**
@@ -55,14 +76,14 @@ export class OfflineDatabaseService {
         if (
             force === false &&
             (this.keyStatus === this.constructor.STATUS_LOADED || this.keyStatus === this.constructor.STATUS_LOADING) &&
-            this.keyStatus === keyName
+            this.loadedKeyName === keyName
         ) {
             return;
         }
-        this.loadedDatabaseName = keyName;
+        this.loadedKeyName = keyName;
         this.keyStatus = this.constructor.STATUS_LOADING;
         const key = await AsyncStorage.getItem(keyName);
-        if (this.loadedDatabaseName !== keyName) {
+        if (this.loadedKeyName !== keyName) {
             //Another loading has been started
             return;
         }
@@ -86,7 +107,7 @@ export class OfflineDatabaseService {
             return;
         }
         this.key = keyObject.data;
-        this.databaseTimestamp = keyObject.timestamp;
+        this.keyTimestamp = keyObject.timestamp;
         this.keyStatus = this.constructor.STATUS_LOADED;
     }
 
@@ -163,6 +184,30 @@ export class OfflineDatabaseService {
         return this.database;
     }
 
+    unloadDatabase() {
+        this.databaseStatus = this.constructor.STATUS_AWAIT;
+        this.database = {};
+        this.loadedDatabaseName = '';
+    }
+
+    async reloadDatabase() {
+        if (this.loadedDatabaseName === '') {
+            return;
+        }
+        await this.loadDatabase(this.loadedDatabaseName, true);
+    }
+
+    getKey() {
+        return this.key;
+    }
+    async reloadKey() {
+        if (this.loadedKeyName === '') {
+            return;
+        }
+        console.log('reloadKey', this.loadedKeyName);
+        await this.loadDatabaseKey(this.loadedKeyName, true);
+    }
+
     /**
      * @param {string} databaseName
      * @param {Object} database
@@ -174,8 +219,10 @@ export class OfflineDatabaseService {
             data: database,
             timestamp: timestamp,
         });
+        // console.log('saveDatabase', databaseName, jsonString);
         const jsonStringEncrypted = AES.encrypt(jsonString, this.pinCode).toString();
         await AsyncStorage.setItem(databaseName, jsonStringEncrypted);
+        this.unloadDatabase();
     }
 
     /**
@@ -201,6 +248,7 @@ export class OfflineDatabaseService {
             data: key,
             timestamp: timestamp,
         });
+        // console.log('saveKey', keyName, jsonString);
         const jsonStringEncrypted = AES.encrypt(jsonString, this.pinCode).toString();
         await AsyncStorage.setItem(keyName, jsonStringEncrypted);
     }

@@ -19,6 +19,7 @@ import {
 import {
     DATABASE_MODE_OFFLINE,
     DATABASE_MODE_ONLINE,
+    DATABASE_MODE_SWITCHING_TO_OFFLINE,
 } from '../../../../src_shared/identity/constants/DatabaseModeStates';
 
 const OfflineDatabase = () => {
@@ -85,7 +86,8 @@ const OfflineDatabase = () => {
     if (
         applicationIdState === APPLICATION_LOADING ||
         offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_LOADING ||
-        offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_UPDATING
+        offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_UPDATING ||
+        databaseMode === DATABASE_MODE_SWITCHING_TO_OFFLINE
     ) {
         return (
             <View style={tw`flex flex-row justify-between items-start`}>

@@ -12,11 +12,15 @@ import EntryFieldButton from '../components/Main/MainBody/EntryGroup/Entry/Entry
 import PasswordBrokerContextProvider from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContextProvider';
 import EntryFieldContextProvider from '../../../src_shared/passwordBroker/contexts/EntryFieldContextProvider';
 import EntryGroupContextProvider from '../../../src_shared/passwordBroker/contexts/EntryGroupContextProvider';
+import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
 
 const PasswordBrokerRouter = () => {
     const {copyToClipboard, writeFile, offlineDatabaseService} = useContext(AppContext);
     return (
-        <PasswordBrokerContextProvider AppContext={AppContext} offlineDatabaseService={offlineDatabaseService}>
+        <PasswordBrokerContextProvider
+            AppContext={AppContext}
+            UserApplicationContext={UserApplicationContext}
+            offlineDatabaseService={offlineDatabaseService}>
             <EntryGroupContextProvider
                 entryFieldTypes={{
                     Link: Link,

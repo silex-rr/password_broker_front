@@ -10,11 +10,12 @@ import copy from 'copy-to-clipboard';
 import React, {useContext} from 'react';
 import PasswordBrokerContextProvider from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContextProvider';
 import EntryGroupContextProvider from '../../../src_shared/passwordBroker/contexts/EntryGroupContextProvider';
+import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
 
 const PasswordBrokerRouter = () => {
     const {writeFile} = useContext(AppContext);
     return (
-        <PasswordBrokerContextProvider AppContext={AppContext}>
+        <PasswordBrokerContextProvider AppContext={AppContext} UserApplicationContext={UserApplicationContext}>
             <EntryGroupContextProvider
                 entryFieldTypes={{
                     Link: Link,

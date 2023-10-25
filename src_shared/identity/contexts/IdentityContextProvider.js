@@ -286,11 +286,12 @@ const IdentityContextProvider = props => {
 
     const getUser = (getToken = true) => {
         changeAuthStatusLoading();
+        // console.log('getUser', 'activated');
         // setAuthStatus(LOADING)
         // console.log(hostURL + "/identity/api/me")
         axios.get(hostURL + '/identity/api/me').then(
             response => {
-                // console.log(response)
+                // console.log('getUser', response);
                 switch (response.data.message) {
                     default:
                     case 'guest':

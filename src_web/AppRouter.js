@@ -5,29 +5,32 @@ import AuthContainer from './identity/components/AuthContainer';
 import AdminPanelRouter from './adminPanel/routers/AdminPanelRouter';
 import React from 'react';
 import IdentityContextProvider from '../src_shared/identity/contexts/IdentityContextProvider';
+import UserApplicationContextProvider from '../src_shared/identity/contexts/UserApplicationContextProvider';
 const AppRouter = () => {
     return (
         <BrowserRouter>
             <IdentityContextProvider>
-                <Routes>
-                    <Route
-                        path="/*"
-                        element={
-                            <RequireAuth>
-                                <PasswordBrokerRouter />
-                            </RequireAuth>
-                        }
-                    />
-                    <Route path="/identity/*" element={<AuthContainer />} />
-                    <Route
-                        path="/admin/*"
-                        element={
-                            <RequireAuth>
-                                <AdminPanelRouter />
-                            </RequireAuth>
-                        }
-                    />
-                </Routes>
+                <UserApplicationContextProvider>
+                    <Routes>
+                        <Route
+                            path="/*"
+                            element={
+                                <RequireAuth>
+                                    <PasswordBrokerRouter />
+                                </RequireAuth>
+                            }
+                        />
+                        <Route path="/identity/*" element={<AuthContainer />} />
+                        <Route
+                            path="/admin/*"
+                            element={
+                                <RequireAuth>
+                                    <AdminPanelRouter />
+                                </RequireAuth>
+                            }
+                        />
+                    </Routes>
+                </UserApplicationContextProvider>
             </IdentityContextProvider>
         </BrowserRouter>
     );

@@ -20,7 +20,7 @@ const AuthLoading = () => {
             getUser(location);
         }
     }, [authStatus, getUser, location]);
-    console.log(authStatus);
+    console.log('authStatus', authStatus);
     switch (authStatus) {
         case LOGGED_IN:
             let path = '/';

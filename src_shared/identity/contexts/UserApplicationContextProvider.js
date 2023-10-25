@@ -15,13 +15,23 @@ import {
     APPLICATION_LOADING,
     APPLICATION_NOT_LOADED,
 } from '../constants/ApplicationStates';
-import {DATABASE_MODE_OFFLINE, DATABASE_MODE_ONLINE} from '../constants/DatabaseModeStates';
+import {
+    DATABASE_MODE_OFFLINE,
+    DATABASE_MODE_ONLINE,
+    DATABASE_MODE_SWITCHING_TO_OFFLINE,
+} from '../constants/DatabaseModeStates';
 import {
     OFFLINE_DATABASE_DOWNLOAD_REQUIRED,
     OFFLINE_DATABASE_NOT_LOADED,
     OFFLINE_DATABASE_SYNCHRONIZED,
 } from '../constants/OfflineDatabaseStatus';
 import IdentityContext from './IdentityContext';
+import {
+    OFFLINE_PRIVATE_KEY_DOWNLOAD_REQUIRED,
+    OFFLINE_PRIVATE_KEY_NOT_LOADED,
+    OFFLINE_PRIVATE_KEY_SYNCHRONIZED,
+} from '../constants/OfflinePrivateKeyStatus';
+import {Buffer} from 'buffer';
 
 const UserApplicationContextProvider = props => {
     let hostURLDefault = '';
@@ -57,19 +67,114 @@ const UserApplicationContextProvider = props => {
     const [offlineDatabaseWorkerId, setOfflineDatabaseWorkerId] = useState(null);
     const [offlineDatabaseStatus, setOfflineDatabaseStatus] = useState(OFFLINE_DATABASE_NOT_LOADED);
 
+    const [offlinePrivateKeyWorkerId, setOfflinePrivateKeyWorkerId] = useState(null);
+    const [offlinePrivateKeyStatus, setOfflinePrivateKeyStatus] = useState(OFFLINE_PRIVATE_KEY_NOT_LOADED);
+
+    const offlinePrivateKeyUpdateWorker = useCallback(() => {
+        if (offlinePrivateKeyWorkerId !== null) {
+            return;
+        }
+
+        // console.log('offlinePrivateKeyUpdateWorker', 'activated');
+
+        const timeout = 30000;
+
+        /**
+         * @param {string} applicationIdForCheck
+         */
+        const checkIsOfflinePrivateKeyForUpdatesAwait = async applicationIdForCheck => {
+            try {
+                const response = await axios.get(
+                    defaultURL + '/userApplication/' + applicationIdForCheck + '/isRsaPrivateRequiredUpdate',
+                );
+                return response.data.status;
+            } catch (error) {
+                console.log('checkIsOfflineDatabaseForUpdatesAwait', error);
+                return false;
+            }
+        };
+
+        /**
+         * @param {AppToken} AppToken
+         */
+        const updateOfflinePrivateKeyAwait = async AppToken => {
+            try {
+                const response = await axios.get(defaultURL + '/getPrivateRsa');
+                const decodedKey = Buffer.from(response.data.rsa_private_key_base64, 'base64').toString('binary');
+                await offlineDatabaseService.saveKeyByToken(AppToken, decodedKey, response.data.timestamp);
+                // if (databaseMode === DATABASE_MODE_OFFLINE) {
+                await offlineDatabaseService.reloadKey();
+                console.log(
+                    'offlineDatabaseService.getKey()',
+                    offlineDatabaseService.getKey(),
+                    offlineDatabaseService.keyStatus,
+                );
+                // }
+                return true;
+            } catch (error) {
+                console.log('updateOfflinePrivateKeyAwait', error);
+                return false;
+            }
+        };
+
+        const closure = async () => {
+            switch (offlinePrivateKeyStatus) {
+                default:
+                    break;
+                case OFFLINE_PRIVATE_KEY_NOT_LOADED:
+                    await offlineDatabaseService.loadKeyByToken(userAppToken);
+                    if (
+                        [
+                            offlineDatabaseService.constructor.STATUS_DOES_NOT_EXISTS,
+                            offlineDatabaseService.constructor.STATUS_CORRUPTED,
+                        ].includes(offlineDatabaseService.keyStatus)
+                    ) {
+                        setOfflinePrivateKeyStatus(OFFLINE_PRIVATE_KEY_DOWNLOAD_REQUIRED);
+                        return;
+                    }
+                    if (offlineDatabaseService.keyStatus === offlineDatabaseService.constructor.STATUS_LOADED) {
+                        setOfflinePrivateKeyStatus(OFFLINE_PRIVATE_KEY_SYNCHRONIZED);
+                        return;
+                    }
+                    break;
+                case OFFLINE_PRIVATE_KEY_DOWNLOAD_REQUIRED:
+                    if (await updateOfflinePrivateKeyAwait(userAppToken)) {
+                        setOfflinePrivateKeyStatus(OFFLINE_PRIVATE_KEY_SYNCHRONIZED);
+                        return;
+                    }
+                    break;
+                case OFFLINE_PRIVATE_KEY_SYNCHRONIZED:
+                    if (await checkIsOfflinePrivateKeyForUpdatesAwait(applicationId)) {
+                        setOfflinePrivateKeyStatus(OFFLINE_PRIVATE_KEY_DOWNLOAD_REQUIRED);
+                        return;
+                    }
+                    break;
+            }
+            const timeoutId = setTimeout(closure, timeout);
+            setOfflinePrivateKeyWorkerId(timeoutId);
+        };
+
+        closure().then(() => {});
+    }, [
+        offlinePrivateKeyWorkerId,
+        defaultURL,
+        offlineDatabaseService,
+        offlinePrivateKeyStatus,
+        userAppToken,
+        applicationId,
+    ]);
+
     const offlineDatabaseUpdateWorker = useCallback(() => {
         if (offlineDatabaseWorkerId !== null) {
             return;
         }
-
-        console.log('offlineDatabaseWorker', 'activated');
 
         const timeout = 5000;
 
         /**
          * @param {string} applicationIdForCheck
          */
-        const checkIsOfflineDatabaseForUpdates = async applicationIdForCheck => {
+        const checkIsOfflineDatabaseForUpdatesAwait = async applicationIdForCheck => {
             try {
                 const response = await axios.get(
                     defaultURL + '/userApplication/' + applicationIdForCheck + '/isOfflineDatabaseRequiredUpdate',
@@ -84,10 +189,13 @@ const UserApplicationContextProvider = props => {
         /**
          * @param {AppToken} AppToken
          */
-        const updateOfflineDatabase = async AppToken => {
+        const updateOfflineDatabaseAwait = async AppToken => {
             try {
                 const response = await axios.get(hostURLDefault + '/passwordBroker/api/entryGroupsWithFields');
                 await offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp);
+                if (databaseMode === DATABASE_MODE_OFFLINE) {
+                    await offlineDatabaseService.reloadDatabase();
+                }
                 return true;
             } catch (error) {
                 console.log('updateOfflineDatabase', error);
@@ -96,18 +204,12 @@ const UserApplicationContextProvider = props => {
         };
 
         const closure = async () => {
-            console.log('offlineDatabaseWorker', 'closure iteration', offlineDatabaseStatus);
+            // console.log('offlineDatabaseWorker', 'closure iteration', offlineDatabaseStatus);
             switch (offlineDatabaseStatus) {
                 default:
                     break;
                 case OFFLINE_DATABASE_NOT_LOADED:
-                    console.log(
-                        'offlineDatabaseWorker',
-                        'database start loading',
-                        offlineDatabaseService.databaseStatus,
-                    );
-                    await offlineDatabaseService.loadDatabase(userAppToken.token);
-                    console.log('offlineDatabaseWorker', 'database loaded', offlineDatabaseService.databaseStatus);
+                    await offlineDatabaseService.loadDataBaseByToken(userAppToken);
                     if (
                         [
                             offlineDatabaseService.constructor.STATUS_DOES_NOT_EXISTS,
@@ -115,20 +217,26 @@ const UserApplicationContextProvider = props => {
                         ].includes(offlineDatabaseService.databaseStatus)
                     ) {
                         setOfflineDatabaseStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
+                        return;
                     }
-                    return;
+                    if (offlineDatabaseService.databaseStatus === offlineDatabaseService.constructor.STATUS_LOADED) {
+                        setOfflineDatabaseStatus(OFFLINE_PRIVATE_KEY_SYNCHRONIZED);
+                        return;
+                    }
+                    break;
                 case OFFLINE_DATABASE_DOWNLOAD_REQUIRED:
-                    if (await updateOfflineDatabase(userAppToken)) {
+                    if (await updateOfflineDatabaseAwait(userAppToken)) {
                         setOfflineDatabaseStatus(OFFLINE_DATABASE_SYNCHRONIZED);
+                        return;
                     }
                     break;
                 case OFFLINE_DATABASE_SYNCHRONIZED:
-                    if (await checkIsOfflineDatabaseForUpdates(applicationId)) {
+                    if (await checkIsOfflineDatabaseForUpdatesAwait(applicationId)) {
                         setOfflineDatabaseStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
+                        return;
                     }
                     break;
             }
-            console.log('reactivated in ' + timeout, offlineDatabaseService.getDataBase());
             const timeoutId = setTimeout(closure, timeout);
             setOfflineDatabaseWorkerId(timeoutId);
         };
@@ -136,6 +244,7 @@ const UserApplicationContextProvider = props => {
         closure().then(() => {});
     }, [
         applicationId,
+        databaseMode,
         defaultURL,
         hostURLDefault,
         offlineDatabaseService,
@@ -143,6 +252,27 @@ const UserApplicationContextProvider = props => {
         offlineDatabaseWorkerId,
         userAppToken,
     ]);
+
+    /**
+     * @param {AppToken} AppToken
+     */
+    const updateOfflineDatabase = AppToken => {
+        axios.get(hostURLDefault + '/passwordBroker/api/entryGroupsWithFields').then(
+            response => {
+                offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp).then(
+                    () => {
+                        console.log('offline DB saved');
+                    },
+                    error => {
+                        console.log('offline DB saving is failed', error);
+                    },
+                );
+            },
+            error => {
+                console.log(error);
+            },
+        );
+    };
 
     /**
      * @param {AppToken} AppToken
@@ -205,7 +335,11 @@ const UserApplicationContextProvider = props => {
     };
 
     const switchDatabaseToOffline = () => {
-        setDatabaseMode(DATABASE_MODE_OFFLINE);
+        setDatabaseMode(DATABASE_MODE_SWITCHING_TO_OFFLINE);
+        offlineDatabaseService.loadDataBaseWithKeyByToken(userAppToken).then(
+            () => setDatabaseMode(DATABASE_MODE_OFFLINE),
+            error => console.log(error),
+        );
     };
 
     const switchDatabaseToOnline = () => {
@@ -249,7 +383,32 @@ const UserApplicationContextProvider = props => {
                 setOfflineDatabaseWorkerId(null);
             }
         };
-    }, [offlineDatabaseUpdateWorker, offlineDatabaseWorkerId, offlineDatabaseSyncMode, offlineDatabaseStatus]);
+    }, [
+        offlineDatabaseUpdateWorker,
+        offlineDatabaseWorkerId,
+        offlineDatabaseSyncMode,
+        offlineDatabaseStatus,
+        userAppToken,
+    ]);
+
+    useEffect(() => {
+        if (offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE) {
+            offlinePrivateKeyUpdateWorker();
+        }
+
+        return () => {
+            if (offlinePrivateKeyWorkerId) {
+                clearTimeout(offlinePrivateKeyWorkerId);
+                setOfflinePrivateKeyWorkerId(null);
+            }
+        };
+    }, [
+        offlineDatabaseSyncMode,
+        offlinePrivateKeyUpdateWorker,
+        offlinePrivateKeyWorkerId,
+        offlinePrivateKeyStatus,
+        userAppToken,
+    ]);
 
     return (
         <UserApplicationContext.Provider
@@ -267,6 +426,7 @@ const UserApplicationContextProvider = props => {
                 switchDatabaseToOffline,
                 switchDatabaseToOnline,
                 updateOfflineDatabaseKey,
+                updateOfflineDatabase,
             }}>
             {props.children}
         </UserApplicationContext.Provider>
