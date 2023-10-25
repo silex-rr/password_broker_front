@@ -7,8 +7,8 @@ import React from 'react';
 import IdentityContextProvider from '../src_shared/identity/contexts/IdentityContextProvider';
 const AppRouter = () => {
     return (
-        <IdentityContextProvider>
-            <BrowserRouter>
+        <BrowserRouter>
+            <IdentityContextProvider>
                 <Routes>
                     <Route
                         path="/*"
@@ -28,8 +28,8 @@ const AppRouter = () => {
                         }
                     />
                 </Routes>
-            </BrowserRouter>
-        </IdentityContextProvider>
+            </IdentityContextProvider>
+        </BrowserRouter>
     );
 };
 
