@@ -22,6 +22,9 @@ import {
     FIELD_EDITING_LOADING_DATA,
 } from '../constants/EntryGroupEntryFieldEditingStates';
 import EntryGroupContext from './EntryGroupContext';
+import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates';
+import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
+import {CryptoService} from '../../utils/native/CryptoService';
 
 const EntryGroupContextProvider = props => {
     const {Link, Password, Note, File} = props.entryFieldTypes;
@@ -29,6 +32,7 @@ const EntryGroupContextProvider = props => {
     const copy = props.copyToClipboard;
     const writeFile = props.writeFile;
 
+    const passwordBrokerContext = useContext(PasswordBrokerContext);
     const {
         masterPassword,
         masterPasswordState,
@@ -46,13 +50,21 @@ const EntryGroupContextProvider = props => {
         setEntryGroupTreesStatus,
         entryGroupTreesOpened,
         setEntryGroupTreesOpened,
-    } = useContext(PasswordBrokerContext);
+
+        entryGroupData,
+        databaseMode,
+    } = passwordBrokerContext;
+
+    /**
+     * @type {OfflineDatabaseService}
+     */
+    const offlineDatabaseService = passwordBrokerContext.offlineDatabaseService;
 
     const [addingEntryGroupState, setAddingEntryGroupState] = useState(ENTRY_GROUP_ADDING_AWAIT);
     const [addingEntryGroupTitle, setAddingEntryGroupTitle] = useState('');
     const [addingEntryGroupErrorMessage, setAddingEntryGroupErrorMessage] = useState('');
     const addingEntryGroupModalVisibilityCheckboxRef = useRef();
-
+    const cryptoService = new CryptoService();
     const addNewEntryGroup = (entryGroupId = null) => {
         if (addingEntryGroupState !== ENTRY_GROUP_ADDING_AWAIT) {
             return;
@@ -118,6 +130,50 @@ const EntryGroupContextProvider = props => {
             }
             const getDecryptedFieldValue = masterPasswordNew => {
                 setButtonLoading(button);
+
+                if (databaseMode === DATABASE_MODE_OFFLINE) {
+                    offlineDatabaseService.reloadSalt().then(() => {
+                        offlineDatabaseService.reloadKey().then(() => {
+                            const rsaPrivateKey = offlineDatabaseService.getKey();
+                            const salt = offlineDatabaseService.getSalt();
+                            // console.log('rsaPrivateKey', rsaPrivateKey);
+                            // console.log('salt', salt);
+                            const entry = entryGroupData.entries.find(
+                                entryCandidate => entryCandidate.entry_id === fieldProps.entry_id,
+                            );
+                            const field = entry[fieldProps.type + 's'].find(
+                                fieldCandidate => (fieldCandidate.field_id = fieldProps.field_id),
+                            );
+                            const encrypted_value = Buffer.from(field.encrypted_value_base64, 'base64').toString(
+                                'binary',
+                            );
+                            const initialization_vector = Buffer.from(
+                                field.initialization_vector_base64,
+                                'base64',
+                            ).toString('binary');
+
+                            // const encrypted_aes_password = Buffer.from(
+                            //     entryGroupData.entryGroup.admins[0].encrypted_aes_password_base64,
+                            //     'base64',
+                            // ).toString('binary');
+                            // console.log('encrypted_value_b64', field.encrypted_value_base64);
+                            // console.log('offlineDatabaseService', offlineDatabaseService);
+                            const fieldValue = cryptoService.decryptFieldValue(
+                                encrypted_value,
+                                initialization_vector,
+                                entryGroupData.entryGroup.admins[0].encrypted_aes_password_base64,
+                                rsaPrivateKey,
+                                masterPasswordNew,
+                                salt,
+                            );
+                            // console.log('decryptedFieldValue', fieldValue);
+                            setMasterPasswordState(MASTER_PASSWORD_VALIDATED);
+                            setButtonLoading('');
+                            onSucceed(fieldValue);
+                        });
+                    });
+                    return;
+                }
 
                 axios
                     .post(url + '/decrypted', {

@@ -4,6 +4,7 @@ import {AES, enc, MD5} from 'crypto-js';
 export class OfflineDatabaseService {
     static OFFLINE_DATABASE_STORAGE_PREFIX = 'OFFLINE_DATABASE_';
     static OFFLINE_DATABASE_KEY_STORAGE_PREFIX = 'OFFLINE_DATABASE_KEY_';
+    static OFFLINE_DATABASE_SALT_STORAGE_PREFIX = 'OFFLINE_AES_SALT_';
     static STATUS_LOADED = 'loaded';
     static STATUS_LOADING = 'loading';
     static STATUS_DOES_NOT_EXISTS = 'does not exists';
@@ -11,14 +12,21 @@ export class OfflineDatabaseService {
     static STATUS_DECRYPTION_FAILED_WRONG_PIN = 'decryption failed wrong pin';
     static STATUS_CORRUPTED = 'corrupted';
 
+    //DB
     databaseStatus = '';
     loadedDatabaseName = '';
     databaseTimestamp = 0;
+    database = {};
+    //Key
     keyStatus = '';
     loadedKeyName = '';
     keyTimestamp = 0;
-    database = {};
     key = '';
+    //Salt
+    saltStatus = '';
+    loadedSaltName = '';
+    saltTimestamp = 0;
+    salt = '';
     pinCode = '';
     constructor() {
         this.databaseStatus = this.constructor.STATUS_AWAIT;
@@ -50,6 +58,16 @@ export class OfflineDatabaseService {
      * @param {boolean} force
      * @return {Promise<void>}
      */
+    async loadSaltByToken(appToken, force = false) {
+        const saltName = this.getDatabaseSaltNameByAppToken(appToken);
+        await this.loadDatabaseSalt(saltName, force);
+    }
+
+    /**
+     * @param {AppToken} appToken
+     * @param {boolean} force
+     * @return {Promise<void>}
+     */
     async loadDataBaseWithKeyByToken(appToken, force = false) {
         const databaseName = this.getDatabaseNameByAppToken(appToken);
         const databaseKeyName = this.getDatabaseKeyNameByAppToken(appToken);
@@ -66,6 +84,50 @@ export class OfflineDatabaseService {
             }
             reject(this.databaseStatus, this.keyStatus);
         });
+    }
+    /**
+     * @param {string} saltName
+     * @param {boolean} force
+     * @return {Promise<void>}
+     */
+    async loadDatabaseSalt(saltName, force = false) {
+        if (
+            force === false &&
+            (this.saltStatus === this.constructor.STATUS_LOADED ||
+                this.saltStatus === this.constructor.STATUS_LOADING) &&
+            this.loadedSaltName === saltName
+        ) {
+            return;
+        }
+        this.loadedSaltName = saltName;
+        this.saltStatus = this.constructor.STATUS_LOADING;
+        const salt = await AsyncStorage.getItem(saltName);
+        if (this.loadedSaltName !== saltName) {
+            //Another loading has been started
+            return;
+        }
+        if (salt === null) {
+            this.salt = '';
+            this.saltStatus = this.constructor.STATUS_DOES_NOT_EXISTS;
+            return;
+        }
+        let saltDecrypted = '';
+        try {
+            saltDecrypted = AES.decrypt(salt, this.pinCode).toString(enc.Utf8);
+        } catch (e) {
+            this.saltStatus = this.constructor.STATUS_DECRYPTION_FAILED_WRONG_PIN;
+            return;
+        }
+        let saltObject = {};
+        try {
+            saltObject = JSON.parse(saltDecrypted);
+        } catch (e) {
+            this.saltStatus = this.constructor.STATUS_CORRUPTED;
+            return;
+        }
+        this.salt = saltObject.data;
+        this.saltTimestamp = saltObject.timestamp;
+        this.saltStatus = this.constructor.STATUS_LOADED;
     }
     /**
      * @param {string} keyName
@@ -176,6 +238,13 @@ export class OfflineDatabaseService {
     getDatabaseKeyNameByAppToken(appToken) {
         return this.constructor.OFFLINE_DATABASE_KEY_STORAGE_PREFIX + MD5(appToken.url + appToken.login);
     }
+    /**
+     * @param {AppToken} appToken
+     * @return {string}
+     */
+    getDatabaseSaltNameByAppToken(appToken) {
+        return this.constructor.OFFLINE_DATABASE_SALT_STORAGE_PREFIX + MD5(appToken.url + appToken.login);
+    }
 
     /**
      * @return {{}}
@@ -200,12 +269,23 @@ export class OfflineDatabaseService {
     getKey() {
         return this.key;
     }
-    async reloadKey() {
+    async reloadKey(force = false) {
         if (this.loadedKeyName === '') {
             return;
         }
         console.log('reloadKey', this.loadedKeyName);
-        await this.loadDatabaseKey(this.loadedKeyName, true);
+        await this.loadDatabaseKey(this.loadedKeyName, force);
+    }
+
+    getSalt() {
+        return this.salt;
+    }
+    async reloadSalt(force = false) {
+        if (this.loadedSaltName === '') {
+            return;
+        }
+        console.log('reloadSalt', this.loadedSaltName);
+        await this.loadDatabaseSalt(this.loadedSaltName, force);
     }
 
     /**
@@ -263,5 +343,33 @@ export class OfflineDatabaseService {
     async saveKeyByToken(appToken, key, timestamp) {
         const KeyName = this.getDatabaseKeyNameByAppToken(appToken);
         await this.saveKey(KeyName, key, timestamp);
+    }
+
+    /**
+     * @param {string}saltName
+     * @param {string}salt
+     * @param {number}timestamp
+     * @return {Promise<void>}
+     */
+    async saveSalt(saltName, salt, timestamp) {
+        const jsonString = JSON.stringify({
+            data: salt,
+            timestamp: timestamp,
+        });
+        // console.log('saveSalt', saltName, jsonString);
+        const jsonStringEncrypted = AES.encrypt(jsonString, this.pinCode).toString();
+        await AsyncStorage.setItem(saltName, jsonStringEncrypted);
+    }
+
+    /**
+     *
+     * @param {AppToken} appToken
+     * @param {string}salt
+     * @param {number}timestamp
+     * @return {Promise<void>}
+     */
+    async saveSaltByToken(appToken, salt, timestamp) {
+        const SaltName = this.getDatabaseSaltNameByAppToken(appToken);
+        await this.saveSalt(SaltName, salt, timestamp);
     }
 }

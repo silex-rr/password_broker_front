@@ -22,15 +22,11 @@ import {
 } from '../constants/DatabaseModeStates';
 import {
     OFFLINE_DATABASE_DOWNLOAD_REQUIRED,
+    OFFLINE_DATABASE_IS_UPDATING,
     OFFLINE_DATABASE_NOT_LOADED,
     OFFLINE_DATABASE_SYNCHRONIZED,
 } from '../constants/OfflineDatabaseStatus';
 import IdentityContext from './IdentityContext';
-import {
-    OFFLINE_PRIVATE_KEY_DOWNLOAD_REQUIRED,
-    OFFLINE_PRIVATE_KEY_NOT_LOADED,
-    OFFLINE_PRIVATE_KEY_SYNCHRONIZED,
-} from '../constants/OfflinePrivateKeyStatus';
 import {Buffer} from 'buffer';
 
 const UserApplicationContextProvider = props => {
@@ -64,11 +60,13 @@ const UserApplicationContextProvider = props => {
     const [applicationIdState, setApplicationIdState] = useState(APPLICATION_NOT_LOADED);
     const [offlineDatabaseSyncMode, setOfflineDatabaseSyncMode] = useState(OFFLINE_DATABASE_SYNC_MODE_AWAIT);
     const [databaseMode, setDatabaseMode] = useState(DATABASE_MODE_ONLINE);
+
     const [offlineDatabaseWorkerId, setOfflineDatabaseWorkerId] = useState(null);
     const [offlineDatabaseStatus, setOfflineDatabaseStatus] = useState(OFFLINE_DATABASE_NOT_LOADED);
 
     const [offlinePrivateKeyWorkerId, setOfflinePrivateKeyWorkerId] = useState(null);
-    const [offlinePrivateKeyStatus, setOfflinePrivateKeyStatus] = useState(OFFLINE_PRIVATE_KEY_NOT_LOADED);
+    const [offlinePrivateKeyStatus, setOfflinePrivateKeyStatus] = useState(OFFLINE_DATABASE_NOT_LOADED);
+    const [offlineSaltStatus, setOfflineSaltStatus] = useState(OFFLINE_DATABASE_NOT_LOADED);
 
     const offlinePrivateKeyUpdateWorker = useCallback(() => {
         if (offlinePrivateKeyWorkerId !== null) {
@@ -121,7 +119,7 @@ const UserApplicationContextProvider = props => {
             switch (offlinePrivateKeyStatus) {
                 default:
                     break;
-                case OFFLINE_PRIVATE_KEY_NOT_LOADED:
+                case OFFLINE_DATABASE_NOT_LOADED:
                     await offlineDatabaseService.loadKeyByToken(userAppToken);
                     if (
                         [
@@ -129,23 +127,23 @@ const UserApplicationContextProvider = props => {
                             offlineDatabaseService.constructor.STATUS_CORRUPTED,
                         ].includes(offlineDatabaseService.keyStatus)
                     ) {
-                        setOfflinePrivateKeyStatus(OFFLINE_PRIVATE_KEY_DOWNLOAD_REQUIRED);
+                        setOfflinePrivateKeyStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
                         return;
                     }
                     if (offlineDatabaseService.keyStatus === offlineDatabaseService.constructor.STATUS_LOADED) {
-                        setOfflinePrivateKeyStatus(OFFLINE_PRIVATE_KEY_SYNCHRONIZED);
+                        setOfflinePrivateKeyStatus(OFFLINE_DATABASE_SYNCHRONIZED);
                         return;
                     }
                     break;
-                case OFFLINE_PRIVATE_KEY_DOWNLOAD_REQUIRED:
+                case OFFLINE_DATABASE_DOWNLOAD_REQUIRED:
                     if (await updateOfflinePrivateKeyAwait(userAppToken)) {
-                        setOfflinePrivateKeyStatus(OFFLINE_PRIVATE_KEY_SYNCHRONIZED);
+                        setOfflinePrivateKeyStatus(OFFLINE_DATABASE_SYNCHRONIZED);
                         return;
                     }
                     break;
-                case OFFLINE_PRIVATE_KEY_SYNCHRONIZED:
+                case OFFLINE_DATABASE_SYNCHRONIZED:
                     if (await checkIsOfflinePrivateKeyForUpdatesAwait(applicationId)) {
-                        setOfflinePrivateKeyStatus(OFFLINE_PRIVATE_KEY_DOWNLOAD_REQUIRED);
+                        setOfflinePrivateKeyStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
                         return;
                     }
                     break;
@@ -220,7 +218,7 @@ const UserApplicationContextProvider = props => {
                         return;
                     }
                     if (offlineDatabaseService.databaseStatus === offlineDatabaseService.constructor.STATUS_LOADED) {
-                        setOfflineDatabaseStatus(OFFLINE_PRIVATE_KEY_SYNCHRONIZED);
+                        setOfflineDatabaseStatus(OFFLINE_DATABASE_SYNCHRONIZED);
                         return;
                     }
                     break;
@@ -371,6 +369,56 @@ const UserApplicationContextProvider = props => {
     const reloadApplication = () => {
         setApplicationIdState(APPLICATION_NOT_LOADED);
     };
+
+    const updateOfflineSalt = useCallback(
+        AppToken => {
+            console.log('updateOfflineSalt');
+            offlineDatabaseService.loadSaltByToken(AppToken).then(() => {
+                console.log(
+                    'updateOfflineSalt saltStatus',
+                    offlineDatabaseService.saltStatus,
+                    offlineDatabaseService.salt,
+                );
+                if (
+                    offlineDatabaseService.saltStatus === offlineDatabaseService.constructor.STATUS_LOADED ||
+                    offlineSaltStatus !== OFFLINE_DATABASE_NOT_LOADED
+                ) {
+                    return;
+                }
+                setOfflineSaltStatus(OFFLINE_DATABASE_IS_UPDATING);
+                console.log('updateOfflineSalt updating');
+                axios.get(defaultURL + '/getCbcSalt').then(
+                    response => {
+                        const decodedSalt = Buffer.from(response.data.salt_base64, 'base64').toString('binary');
+                        console.log('salt received', response.data.salt_base64);
+                        offlineDatabaseService.saveSaltByToken(AppToken, decodedSalt, response.data.timestamp).then(
+                            () => {
+                                offlineDatabaseService
+                                    .loadSaltByToken(AppToken)
+                                    .then(() => setOfflineSaltStatus(OFFLINE_DATABASE_SYNCHRONIZED));
+                            },
+                            () => {
+                                setTimeout(() => setOfflineSaltStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED), 5000);
+                            },
+                        );
+                    },
+                    error => {
+                        console.log('updateOfflineSalt', error);
+                        setTimeout(() => setOfflineSaltStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED), 5000);
+                    },
+                );
+            });
+        },
+        [defaultURL, offlineDatabaseService, offlineSaltStatus],
+    );
+
+    useEffect(() => {
+        if (offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE) {
+            if (offlineSaltStatus === OFFLINE_DATABASE_NOT_LOADED) {
+                updateOfflineSalt(userAppToken);
+            }
+        }
+    }, [updateOfflineSalt, offlineDatabaseSyncMode, offlineSaltStatus, userAppToken]);
 
     useEffect(() => {
         if (offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE) {
