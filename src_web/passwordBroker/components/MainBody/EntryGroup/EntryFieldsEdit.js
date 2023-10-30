@@ -62,14 +62,14 @@ const EntryFieldsEdit = props => {
     const fieldValueDefault = entryGroupFieldForEditDecryptedValue;
 
     useEffect(() => {
-        if (fieldTypeDefault !== addingFieldType) {
-            changeType(fieldTypeDefault);
-        }
         const modalVisibilityCheckbox = modalVisibilityRef.current;
         if (
             modalVisibilityCheckbox.checked &&
             ![FIELD_EDITING_EDITING, FIELD_EDITING_IN_PROGRESS].includes(entryGroupFieldForEditState)
         ) {
+            if (fieldTypeDefault !== addingFieldType) {
+                changeType(fieldTypeDefault);
+            }
             modalVisibilityCheckbox.click();
             changeValue('');
             changeTitle('');
