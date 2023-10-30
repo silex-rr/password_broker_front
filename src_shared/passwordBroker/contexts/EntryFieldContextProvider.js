@@ -49,7 +49,7 @@ const EntryFieldContextProvider = props => {
     const [errorMessage, setErrorMessage] = useState([]);
 
     const addNewField = (entryGroupId, entryId) => {
-        if (addingFieldState !== FIELD_ADDING_EDITING) {
+        if (addingFieldState === FIELD_ADDING_IN_PROGRESS) {
             return;
         }
         let masterPasswordForm = masterPassword;
