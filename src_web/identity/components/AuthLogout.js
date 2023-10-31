@@ -9,8 +9,10 @@ const AuthLogout = () => {
     const navigate = useNavigate();
     const {logout} = identityContext;
     useEffect(() => {
-        logout(navigate, databaseMode);
-        userApplicationUnload();
+        logout(navigate, databaseMode).then(() => {
+            userApplicationUnload();
+            navigate('/');
+        });
     }, [navigate, logout, databaseMode, userApplicationUnload]);
     return (
         <div className="w-full rounded md:flex ">

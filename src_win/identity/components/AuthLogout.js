@@ -11,8 +11,10 @@ const AuthLogout = () => {
     const navigate = useNavigate();
     const {logout} = identityContext;
     useEffect(() => {
-        logout(navigate, databaseMode);
-        userApplicationUnload();
+        logout(navigate, databaseMode).then(() => {
+            userApplicationUnload();
+            navigate('/');
+        });
     }, [logout, navigate, databaseMode, userApplicationUnload]);
     return (
         <View style={tw``}>

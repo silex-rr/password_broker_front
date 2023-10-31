@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {AUTH_MODE_BEARER_TOKEN, AUTH_MODE_COOKIE} from '../constants/AuthMode';
 import {AUTH_LOGIN_AWAIT, AUTH_LOGIN_IN_PROCESS} from '../constants/AuthLoginStatus';
 import {LOADING, LOG_IN_FORM, LOGGED_IN, NETWORK_ERROR, SIGN_UP_FORM} from '../constants/AuthStatus';
@@ -19,7 +19,7 @@ const IdentityContextProvider = props => {
         : async () => {
               return '';
           };
-    const AppContext = props.AppContext;
+    // const AppContext = props.AppContext;
     /**
      * @type {AppTokensService} appTokensService
      */
@@ -205,7 +205,7 @@ const IdentityContextProvider = props => {
 
     const CSRF = () => {
         return new Promise((resolve, reject) => {
-            axios.get(hostURL + '/sanctum/csrf-cookie').then(
+            axios.get(getUrlCsrf()).then(
                 response => {
                     // console.log('csrf', response)
                     typeof resolve === 'function' && resolve(response);
@@ -216,6 +216,19 @@ const IdentityContextProvider = props => {
             );
         });
     };
+
+    const getUrlCsrf = useCallback(() => {
+        return hostURL + '/sanctum/csrf-cookie';
+    }, [hostURL]);
+    const getUrlLogin = useCallback(() => {
+        return hostURL + '/identity/api/login';
+    }, [hostURL]);
+    const getUrlLogout = useCallback(() => {
+        return hostURL + '/identity/api/logout';
+    }, [hostURL]);
+    const getUrlUser = useCallback(() => {
+        return hostURL + '/identity/api/me';
+    }, [hostURL]);
 
     const login = () => {
         // CSRF COOKIE
@@ -251,7 +264,7 @@ const IdentityContextProvider = props => {
                 // console.log(userPassword)
                 // LOGIN
                 axios
-                    .post(hostURL + '/identity/api/login', {
+                    .post(getUrlLogin(), {
                         email: userEmail,
                         password: userPassword,
                     })
@@ -323,7 +336,7 @@ const IdentityContextProvider = props => {
         changeAuthStatusLoggedIn();
     };
 
-    async function logout(navigateFn, databaseMode) {
+    const logout = async databaseMode => {
         const afterLogout = () => {
             if (authMode === AUTH_MODE_COOKIE) {
                 Cookies.remove('XSRF-TOKEN');
@@ -339,7 +352,6 @@ const IdentityContextProvider = props => {
             setUserEmail('');
             setUserPassword('');
             setAuthStatus('');
-            navigateFn('/');
         };
 
         if (databaseMode === DATABASE_MODE_OFFLINE) {
@@ -347,15 +359,18 @@ const IdentityContextProvider = props => {
             return;
         }
 
-        axios.get(hostURL + '/identity/api/logout').then(() => {
-            afterLogout();
-        });
-    }
+        try {
+            await axios.get(getUrlLogout());
+        } catch (e) {
+            console.log('logout error', e);
+        }
+        afterLogout();
+    };
 
     const getUser = (getToken = true) => {
         changeAuthStatusLoading();
 
-        axios.get(hostURL + '/identity/api/me').then(
+        axios.get(getUrlUser()).then(
             response => {
                 console.log('getUser', response);
                 switch (response.data.message) {
@@ -419,7 +434,31 @@ const IdentityContextProvider = props => {
         // console.log('activate interceptors');
         axios.defaults.withCredentials = true;
         axios.defaults.timeout = 30000;
-    }, []);
+        let requestInterceptor = null;
+        if (authStatus !== LOGGED_IN) {
+            // console.log('request interceptor activated', authStatus);
+            const validUrl = [getUrlLogin(), getUrlLogout(), getUrlCsrf(), getUrlUser()];
+
+            requestInterceptor = axios.interceptors.request.use(
+                config => {
+                    if (validUrl.includes(config.url)) {
+                        return config;
+                    }
+                    console.log('user is logout', config);
+                    return Promise.reject({reason: 'user is logout', config: config});
+                },
+                error => {
+                    return Promise.reject(error);
+                },
+            );
+        }
+        return () => {
+            if (requestInterceptor) {
+                // console.log('request interceptor ejected');
+                axios.interceptors.request.eject(requestInterceptor);
+            }
+        };
+    }, [authStatus, getUrlCsrf, getUrlLogin, getUrlLogout, getUrlUser]);
 
     return (
         <IdentityContext.Provider
