@@ -44,7 +44,16 @@ export class AppTokensService {
             if (!tokens_raw[i].login || !tokens_raw[i].url || !tokens_raw[i].token) {
                 continue;
             }
-            tokens.push(new AppToken(tokens_raw[i].login, tokens_raw[i].url, tokens_raw[i].token));
+            tokens.push(
+                new AppToken(
+                    tokens_raw[i].user_id,
+                    tokens_raw[i].login,
+                    tokens_raw[i].name,
+                    tokens_raw[i].url,
+                    tokens_raw[i].token,
+                    tokens_raw[i].is_admin,
+                ),
+            );
         }
         // console.log(4, tokens)
         this.tokens = tokens;
@@ -76,8 +85,8 @@ export class AppTokensService {
         // console.log('set', appTokens, appToken, appToken.url, appToken.login, appToken.token)
         await this.load(true);
     }
-    async addTokenByParams(login, url, token) {
-        await this.addToken(new AppToken(login, url, token));
+    async addTokenByParams(user_id, login, name, url, token, is_admin) {
+        await this.addToken(new AppToken(user_id, login, name, url, token, is_admin));
     }
 
     /**
