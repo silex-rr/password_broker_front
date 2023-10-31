@@ -68,21 +68,29 @@ export class OfflineDatabaseService {
      * @param {boolean} force
      * @return {Promise<void>}
      */
-    async loadDataBaseWithKeyByToken(appToken, force = false) {
+    async loadDataBaseWithKeyAndSaltByToken(appToken, force = false) {
         const databaseName = this.getDatabaseNameByAppToken(appToken);
         const databaseKeyName = this.getDatabaseKeyNameByAppToken(appToken);
-        await this.loadDatabase(databaseName, force);
-        await this.loadDatabaseKey(databaseKeyName, force);
-
+        const saltName = this.getDatabaseSaltNameByAppToken(appToken);
+        console.log('loadDataBaseWithKeyAndSaltByToken', databaseName, databaseKeyName, saltName);
+        try {
+            await this.loadDatabase(databaseName, force);
+            await this.loadDatabaseKey(databaseKeyName, force);
+            await this.loadDatabaseSalt(saltName, force);
+        } catch (e) {
+            console.log('loadDataBaseWithKeyAndSaltByToken error', e);
+        }
+        console.log('loadDataBaseWithKeyAndSaltByToken', 'loaded');
         return new Promise((resolve, reject) => {
             if (
                 this.databaseStatus === this.constructor.STATUS_LOADED &&
-                this.keyStatus === this.constructor.STATUS_LOADED
+                this.keyStatus === this.constructor.STATUS_LOADED &&
+                this.saltStatus === this.constructor.STATUS_LOADED
             ) {
                 resolve();
                 return;
             }
-            reject(this.databaseStatus, this.keyStatus);
+            reject(this.databaseStatus, this.keyStatus, this.saltStatus);
         });
     }
     /**
