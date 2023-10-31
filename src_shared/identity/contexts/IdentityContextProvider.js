@@ -1,13 +1,15 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {AUTH_MODE_BEARER_TOKEN, AUTH_MODE_COOKIE} from '../constants/AuthMode';
 import {AUTH_LOGIN_AWAIT, AUTH_LOGIN_IN_PROCESS} from '../constants/AuthLoginStatus';
-import {LOADING, LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM} from '../constants/AuthStatus';
+import {LOADING, LOG_IN_FORM, LOGGED_IN, NETWORK_ERROR, SIGN_UP_FORM} from '../constants/AuthStatus';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import IdentityContext from './IdentityContext';
 import {useNavigate} from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import {AppTokensService} from '../../utils/native/AppTokensService';
+// eslint-disable-next-line no-unused-vars
+import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import {AppToken} from '../../utils/native/AppToken';
 
 const IdentityContextProvider = props => {
@@ -16,10 +18,15 @@ const IdentityContextProvider = props => {
         : async () => {
               return '';
           };
+    const AppContext = props.AppContext;
     /**
-     * @var {AppTokensService} appTokensService
+     * @type {AppTokensService} appTokensService
      */
     const appTokensService = props.appTokensService ? props.appTokensService : null;
+    /**
+     * @type {OfflineDatabaseService} offlineDatabaseService
+     */
+    const offlineDatabaseService = useContext(AppContext).offlineDatabaseService;
 
     let hostURLDefault = '';
     if (props.hostURL) {
@@ -36,6 +43,7 @@ const IdentityContextProvider = props => {
     const [userEmail, setUserEmail] = useState('');
     const [userPassword, setUserPassword] = useState('');
     const [userToken, setUserToken] = useState('');
+    const [userIsAdmin, setUserIsAdmin] = useState(false);
     /**
      * @var {AppToken} userAppToken
      */
@@ -60,6 +68,13 @@ const IdentityContextProvider = props => {
 
     const changeAuthStatusSignup = () => {
         setAuthStatus(SIGN_UP_FORM);
+    };
+    const changeAuthStatusLoggedIn = () => {
+        setAuthStatus(LOGGED_IN);
+    };
+
+    const changeAuthStatusNetworkError = () => {
+        setAuthStatus(NETWORK_ERROR);
     };
 
     const handleUserNameInput = value => {
@@ -100,7 +115,7 @@ const IdentityContextProvider = props => {
                                     setUserId(response.data.id);
                                     setUserName(response.data.name);
                                     setErrorMessage('');
-                                    setAuthStatus(LOGGED_IN);
+                                    changeAuthStatusLoggedIn();
                                 },
                                 // GET USER ERROR
                                 () => {
@@ -155,13 +170,31 @@ const IdentityContextProvider = props => {
             })
             .then(
                 response => {
+                    console.log('getUserToken', response);
                     const token = response.data.token;
-                    const appToken = new AppToken(login, hostURL, token);
-                    appTokensService.addToken(appToken);
-                    activateUserToken(appToken);
-                    // console.log(response)
-                    setAuthStatus(LOGGED_IN);
-                    // console.log('cookies', Cookies.get())
+                    const user = response.data.user;
+                    console.log('token creating');
+                    let appToken = null;
+                    try {
+                        appToken = new AppToken(user.user_id, login, user.name, hostURL, token, user.is_admin);
+                    } catch (error) {
+                        console.log('token error', error);
+                        return;
+                    }
+                    console.log('token', appToken);
+
+                    appTokensService.addToken(appToken).then(
+                        () => {
+                            console.log('token', 'saved');
+                            activateUserToken(appToken);
+                            changeAuthStatusLoggedIn();
+                        },
+                        error => {
+                            console.log('appTokensService.addToken', error);
+                        },
+                    );
+
+                    // console.log('cookies', Cookies.get());
                 },
                 // error => {
                 //     // console.log('getTokenError', error)
@@ -223,10 +256,14 @@ const IdentityContextProvider = props => {
                     })
                     .then(
                         () => {
-                            console.log('login', 'logged');
+                            console.log('login', 'logged', authMode);
                             setAuthLoginStatus(AUTH_LOGIN_AWAIT);
-                            setAuthStatus('');
-                            navigate('/identity/loading');
+                            if (authMode === AUTH_MODE_BEARER_TOKEN) {
+                                getUser(true);
+                            } else {
+                                setAuthStatus('');
+                                navigate('/identity/loading');
+                            }
                         },
                         // LOGIN ERROR
                         error => {
@@ -259,10 +296,30 @@ const IdentityContextProvider = props => {
         // console.log('aad')
         activateUserToken(appToken);
         // console.log(axios)
-        CSRF().then(() => {
-            // console.log('csrf getUser')
-            getUser(false);
-        });
+        CSRF().then(
+            () => {
+                // console.log('csrf getUser')
+                getUser(false);
+            },
+            error => {
+                console.log(error);
+                if (error.code === 'ERR_NETWORK' && authMode === AUTH_MODE_BEARER_TOKEN) {
+                    changeAuthStatusNetworkError();
+                }
+            },
+        );
+    };
+
+    /**
+     * @param {AppToken} appToken
+     */
+    const offlineLoginByToken = appToken => {
+        setUserId(appToken.user_id);
+        setUserName(appToken.name);
+        setUserEmail(appToken.login);
+        setUserIsAdmin(appToken.is_admin);
+        setErrorMessage('');
+        changeAuthStatusLoggedIn();
     };
 
     async function logout(navigateFn) {
@@ -275,6 +332,7 @@ const IdentityContextProvider = props => {
                 deactivateUserToken();
             }
             setUserId('');
+            setUserIsAdmin(false);
             setUserName('');
             setUserNameInput('');
             setUserEmail('');
@@ -286,12 +344,10 @@ const IdentityContextProvider = props => {
 
     const getUser = (getToken = true) => {
         changeAuthStatusLoading();
-        // console.log('getUser', 'activated');
-        // setAuthStatus(LOADING)
-        // console.log(hostURL + "/identity/api/me")
+
         axios.get(hostURL + '/identity/api/me').then(
             response => {
-                // console.log('getUser', response);
+                console.log('getUser', response);
                 switch (response.data.message) {
                     default:
                     case 'guest':
@@ -305,15 +361,19 @@ const IdentityContextProvider = props => {
                         setUserId(response.data.user.user_id);
                         setUserName(response.data.user.name);
                         setUserEmail(response.data.user.email);
+                        setUserIsAdmin(response.data.user.is_admin === '1');
+                        console.log(
+                            'getUserToken act',
+                            authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken,
+                        );
                         if (authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken) {
                             getUserToken(response.data.user.email).then(() => {});
                         } else {
-                            setAuthStatus(LOGGED_IN);
+                            changeAuthStatusLoggedIn();
                         }
                         break;
                     case 'firstUser':
                         changeAuthStatusSignup();
-
                         break;
                 }
             },
@@ -345,6 +405,12 @@ const IdentityContextProvider = props => {
         });
     };
 
+    useEffect(() => {
+        // console.log('activate interceptors');
+        axios.defaults.withCredentials = true;
+        axios.defaults.timeout = 30000;
+    }, []);
+
     return (
         <IdentityContext.Provider
             value={{
@@ -353,11 +419,14 @@ const IdentityContextProvider = props => {
                 changeAuthStatusLogin,
                 changeAuthStatusSignup,
                 changeAuthStatusLoading,
+                changeAuthStatusNetworkError,
+                changeAuthStatusLoggedIn,
                 userId,
                 userName,
                 userNameInput,
                 userEmail,
                 userPassword,
+                userIsAdmin,
                 getUsers,
                 handleUserNameInput,
                 handleUserEmail,
@@ -366,6 +435,7 @@ const IdentityContextProvider = props => {
                 signup,
                 login,
                 loginByToken,
+                offlineLoginByToken,
                 logout,
                 getUser,
                 errorMessage,
@@ -373,6 +443,7 @@ const IdentityContextProvider = props => {
                 CSRF,
                 hostURL,
                 authLoginStatus,
+                authMode,
                 changeAuthMode,
             }}>
             {props.children}
