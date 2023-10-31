@@ -11,6 +11,7 @@ import {AppTokensService} from '../../utils/native/AppTokensService';
 // eslint-disable-next-line no-unused-vars
 import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import {AppToken} from '../../utils/native/AppToken';
+import {DATABASE_MODE_OFFLINE} from '../constants/DatabaseModeStates';
 
 const IdentityContextProvider = props => {
     const getClientId = props.getClientId
@@ -26,7 +27,7 @@ const IdentityContextProvider = props => {
     /**
      * @type {OfflineDatabaseService} offlineDatabaseService
      */
-    const offlineDatabaseService = useContext(AppContext).offlineDatabaseService;
+    // const offlineDatabaseService = useContext(AppContext).offlineDatabaseService;
 
     let hostURLDefault = '';
     if (props.hostURL) {
@@ -322,8 +323,8 @@ const IdentityContextProvider = props => {
         changeAuthStatusLoggedIn();
     };
 
-    async function logout(navigateFn) {
-        axios.get(hostURL + '/identity/api/logout').then(() => {
+    async function logout(navigateFn, databaseMode) {
+        const afterLogout = () => {
             if (authMode === AUTH_MODE_COOKIE) {
                 Cookies.remove('XSRF-TOKEN');
                 Cookies.remove('laravel_session');
@@ -339,6 +340,15 @@ const IdentityContextProvider = props => {
             setUserPassword('');
             setAuthStatus('');
             navigateFn('/');
+        };
+
+        if (databaseMode === DATABASE_MODE_OFFLINE) {
+            afterLogout();
+            return;
+        }
+
+        axios.get(hostURL + '/identity/api/logout').then(() => {
+            afterLogout();
         });
     }
 
