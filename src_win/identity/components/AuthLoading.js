@@ -1,33 +1,35 @@
 import React, {useContext, useEffect} from 'react';
 import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
-import {
-    LOG_IN_FORM,
-    LOGGED_IN,
-    SIGN_UP_FORM,
-    // TOKEN_SELECTION_PAGE,
-} from '../../../src_shared/identity/constants/AuthStatus';
+import {LOG_IN_FORM, LOGGED_IN, NETWORK_ERROR, SIGN_UP_FORM} from '../../../src_shared/identity/constants/AuthStatus';
 import {Navigate, useLocation} from 'react-router-native';
 import {Text, View} from 'react-native-windows';
 import tw from 'twrnc';
+import {AUTH_MODE_BEARER_TOKEN} from '../../../src_shared/identity/constants/AuthMode';
+import AuthLoadingOfflineMode from './AuthLoadingOfflineMode';
 
 const AuthLoading = () => {
     const location = useLocation();
     const identityContext = useContext(IdentityContext);
-    const {getUser, authStatus} = identityContext;
-
+    const {authMode, authStatus, changeAuthStatusLogin, appTokensService, getUser} = identityContext;
     useEffect(() => {
         if (authStatus === '') {
-            getUser(location);
+            if (authMode === AUTH_MODE_BEARER_TOKEN) {
+                appTokensService.load().then(() => {
+                    changeAuthStatusLogin();
+                });
+            } else {
+                getUser(location);
+            }
         }
-    }, [authStatus, getUser, location]);
+    }, [appTokensService, authMode, authStatus, changeAuthStatusLogin, getUser, location]);
     console.log('authStatus', authStatus);
     switch (authStatus) {
         case LOGGED_IN:
+            // console.log(path);
             let path = '/';
             if (location?.state?.from?.pathname) {
                 path = location.state.from.pathname;
             }
-            console.log(path);
             return <Navigate to={path} replace={true} />;
         case LOG_IN_FORM:
             return <Navigate to="/identity/login" replace={true} />;
@@ -37,7 +39,11 @@ const AuthLoading = () => {
 
     return (
         <View style={tw``}>
-            <Text style={tw`text-4xl text-slate-700 text-center`}>Loading</Text>
+            {authStatus === NETWORK_ERROR ? (
+                <AuthLoadingOfflineMode />
+            ) : (
+                <Text style={tw`text-4xl text-slate-700 text-center`}>Loading</Text>
+            )}
         </View>
     );
 };

@@ -1,7 +1,7 @@
 import React, {useContext, useState} from 'react';
 import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
 import {Navigate} from 'react-router-dom';
-import {LOGGED_IN} from '../../../src_shared/identity/constants/AuthStatus';
+import {LOADING, LOGGED_IN} from '../../../src_shared/identity/constants/AuthStatus';
 import {ActivityIndicator, Text, TextInput, TouchableOpacity, View} from 'react-native-windows';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -27,6 +27,10 @@ const AuthLogin = () => {
 
     if (authStatus === LOGGED_IN) {
         return <Navigate to="/" replace />;
+    }
+
+    if (authStatus === LOADING) {
+        return <Navigate to="/identity/loading" replace />;
     }
     //console-network
     //database
