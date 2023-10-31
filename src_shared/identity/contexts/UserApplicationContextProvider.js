@@ -440,7 +440,7 @@ const UserApplicationContextProvider = props => {
     }, [updateOfflineSalt, offlineDatabaseSyncMode, offlineSaltStatus, userAppToken]);
 
     useEffect(() => {
-        if (offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE) {
+        if (offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE && databaseMode === DATABASE_MODE_ONLINE) {
             offlineDatabaseUpdateWorker();
         }
 
@@ -456,10 +456,11 @@ const UserApplicationContextProvider = props => {
         offlineDatabaseSyncMode,
         offlineDatabaseStatus,
         userAppToken,
+        databaseMode,
     ]);
 
     useEffect(() => {
-        if (offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE) {
+        if (offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE && databaseMode === DATABASE_MODE_ONLINE) {
             offlinePrivateKeyUpdateWorker();
         }
 
@@ -475,18 +476,19 @@ const UserApplicationContextProvider = props => {
         offlinePrivateKeyWorkerId,
         offlinePrivateKeyStatus,
         userAppToken,
+        databaseMode,
     ]);
 
     useEffect(() => {
         const requestInterceptor = axios.interceptors.request.use(
-            function (config) {
+            config => {
                 if (databaseMode === DATABASE_MODE_OFFLINE) {
                     return Promise.reject({databaseMode: DATABASE_MODE_OFFLINE, config: config});
                 }
                 // Do something before request is sent
                 return config;
             },
-            function (error) {
+            error => {
                 // Do something with request error
                 console.log('Interceptor error handler', error);
                 return Promise.reject(error);
