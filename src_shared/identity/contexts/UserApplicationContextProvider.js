@@ -334,7 +334,7 @@ const UserApplicationContextProvider = props => {
 
     const switchDatabaseToOffline = () => {
         setDatabaseMode(DATABASE_MODE_SWITCHING_TO_OFFLINE);
-        offlineDatabaseService.loadDataBaseWithKeyByToken(userAppToken).then(
+        offlineDatabaseService.loadDataBaseWithKeyAndSaltByToken(userAppToken).then(
             () => setDatabaseMode(DATABASE_MODE_OFFLINE),
             error => console.log(error),
         );
@@ -457,6 +457,29 @@ const UserApplicationContextProvider = props => {
         offlinePrivateKeyStatus,
         userAppToken,
     ]);
+
+    useEffect(() => {
+        const requestInterceptor = axios.interceptors.request.use(
+            function (config) {
+                if (databaseMode === DATABASE_MODE_OFFLINE) {
+                    return Promise.reject({databaseMode: DATABASE_MODE_OFFLINE, config: config});
+                }
+                // Do something before request is sent
+                return config;
+            },
+            function (error) {
+                // Do something with request error
+                console.log('Interceptor error handler', error);
+                return Promise.reject(error);
+            },
+        );
+        return () => {
+            // console.log('request interceptors ejected');
+            if (requestInterceptor) {
+                axios.interceptors.request.eject(requestInterceptor);
+            }
+        };
+    }, [databaseMode]);
 
     return (
         <UserApplicationContext.Provider
