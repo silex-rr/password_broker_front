@@ -41,7 +41,10 @@ const OfflineDatabase = () => {
         offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? 'toggle-switch' : 'toggle-switch-off-outline';
     const toggleIsOfflineIcon = databaseMode === DATABASE_MODE_OFFLINE ? 'toggle-switch' : 'toggle-switch-off-outline';
     const iconSize = 21;
-    const iconSyncColor = offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? '#61e635' : '#CCCCCC';
+    let iconSyncColor = '#777777';
+    if (databaseMode === DATABASE_MODE_ONLINE) {
+        iconSyncColor = offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? '#61e635' : '#CCCCCC';
+    }
     const iconDatabaseIsOfflineColor = databaseMode === DATABASE_MODE_OFFLINE ? '#61e635' : '#CCCCCC';
 
     const offlineSyncModePressHandles = () => {
@@ -70,6 +73,10 @@ const OfflineDatabase = () => {
     };
 
     useEffect(() => {
+        if (databaseMode === DATABASE_MODE_OFFLINE) {
+            return;
+        }
+
         if (applicationIdState !== APPLICATION_LOADED) {
             if (applicationIdState === APPLICATION_NOT_LOADED) {
                 loadUserApplication();
@@ -81,7 +88,7 @@ const OfflineDatabase = () => {
             return;
         }
         getOfflineDatabaseSyncMode();
-    }, [offlineDatabaseSyncMode, getOfflineDatabaseSyncMode, applicationIdState, loadUserApplication]);
+    }, [offlineDatabaseSyncMode, getOfflineDatabaseSyncMode, applicationIdState, loadUserApplication, databaseMode]);
 
     if (
         applicationIdState === APPLICATION_LOADING ||
@@ -116,8 +123,11 @@ const OfflineDatabase = () => {
 
     return (
         <View style={tw`flex flex-row justify-between items-start`}>
-            <Text style={tw``}>Sync Offline:</Text>
-            <Text style={tw`pl-1`} onPress={offlineSyncModePressHandles}>
+            <Text style={tw`${databaseMode === DATABASE_MODE_OFFLINE ? 'text-gray-500' : ''}`}>Sync Offline:</Text>
+            <Text
+                style={tw`pl-1`}
+                onPress={offlineSyncModePressHandles}
+                disabled={databaseMode === DATABASE_MODE_OFFLINE}>
                 <MaterialCommunityIcons name={toggleSyncIcon} size={iconSize} color={iconSyncColor} />
             </Text>
             <Text style={tw`pl-2`}>Offline mode:</Text>
