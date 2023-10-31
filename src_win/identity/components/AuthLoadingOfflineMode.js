@@ -34,7 +34,7 @@ const AuthLoadingOfflineMode = () => {
     return (
         <View>
             <Text style={tw`text-3xl text-red-700 text-center mb-2`}>Network error</Text>
-            <Text style={tw`text-l text-slate-700 text-center`}>cannot connect to {hostURL}</Text>
+            <Text style={tw`text-slate-700 text-center`}>cannot connect to {hostURL}</Text>
             <View style={tw`flex flex-col mt-5`}>
                 <TouchableOpacity
                     onPress={tryAgainHandler}
