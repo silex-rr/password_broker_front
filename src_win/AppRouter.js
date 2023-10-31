@@ -16,7 +16,8 @@ const AppRouter = () => {
                 hostURL={hostURL}
                 tokenMode={true}
                 getClientId={getClientId}
-                appTokensService={appTokensService}>
+                appTokensService={appTokensService}
+                AppContext={AppContext}>
                 <UserApplicationContextProvider
                     getClientId={getClientId}
                     hostURL={hostURL}

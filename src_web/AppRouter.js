@@ -6,10 +6,11 @@ import AdminPanelRouter from './adminPanel/routers/AdminPanelRouter';
 import React from 'react';
 import IdentityContextProvider from '../src_shared/identity/contexts/IdentityContextProvider';
 import UserApplicationContextProvider from '../src_shared/identity/contexts/UserApplicationContextProvider';
+import AppContext from '../src_win/AppContext';
 const AppRouter = () => {
     return (
         <BrowserRouter>
-            <IdentityContextProvider>
+            <IdentityContextProvider AppContext={AppContext}>
                 <UserApplicationContextProvider>
                     <Routes>
                         <Route
