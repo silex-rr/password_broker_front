@@ -68,6 +68,25 @@ const UserApplicationContextProvider = props => {
     const [offlinePrivateKeyStatus, setOfflinePrivateKeyStatus] = useState(OFFLINE_DATABASE_NOT_LOADED);
     const [offlineSaltStatus, setOfflineSaltStatus] = useState(OFFLINE_DATABASE_NOT_LOADED);
 
+    const userApplicationUnload = useCallback(
+        () => {
+            setApplicationId(applicationId);
+            setApplicationIdState(applicationIdState);
+            setOfflineDatabaseSyncMode(offlineDatabaseSyncMode);
+            setDatabaseMode(databaseMode);
+
+            setOfflineDatabaseWorkerId(offlineDatabaseWorkerId);
+            setOfflineDatabaseStatus(offlineDatabaseStatus);
+
+            setOfflinePrivateKeyWorkerId(offlinePrivateKeyWorkerId);
+            setOfflinePrivateKeyStatus(offlinePrivateKeyStatus);
+            setOfflineSaltStatus(offlineSaltStatus);
+        },
+        //Dependency avoided intentionally to put all state on default
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [],
+    );
+
     const offlinePrivateKeyUpdateWorker = useCallback(() => {
         if (offlinePrivateKeyWorkerId !== null) {
             return;
@@ -320,7 +339,7 @@ const UserApplicationContextProvider = props => {
         setOfflineDatabaseSyncMode(OFFLINE_DATABASE_SYNC_MODE_LOADING);
         axios.get(defaultURL + '/userApplication/' + applicationId + '/offlineDatabaseMode').then(
             result => {
-                console.log(getOfflineDatabaseSyncMode, result.data.status);
+                // console.log('getOfflineDatabaseSyncMode', result.data.status);
                 setOfflineDatabaseSyncMode(
                     result.data.status ? OFFLINE_DATABASE_SYNC_MODE_ENABLE : OFFLINE_DATABASE_SYNC_MODE_DISABLE,
                 );
@@ -498,6 +517,7 @@ const UserApplicationContextProvider = props => {
                 switchDatabaseToOnline,
                 updateOfflineDatabaseKey,
                 updateOfflineDatabase,
+                userApplicationUnload,
             }}>
             {props.children}
         </UserApplicationContext.Provider>
