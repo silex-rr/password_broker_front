@@ -63,6 +63,8 @@ const UserApplicationContextProvider = props => {
     const [offlinePrivateKeyStatus, setOfflinePrivateKeyStatus] = useState(OFFLINE_DATABASE_NOT_LOADED);
     const [offlineSaltStatus, setOfflineSaltStatus] = useState(OFFLINE_DATABASE_NOT_LOADED);
 
+    const iconDisableColor = '#777777';
+
     const userApplicationUnload = useCallback(
         () => {
             setApplicationId(applicationId);
@@ -515,6 +517,8 @@ const UserApplicationContextProvider = props => {
                 updateOfflineDatabaseKey,
                 updateOfflineDatabase,
                 userApplicationUnload,
+
+                iconDisableColor,
             }}>
             {props.children}
         </UserApplicationContext.Provider>
