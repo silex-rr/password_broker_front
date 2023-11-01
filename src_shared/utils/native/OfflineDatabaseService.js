@@ -284,7 +284,6 @@ export class OfflineDatabaseService {
         console.log('reloadKey', this.loadedKeyName);
         await this.loadDatabaseKey(this.loadedKeyName, force);
     }
-
     getSalt() {
         return this.salt;
     }
@@ -294,6 +293,11 @@ export class OfflineDatabaseService {
         }
         console.log('reloadSalt', this.loadedSaltName);
         await this.loadDatabaseSalt(this.loadedSaltName, force);
+    }
+
+    async reloadKeyAndSalt(force = false) {
+        await this.reloadKey(force);
+        await this.reloadSalt(force);
     }
 
     /**
