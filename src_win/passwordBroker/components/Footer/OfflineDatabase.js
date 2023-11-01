@@ -35,13 +35,14 @@ const OfflineDatabase = () => {
         reloadApplication,
         switchDatabaseToOffline,
         switchDatabaseToOnline,
+        iconDisableColor,
     } = useContext(UserApplicationContext);
 
     const toggleSyncIcon =
         offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? 'toggle-switch' : 'toggle-switch-off-outline';
     const toggleIsOfflineIcon = databaseMode === DATABASE_MODE_OFFLINE ? 'toggle-switch' : 'toggle-switch-off-outline';
     const iconSize = 21;
-    let iconSyncColor = '#777777';
+    let iconSyncColor = iconDisableColor;
     if (databaseMode === DATABASE_MODE_ONLINE) {
         iconSyncColor = offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? '#61e635' : '#CCCCCC';
     }
