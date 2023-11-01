@@ -44,7 +44,7 @@ const EntryField = props => {
     //hover:bg-slate-600
 
     return (
-        <View key={fieldId}>
+        <View>
             <View style={tw`flex flex-row w-full px-2 bg-slate-500 items-baseline ${trashed ? 'hidden' : ''}`}>
                 <View style={tw`px-2 basis-1/6`}>
                     <Text>{title}</Text>

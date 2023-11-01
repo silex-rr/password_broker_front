@@ -23,7 +23,7 @@ const EntryFields = ({
     const fieldComponents = [];
 
     for (let i = 0; i < fields.length; i++) {
-        fieldComponents.push(EntryField(fields[i]));
+        fieldComponents.push(<EntryField key={fields[i].field_id} {...fields[i]} />);
     }
 
     const {entryGroupFieldForEditId, entryGroupFieldForEditDecryptedValue, entryGroupFieldForEditState} =
@@ -93,6 +93,9 @@ const EntryFields = ({
         setEntryFieldsStatus,
         modalClose,
     ]);
+    console.log('fields loaded');
+    console.log(fieldComponents.length);
+    console.log(fieldComponents);
 
     return (
         <React.Fragment key={entryId + '_fields'}>
