@@ -30,8 +30,6 @@ import IdentityContext from './IdentityContext';
 import {Buffer} from 'buffer';
 
 const UserApplicationContextProvider = props => {
-    let hostURLDefault = '';
-
     const getClientId = props.getClientId
         ? props.getClientId
         : async () => {
@@ -43,18 +41,15 @@ const UserApplicationContextProvider = props => {
      */
     const offlineDatabaseService = props.offlineDatabaseService;
 
-    if (props.hostURL) {
-        hostURLDefault = props.hostURL;
-    } else if (process.env.REACT_APP_PASSWORD_BROKER_HOST) {
-        hostURLDefault = process.env.REACT_APP_PASSWORD_BROKER_HOST;
-    }
+    const identityContext = useContext(IdentityContext);
+    const {hostURL} = identityContext;
 
     /**
      * @var {AppToken} userAppToken
      */
-    const {userAppToken} = useContext(IdentityContext);
+    const {userAppToken} = identityContext;
 
-    const defaultURL = hostURLDefault + '/identity/api';
+    const defaultURL = hostURL + '/identity/api';
 
     const [applicationId, setApplicationId] = useState('');
     const [applicationIdState, setApplicationIdState] = useState(APPLICATION_NOT_LOADED);
@@ -208,7 +203,7 @@ const UserApplicationContextProvider = props => {
          */
         const updateOfflineDatabaseAwait = async AppToken => {
             try {
-                const response = await axios.get(hostURLDefault + '/passwordBroker/api/entryGroupsWithFields');
+                const response = await axios.get(hostURL + '/passwordBroker/api/entryGroupsWithFields');
                 await offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp);
                 if (databaseMode === DATABASE_MODE_OFFLINE) {
                     await offlineDatabaseService.reloadDatabase();
@@ -263,7 +258,7 @@ const UserApplicationContextProvider = props => {
         applicationId,
         databaseMode,
         defaultURL,
-        hostURLDefault,
+        hostURL,
         offlineDatabaseService,
         offlineDatabaseStatus,
         offlineDatabaseWorkerId,
@@ -274,7 +269,7 @@ const UserApplicationContextProvider = props => {
      * @param {AppToken} AppToken
      */
     const updateOfflineDatabase = AppToken => {
-        axios.get(hostURLDefault + '/passwordBroker/api/entryGroupsWithFields').then(
+        axios.get(hostURL + '/passwordBroker/api/entryGroupsWithFields').then(
             response => {
                 offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp).then(
                     () => {

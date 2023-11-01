@@ -211,6 +211,11 @@ const IdentityContextProvider = props => {
                     typeof resolve === 'function' && resolve(response);
                 },
                 error => {
+                    console.log(error);
+                    if (error.code === 'ERR_NETWORK' && authMode === AUTH_MODE_BEARER_TOKEN) {
+                        changeAuthStatusNetworkError();
+                        return;
+                    }
                     typeof reject === 'function' && reject(error);
                 },
             );
@@ -309,19 +314,21 @@ const IdentityContextProvider = props => {
     const loginByToken = appToken => {
         // console.log('aad')
         activateUserToken(appToken);
+        setHostURL(appToken.url);
+        setAuthStatus('');
         // console.log(axios)
-        CSRF().then(
-            () => {
-                // console.log('csrf getUser')
-                getUser(false);
-            },
-            error => {
-                console.log(error);
-                if (error.code === 'ERR_NETWORK' && authMode === AUTH_MODE_BEARER_TOKEN) {
-                    changeAuthStatusNetworkError();
-                }
-            },
-        );
+        // CSRF().then(
+        //     () => {
+        //         // console.log('csrf getUser')
+        //         getUser(false);
+        //     },
+        //     error => {
+        //         console.log(error);
+        //         if (error.code === 'ERR_NETWORK' && authMode === AUTH_MODE_BEARER_TOKEN) {
+        //             changeAuthStatusNetworkError();
+        //         }
+        //     },
+        // );
     };
 
     /**
@@ -369,43 +376,44 @@ const IdentityContextProvider = props => {
 
     const getUser = (getToken = true) => {
         changeAuthStatusLoading();
-
-        axios.get(getUrlUser()).then(
-            response => {
-                console.log('getUser', response);
-                switch (response.data.message) {
-                    default:
-                    case 'guest':
-                        authMode === AUTH_MODE_BEARER_TOKEN
-                            ? appTokensService.load().then(() => {
-                                  changeAuthStatusLogin();
-                              })
-                            : changeAuthStatusLogin();
-                        break;
-                    case 'loggedIn':
-                        setUserId(response.data.user.user_id);
-                        setUserName(response.data.user.name);
-                        setUserEmail(response.data.user.email);
-                        setUserIsAdmin(response.data.user.is_admin === '1');
-                        console.log(
-                            'getUserToken act',
-                            authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken,
-                        );
-                        if (authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken) {
-                            getUserToken(response.data.user.email).then(() => {});
-                        } else {
-                            changeAuthStatusLoggedIn();
-                        }
-                        break;
-                    case 'firstUser':
-                        changeAuthStatusSignup();
-                        break;
-                }
-            },
-            error => {
-                console.log('identityContext.getUser error', error);
-                navigate('/identity/login');
-            },
+        CSRF().then(() =>
+            axios.get(getUrlUser()).then(
+                response => {
+                    console.log('getUser', response);
+                    switch (response.data.message) {
+                        default:
+                        case 'guest':
+                            authMode === AUTH_MODE_BEARER_TOKEN
+                                ? appTokensService.load().then(() => {
+                                      changeAuthStatusLogin();
+                                  })
+                                : changeAuthStatusLogin();
+                            break;
+                        case 'loggedIn':
+                            setUserId(response.data.user.user_id);
+                            setUserName(response.data.user.name);
+                            setUserEmail(response.data.user.email);
+                            setUserIsAdmin(response.data.user.is_admin === '1');
+                            console.log(
+                                'getUserToken act',
+                                authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken,
+                            );
+                            if (authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken) {
+                                getUserToken(response.data.user.email).then(() => {});
+                            } else {
+                                changeAuthStatusLoggedIn();
+                            }
+                            break;
+                        case 'firstUser':
+                            changeAuthStatusSignup();
+                            break;
+                    }
+                },
+                error => {
+                    console.log('identityContext.getUser error', error);
+                    navigate('/identity/login');
+                },
+            ),
         );
     };
 

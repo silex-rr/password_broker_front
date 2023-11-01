@@ -20,6 +20,7 @@ import PasswordBrokerContext from './PasswordBrokerContext';
 import {DATABASE_MODE_OFFLINE, DATABASE_MODE_ONLINE} from '../../identity/constants/DatabaseModeStates';
 // eslint-disable-next-line no-unused-vars
 import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
+import IdentityContext from '../../identity/contexts/IdentityContext';
 
 const PasswordBrokerContextProvider = props => {
     const AppContext = props.AppContext;
@@ -31,7 +32,8 @@ const PasswordBrokerContextProvider = props => {
      * @type {OfflineDatabaseService}
      */
     const offlineDatabaseService = useContext(AppContext).offlineDatabaseService;
-    const {hostURL, showMasterPasswordModal} = useContext(AppContext);
+    const {showMasterPasswordModal} = useContext(AppContext);
+    const {hostURL} = useContext(IdentityContext);
     const baseUrl = hostURL + '/passwordBroker/api';
 
     const [entryGroupTrees, setEntryGroupTrees] = useState([]);
@@ -67,7 +69,7 @@ const PasswordBrokerContextProvider = props => {
         setMoveEntryGroupMode(!moveEntryGroupMode);
     };
 
-    const loadEntryGroupTrees = () => {
+    const loadEntryGroupTrees = useCallback(() => {
         if (databaseMode === DATABASE_MODE_OFFLINE) {
             const dataBase = offlineDatabaseService.getDataBase();
             // console.log('loadEntryGroupTrees-offline', dataBase);
@@ -86,7 +88,7 @@ const PasswordBrokerContextProvider = props => {
                 console.log(error);
             },
         );
-    };
+    }, [baseUrl, databaseMode, offlineDatabaseService]);
 
     const selectEntryGroup = useCallback(
         entryGroupID => {

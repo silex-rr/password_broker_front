@@ -10,10 +10,10 @@ import AuthLoadingOfflineMode from './AuthLoadingOfflineMode';
 const AuthLoading = () => {
     const location = useLocation();
     const identityContext = useContext(IdentityContext);
-    const {authMode, authStatus, changeAuthStatusLogin, appTokensService, getUser} = identityContext;
+    const {authMode, authStatus, changeAuthStatusLogin, appTokensService, getUser, userAppToken} = identityContext;
     useEffect(() => {
         if (authStatus === '') {
-            if (authMode === AUTH_MODE_BEARER_TOKEN) {
+            if (authMode === AUTH_MODE_BEARER_TOKEN && userAppToken === null) {
                 appTokensService.load().then(() => {
                     changeAuthStatusLogin();
                 });
@@ -21,7 +21,7 @@ const AuthLoading = () => {
                 getUser(location);
             }
         }
-    }, [appTokensService, authMode, authStatus, changeAuthStatusLogin, getUser, location]);
+    }, [appTokensService, authMode, authStatus, changeAuthStatusLogin, getUser, location, userAppToken]);
     console.log('authStatus', authStatus);
     switch (authStatus) {
         case LOGGED_IN:
