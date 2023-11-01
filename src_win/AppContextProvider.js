@@ -13,7 +13,7 @@ import {AppTokensService} from '../src_shared/utils/native/AppTokensService';
 const offlineDatabaseService = new OfflineDatabaseService();
 const appTokensService = new AppTokensService();
 const AppContextProvider = props => {
-    const hostURL = 'http://dev-back.jrvs.ru';
+    const hostURL = process.env.REACT_APP_PASSWORD_BROKER_HOST;
     const [modalContent, setModalContent] = useState(<View />);
     const [modalStyle, setModalStyle] = useState({});
     const [modalVisible, setModalVisible] = useState(false);
