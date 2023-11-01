@@ -159,6 +159,7 @@ const IdentityContextProvider = props => {
     };
     const deactivateUserToken = () => {
         setUserToken('');
+        setUserAppToken(null);
         axios.defaults.headers.common = {};
         // axios.interceptors.request.use(() => {})
     };
