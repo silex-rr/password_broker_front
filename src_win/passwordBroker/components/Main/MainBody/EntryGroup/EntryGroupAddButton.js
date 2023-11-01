@@ -24,7 +24,9 @@ const EntryGroupAddButton = props => {
 
     return (
         <View style={tw`px-2`}>
-            <Pressable onPress={openModal}>{props.button}</Pressable>
+            <Pressable onPress={openModal} disabled={props.disabled}>
+                {props.button}
+            </Pressable>
         </View>
     );
 };

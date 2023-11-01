@@ -14,14 +14,15 @@ import MainLeftMenuTreeNode from './MainLeftMenuTreeNode';
 // import {RiFolderAddFill, RiFolderSettingsFill} from 'react-icons/ri';
 // import MainLeftMenuRootDrop from "./MainLeftMenuRootDrop";
 // import {ClockLoader} from 'react-spinners';
-import {Text, View, ActivityIndicator, ScrollView} from 'react-native-windows';
+import {ActivityIndicator, ScrollView, Text, View} from 'react-native-windows';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 // import EntryGroupAdd from './MainBody/EntryGroup/EntryGroupAdd';
 import EntryGroupAddButton from './MainBody/EntryGroup/EntryGroupAddButton';
+import UserApplicationContext from '../../../../src_shared/identity/contexts/UserApplicationContext';
+import {DATABASE_MODE_OFFLINE} from '../../../../src_shared/identity/constants/DatabaseModeStates';
 
 const MainLeftMenu = () => {
-    const passwordBrokerContext = useContext(PasswordBrokerContext);
     const {
         loadEntryGroupTrees,
         entryGroupTrees,
@@ -29,16 +30,11 @@ const MainLeftMenu = () => {
         setEntryGroupTreesStatus,
         // moveEntryGroupMode,
         // setMoveEntryGroupMode,
-    } = passwordBrokerContext;
+    } = useContext(PasswordBrokerContext);
+
+    const {databaseMode, iconDisableColor} = useContext(UserApplicationContext);
 
     // const menuButtonSize = 'text-3xl';
-
-    useEffect(() => {
-        if (entryGroupTreesStatus === ENTRY_GROUP_TREES_REQUIRED_LOADING) {
-            setEntryGroupTreesStatus(ENTRY_GROUP_TREES_LOADING);
-            loadEntryGroupTrees();
-        }
-    }, [entryGroupTreesStatus, setEntryGroupTreesStatus, loadEntryGroupTrees]);
 
     let trees = <View style={tw`px-4`} />;
 
@@ -62,16 +58,28 @@ const MainLeftMenu = () => {
         }
     }
 
+    const disableButtons = databaseMode === DATABASE_MODE_OFFLINE;
+    const iconColor = disableButtons ? iconDisableColor : '#1e293b';
+
+    useEffect(() => {
+        if (entryGroupTreesStatus === ENTRY_GROUP_TREES_REQUIRED_LOADING) {
+            setEntryGroupTreesStatus(ENTRY_GROUP_TREES_LOADING);
+            loadEntryGroupTrees();
+        }
+    }, [entryGroupTreesStatus, setEntryGroupTreesStatus, loadEntryGroupTrees]);
+
     // const handleMoveEntryGroupMode = () => {
     //     setMoveEntryGroupMode(!moveEntryGroupMode);
     // };
+
     return (
         <View style={tw`bg-slate-900 text-slate-400 pr-1 h-full min-w-[20%]`}>
             <View style={tw`w-full bg-slate-200 px-3 text-slate-800 py-0 min-w-[40px]`}>
                 <EntryGroupAddButton
                     entryGroupId={null}
                     entryGroupTitle={null}
-                    button={<MaterialCommunityIcons name="folder-plus" size={32} color="#1e293b" />}
+                    disabled={disableButtons}
+                    button={<MaterialCommunityIcons name="folder-plus" size={32} color={iconColor} />}
                 />
             </View>
             <View style={tw`py-0 px-2 flex h-full mt-5 flex-1`}>

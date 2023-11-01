@@ -8,10 +8,13 @@ import {DataTable} from 'react-native-paper';
 import tw from 'twrnc';
 import EntryGroupAddButton from './EntryGroupAddButton';
 import EntryContextProvider from '../../../../../../src_shared/passwordBroker/contexts/EntryContextProvider';
+import UserApplicationContext from '../../../../../../src_shared/identity/contexts/UserApplicationContext';
+import {DATABASE_MODE_OFFLINE} from '../../../../../../src_shared/identity/constants/DatabaseModeStates';
 // import {EntryFieldProvider} from '../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
 
 const EntryGroup = props => {
     const passwordBrokerContext = useContext(PasswordBrokerContext);
+    const {databaseMode} = useContext(UserApplicationContext);
     const {entryGroupId} = passwordBrokerContext;
 
     const entries = [];
@@ -29,6 +32,9 @@ const EntryGroup = props => {
             </DataTable.Row>,
         );
     }
+
+    const disableButtons = databaseMode === DATABASE_MODE_OFFLINE;
+    const buttonColor = disableButtons ? 'bg-gray-500' : 'bg-slate-800';
 
     // const entryGroupAddButton =
 
@@ -58,8 +64,9 @@ const EntryGroup = props => {
                     <EntryGroupAddButton
                         entryGroupId={entryGroupId}
                         entryGroupTitle={props.entryGroup.name}
+                        disabled={disableButtons}
                         button={
-                            <View style={tw`rounded py-2 px-10 bg-slate-800`}>
+                            <View style={tw`rounded py-2 px-10 ${buttonColor}`}>
                                 <Text style={tw`text-slate-200 text-center`}>add new child Entry Group</Text>
                             </View>
                         }

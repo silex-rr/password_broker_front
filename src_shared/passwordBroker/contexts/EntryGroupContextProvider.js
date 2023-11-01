@@ -26,13 +26,14 @@ import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates
 // eslint-disable-next-line no-unused-vars
 import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import {CryptoService} from '../../utils/native/CryptoService';
+import UserApplicationContext from '../../identity/contexts/UserApplicationContext';
 
 const EntryGroupContextProvider = props => {
     const {Link, Password, Note, File} = props.entryFieldTypes;
     const EntryFieldButton = props.EntryFieldButton;
     const copy = props.copyToClipboard;
     const writeFile = props.writeFile;
-
+    const {iconDisableColor} = useContext(UserApplicationContext);
     const passwordBrokerContext = useContext(PasswordBrokerContext);
     const {
         masterPassword,
@@ -246,6 +247,9 @@ const EntryGroupContextProvider = props => {
         let value = '';
         const buttons = [];
 
+        const disableButtons = databaseMode === DATABASE_MODE_OFFLINE;
+        const iconColor = disableButtons ? iconDisableColor : '';
+
         const visibilityButton = (
             <EntryFieldButton
                 key="visibilityButton"
@@ -283,7 +287,8 @@ const EntryGroupContextProvider = props => {
                 onclick={handleHistoryButton}
                 loading={buttonLoading === 'history'}
                 tip="history"
-                colour={historyVisible ? 'text-yellow-500' : ''}
+                colour={historyVisible ? 'text-yellow-500' : iconColor}
+                disabled={disableButtons}
             />
         );
 
@@ -378,10 +383,11 @@ const EntryGroupContextProvider = props => {
                 <EntryFieldButton
                     key="editButton"
                     icon="FaEdit"
-                    colour="text-blue-300"
                     onclick={handleEdit}
                     loading={buttonLoading === 'edit'}
                     tip="edit"
+                    colour={historyVisible ? 'text-blue-300' : iconColor}
+                    disabled={disableButtons}
                 />,
             );
 
@@ -389,10 +395,11 @@ const EntryGroupContextProvider = props => {
                 <EntryFieldButton
                     key="deleteButton"
                     icon="FaTrashAlt"
-                    colour="text-red-400"
                     onclick={handleDelete}
                     loading={buttonLoading === 'delete'}
                     tip="delete"
+                    colour={historyVisible ? 'text-red-400' : iconColor}
+                    disabled={disableButtons}
                 />,
             );
         }

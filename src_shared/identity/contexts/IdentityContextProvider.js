@@ -206,6 +206,10 @@ const IdentityContextProvider = props => {
 
     const CSRF = () => {
         return new Promise((resolve, reject) => {
+            if (Cookies.get('XSRF-TOKEN')) {
+                typeof resolve === 'function' && resolve(null);
+                return;
+            }
             axios.get(getUrlCsrf()).then(
                 response => {
                     // console.log('csrf', response)
@@ -276,7 +280,7 @@ const IdentityContextProvider = props => {
                     })
                     .then(
                         () => {
-                            console.log('login', 'logged', authMode);
+                            // console.log('login', 'logged', authMode);
                             setAuthLoginStatus(AUTH_LOGIN_AWAIT);
                             if (authMode === AUTH_MODE_BEARER_TOKEN) {
                                 getUser(true);
@@ -380,7 +384,7 @@ const IdentityContextProvider = props => {
         CSRF().then(() =>
             axios.get(getUrlUser()).then(
                 response => {
-                    console.log('getUser', response);
+                    // console.log('getUser', response);
                     switch (response.data.message) {
                         default:
                         case 'guest':
