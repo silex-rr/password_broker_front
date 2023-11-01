@@ -72,7 +72,7 @@ export class OfflineDatabaseService {
         const databaseName = this.getDatabaseNameByAppToken(appToken);
         const databaseKeyName = this.getDatabaseKeyNameByAppToken(appToken);
         const saltName = this.getDatabaseSaltNameByAppToken(appToken);
-        console.log('loadDataBaseWithKeyAndSaltByToken', databaseName, databaseKeyName, saltName);
+        // console.log('loadDataBaseWithKeyAndSaltByToken', databaseName, databaseKeyName, saltName);
         try {
             await this.loadDatabase(databaseName, force);
             await this.loadDatabaseKey(databaseKeyName, force);
@@ -80,7 +80,7 @@ export class OfflineDatabaseService {
         } catch (e) {
             console.log('loadDataBaseWithKeyAndSaltByToken error', e);
         }
-        console.log('loadDataBaseWithKeyAndSaltByToken', 'loaded');
+        // console.log('loadDataBaseWithKeyAndSaltByToken', 'loaded');
         return new Promise((resolve, reject) => {
             if (
                 this.databaseStatus === this.constructor.STATUS_LOADED &&
@@ -281,7 +281,7 @@ export class OfflineDatabaseService {
         if (this.loadedKeyName === '') {
             return;
         }
-        console.log('reloadKey', this.loadedKeyName);
+        // console.log('reloadKey', this.loadedKeyName);
         await this.loadDatabaseKey(this.loadedKeyName, force);
     }
     getSalt() {
@@ -291,7 +291,7 @@ export class OfflineDatabaseService {
         if (this.loadedSaltName === '') {
             return;
         }
-        console.log('reloadSalt', this.loadedSaltName);
+        // console.log('reloadSalt', this.loadedSaltName);
         await this.loadDatabaseSalt(this.loadedSaltName, force);
     }
 
