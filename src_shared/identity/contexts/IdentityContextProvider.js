@@ -43,6 +43,9 @@ const IdentityContextProvider = props => {
     const [userNameInput, setUserNameInput] = useState('');
     const [userEmail, setUserEmail] = useState('');
     const [userPassword, setUserPassword] = useState('');
+    const [userPasswordConfirmation, setUserPasswordConfirmation] = useState('');
+    const [userRegistrationMasterPassword, setUserRegistrationMasterPassword] = useState('');
+    const [userRegistrationMasterPasswordConfirmation, setUserRegistrationMasterPasswordConfirmation] = useState('');
     const [userToken, setUserToken] = useState('');
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     /**
@@ -88,9 +91,17 @@ const IdentityContextProvider = props => {
     const handleHostURL = value => {
         setHostURL(value);
     };
-
     const handleUserPassword = value => {
         setUserPassword(value);
+    };
+    const handleUserPasswordConfirmation = value => {
+        setUserPasswordConfirmation(value);
+    };
+    const handleUserRegistrationMasterPassword = value => {
+        setUserRegistrationMasterPassword(value);
+    };
+    const handleUserRegistrationMasterPasswordConfirmation = value => {
+        setUserRegistrationMasterPasswordConfirmation(value);
     };
 
     const signup = () => {
@@ -101,28 +112,23 @@ const IdentityContextProvider = props => {
                 //console.log(response);
                 // SIGNUP / REGISTER
                 axios
-                    .post(hostURL + '/identity/api/register', {
+                    .post(getUrlSingUp(), {
                         name: userNameInput,
                         email: userEmail,
                         password: userPassword,
+                        password_confirmation: userPasswordConfirmation,
+                        master_password: userRegistrationMasterPassword,
+                        master_password_confirmation: userRegistrationMasterPasswordConfirmation,
                     })
                     .then(
                         () => {
-                            //console.log(response);
-                            // GET USER
-                            axios.get(hostURL + '/identity/api/user').then(
-                                response => {
-                                    //console.log(response);
-                                    setUserId(response.data.id);
-                                    setUserName(response.data.name);
-                                    setErrorMessage('');
-                                    changeAuthStatusLoggedIn();
-                                },
-                                // GET USER ERROR
-                                () => {
-                                    setErrorMessage('Could not complete the sign up');
-                                },
-                            );
+                            setAuthLoginStatus(AUTH_LOGIN_AWAIT);
+                            if (authMode === AUTH_MODE_BEARER_TOKEN) {
+                                getUser(true);
+                            } else {
+                                setAuthStatus('');
+                                navigate('/identity/loading');
+                            }
                         },
                         // SIGNUP ERROR
                         error => {
@@ -238,6 +244,9 @@ const IdentityContextProvider = props => {
     }, [hostURL]);
     const getUrlUser = useCallback(() => {
         return hostURL + '/identity/api/me';
+    }, [hostURL]);
+    const getUrlSingUp = useCallback(() => {
+        return hostURL + '/identity/api/registration';
     }, [hostURL]);
 
     const login = () => {
@@ -450,7 +459,7 @@ const IdentityContextProvider = props => {
         let requestInterceptor = null;
         if (authStatus !== LOGGED_IN) {
             // console.log('request interceptor activated', authStatus);
-            const validUrl = [getUrlLogin(), getUrlLogout(), getUrlCsrf(), getUrlUser()];
+            const validUrl = [getUrlLogin(), getUrlLogout(), getUrlCsrf(), getUrlUser(), getUrlSingUp()];
 
             requestInterceptor = axios.interceptors.request.use(
                 config => {
@@ -471,7 +480,7 @@ const IdentityContextProvider = props => {
                 axios.interceptors.request.eject(requestInterceptor);
             }
         };
-    }, [authStatus, getUrlCsrf, getUrlLogin, getUrlLogout, getUrlUser]);
+    }, [authStatus, getUrlCsrf, getUrlLogin, getUrlLogout, getUrlUser, getUrlSingUp]);
 
     return (
         <IdentityContext.Provider
@@ -488,11 +497,17 @@ const IdentityContextProvider = props => {
                 userNameInput,
                 userEmail,
                 userPassword,
+                userPasswordConfirmation,
+                userRegistrationMasterPassword,
+                userRegistrationMasterPasswordConfirmation,
                 userIsAdmin,
                 getUsers,
                 handleUserNameInput,
                 handleUserEmail,
                 handleUserPassword,
+                handleUserPasswordConfirmation,
+                handleUserRegistrationMasterPassword,
+                handleUserRegistrationMasterPasswordConfirmation,
                 handleHostURL,
                 signup,
                 login,
