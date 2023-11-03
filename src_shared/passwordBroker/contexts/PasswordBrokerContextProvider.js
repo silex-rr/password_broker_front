@@ -18,8 +18,7 @@ import {MASTER_PASSWORD_FILLED_IN, MASTER_PASSWORD_IS_EMPTY} from '../constants/
 import axios from 'axios';
 import PasswordBrokerContext from './PasswordBrokerContext';
 import {DATABASE_MODE_OFFLINE, DATABASE_MODE_ONLINE} from '../../identity/constants/DatabaseModeStates';
-// eslint-disable-next-line no-unused-vars
-import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
+// import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import IdentityContext from '../../identity/contexts/IdentityContext';
 
 const PasswordBrokerContextProvider = props => {

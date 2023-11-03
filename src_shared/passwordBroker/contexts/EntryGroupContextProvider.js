@@ -8,7 +8,7 @@ import {
     MASTER_PASSWORD_INVALID,
     MASTER_PASSWORD_VALIDATED,
 } from '../constants/MasterPasswordStates';
-import {Buffer} from 'buffer';
+// import {Buffer} from 'buffer';
 import {
     FIELD_TYPE_FILE,
     FIELD_TYPE_LINK,
@@ -23,10 +23,11 @@ import {
 } from '../constants/EntryGroupEntryFieldEditingStates';
 import EntryGroupContext from './EntryGroupContext';
 import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates';
-// eslint-disable-next-line no-unused-vars
-import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
+// import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import {CryptoService} from '../../utils/native/CryptoService';
 import UserApplicationContext from '../../identity/contexts/UserApplicationContext';
+
+const Buffer = require('buffer/').Buffer;
 
 const EntryGroupContextProvider = props => {
     const {Link, Password, Note, File} = props.entryFieldTypes;

@@ -27,8 +27,8 @@ import {
     OFFLINE_DATABASE_SYNCHRONIZED,
 } from '../constants/OfflineDatabaseStatus';
 import IdentityContext from './IdentityContext';
-import {Buffer} from 'buffer';
-
+// import {Buffer} from 'buffer';
+const Buffer = require('buffer/').Buffer;
 const UserApplicationContextProvider = props => {
     const getClientId = props.getClientId
         ? props.getClientId
