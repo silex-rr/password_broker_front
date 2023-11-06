@@ -104,6 +104,10 @@ const IdentityContextProvider = props => {
         setUserRegistrationMasterPasswordConfirmation(value);
     };
 
+    const checkCsrfMismatch = error => {
+        return error?.response?.data?.message === 'CSRF token mismatch.';
+    };
+
     const signup = () => {
         // CSRF COOKIE
         // axios.get(hostURL + "/sanctum/csrf-cookie")
@@ -132,14 +136,44 @@ const IdentityContextProvider = props => {
                         },
                         // SIGNUP ERROR
                         error => {
-                            if (error.response.data.errors.name) {
-                                setErrorMessage(error.response.data.errors.name[0]);
-                            } else if (error.response.data.errors.email) {
-                                setErrorMessage(error.response.data.errors.email[0]);
-                            } else if (error.response.data.errors.password) {
-                                setErrorMessage(error.response.data.errors.password[0]);
-                            } else if (error.response.data.message) {
+                            //console.log(error);
+                            if (checkCsrfMismatch(error)) {
+                                Cookies.remove('XSRF-TOKEN', {path: ''});
+                                //console.log(Cookies.get());
+                            }
+                            let errorMessages = [];
+                            if (error?.response?.data?.errors) {
+                                if (error.response.data.errors['user.name']) {
+                                    errorMessages = errorMessages.concat(error.response.data.errors['user.name']);
+                                }
+                                if (error.response.data.errors['user.email']) {
+                                    errorMessages = errorMessages.concat(error.response.data.errors['user.email']);
+                                }
+                                if (error.response.data.errors['user.password']) {
+                                    errorMessages = errorMessages.concat(error.response.data.errors['user.password']);
+                                }
+                                if (error.response.data.errors['user.password_confirmation']) {
+                                    errorMessages = errorMessages.concat(
+                                        error.response.data.errors['user.password_confirmation'],
+                                    );
+                                }
+                                if (error.response.data.errors['user.master_password']) {
+                                    errorMessages = errorMessages.concat(
+                                        error.response.data.errors['user.master_password'],
+                                    );
+                                }
+                                if (error.response.data.errors['user.master_password_confirmation']) {
+                                    errorMessages = errorMessages.concat(
+                                        error.response.data.errors['user.master_password_confirmation'],
+                                    );
+                                }
+                            }
+                            if (errorMessages.length > 0) {
+                                setErrorMessage(errorMessages.join('\r\n'));
+                            } else if (error?.response?.data?.message) {
                                 setErrorMessage(error.response.data.message);
+                            } else if (error?.message) {
+                                setErrorMessage(error.message);
                             } else {
                                 setErrorMessage('Could not complete the sign up');
                             }
@@ -212,13 +246,14 @@ const IdentityContextProvider = props => {
 
     const CSRF = () => {
         return new Promise((resolve, reject) => {
+            //console.log('csrf current:', Cookies.get('XSRF-TOKEN'));
             if (Cookies.get('XSRF-TOKEN')) {
                 typeof resolve === 'function' && resolve(null);
                 return;
             }
             axios.get(getUrlCsrf()).then(
                 response => {
-                    // console.log('csrf', response)
+                    //console.log('csrf', response);
                     typeof resolve === 'function' && resolve(response);
                 },
                 error => {
@@ -300,6 +335,9 @@ const IdentityContextProvider = props => {
                         },
                         // LOGIN ERROR
                         error => {
+                            if (checkCsrfMismatch(error)) {
+                                Cookies.remove('XSRF-TOKEN');
+                            }
                             setAuthLoginStatus(AUTH_LOGIN_AWAIT);
                             if (error.response) {
                                 setErrorMessage(error.response.data.message);
