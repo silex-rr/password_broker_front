@@ -12,6 +12,7 @@ import {useNavigate} from 'react-router-dom';
 // import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import {AppToken} from '../../utils/native/AppToken';
 import {DATABASE_MODE_OFFLINE} from '../constants/DatabaseModeStates';
+import {REGISTRATION_AWAIT, REGISTRATION_IN_PROCESS} from '../constants/RegistrationStates';
 
 const IdentityContextProvider = props => {
     const getClientId = props.getClientId
@@ -46,6 +47,7 @@ const IdentityContextProvider = props => {
     const [userPasswordConfirmation, setUserPasswordConfirmation] = useState('');
     const [userRegistrationMasterPassword, setUserRegistrationMasterPassword] = useState('');
     const [userRegistrationMasterPasswordConfirmation, setUserRegistrationMasterPasswordConfirmation] = useState('');
+    const [registrationState, setRegistrationState] = useState(REGISTRATION_AWAIT);
     const [userToken, setUserToken] = useState('');
     const [userIsAdmin, setUserIsAdmin] = useState(false);
     /**
@@ -108,24 +110,58 @@ const IdentityContextProvider = props => {
         return error?.response?.data?.message === 'CSRF token mismatch.';
     };
 
+    const signupValidator = () => {
+        const signUpErrors = {};
+        const signUpWarnings = {};
+        if (userNameInput.length < 1) {
+            signUpErrors.userName = ['User Name is empty'];
+        }
+        const emailReg = /.+?@.+\..+/;
+        if (!userEmail.match(emailReg)) {
+            signUpErrors.userEmail = ['Incorrect email'];
+        }
+        if (userPassword.length < 1) {
+            signUpErrors.userPassword = ['Password is empty'];
+        } else if (userPassword !== userPasswordConfirmation) {
+            signUpErrors.userPasswordConfirmation = ['Password Confirmation mismatch to Password'];
+        }
+        if (userRegistrationMasterPassword.length < 1) {
+            signUpErrors.userRegistrationMasterPassword = ['Master Password is empty'];
+        } else if (userRegistrationMasterPassword !== userRegistrationMasterPasswordConfirmation) {
+            signUpErrors.userRegistrationMasterPasswordConfirmation = [
+                'Master Password Confirmation mismatch to Master Password',
+            ];
+        } else if (userRegistrationMasterPassword === userPassword) {
+            signUpWarnings.userRegistrationMasterPassword = ['Master Password is identical to Password'];
+        }
+        return {
+            signUpErrors: signUpErrors,
+            signUpWarnings: signUpWarnings,
+        };
+    };
     const signup = () => {
         // CSRF COOKIE
         // axios.get(hostURL + "/sanctum/csrf-cookie")
+        if (registrationState === REGISTRATION_IN_PROCESS) {
+            return;
+        }
+        setRegistrationState(REGISTRATION_IN_PROCESS);
         CSRF().then(
             () => {
-                //console.log(response);
-                // SIGNUP / REGISTER
                 axios
                     .post(getUrlSingUp(), {
-                        name: userNameInput,
-                        email: userEmail,
-                        password: userPassword,
-                        password_confirmation: userPasswordConfirmation,
-                        master_password: userRegistrationMasterPassword,
-                        master_password_confirmation: userRegistrationMasterPasswordConfirmation,
+                        user: {
+                            name: userNameInput,
+                            email: userEmail,
+                            password: userPassword,
+                            password_confirmation: userPasswordConfirmation,
+                            master_password: userRegistrationMasterPassword,
+                            master_password_confirmation: userRegistrationMasterPasswordConfirmation,
+                        },
                     })
                     .then(
                         () => {
+                            setRegistrationState(REGISTRATION_AWAIT);
                             setAuthLoginStatus(AUTH_LOGIN_AWAIT);
                             if (authMode === AUTH_MODE_BEARER_TOKEN) {
                                 getUser(true);
@@ -136,6 +172,7 @@ const IdentityContextProvider = props => {
                         },
                         // SIGNUP ERROR
                         error => {
+                            setRegistrationState(REGISTRATION_AWAIT);
                             //console.log(error);
                             if (checkCsrfMismatch(error)) {
                                 Cookies.remove('XSRF-TOKEN', {path: ''});
@@ -183,6 +220,7 @@ const IdentityContextProvider = props => {
             // COOKIE ERROR
             () => {
                 setErrorMessage('Could not complete the sign up');
+                setRegistrationState(REGISTRATION_AWAIT);
             },
         );
     };
@@ -548,6 +586,9 @@ const IdentityContextProvider = props => {
                 handleUserRegistrationMasterPasswordConfirmation,
                 handleHostURL,
                 signup,
+                signupValidator,
+                registrationState,
+                setRegistrationState,
                 login,
                 loginByToken,
                 offlineLoginByToken,
