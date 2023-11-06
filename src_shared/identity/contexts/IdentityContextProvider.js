@@ -149,16 +149,24 @@ const IdentityContextProvider = props => {
         CSRF().then(
             () => {
                 axios
-                    .post(getUrlSingUp(), {
-                        user: {
-                            name: userNameInput,
-                            email: userEmail,
-                            password: userPassword,
-                            password_confirmation: userPasswordConfirmation,
-                            master_password: userRegistrationMasterPassword,
-                            master_password_confirmation: userRegistrationMasterPasswordConfirmation,
+                    .post(
+                        getUrlSingUp(),
+                        {
+                            user: {
+                                username: userNameInput,
+                                email: userEmail,
+                                password: userPassword,
+                                password_confirmation: userPasswordConfirmation,
+                                master_password: userRegistrationMasterPassword,
+                                master_password_confirmation: userRegistrationMasterPasswordConfirmation,
+                            },
                         },
-                    })
+                        {
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+                            },
+                        },
+                    )
                     .then(
                         () => {
                             setRegistrationState(REGISTRATION_AWAIT);
