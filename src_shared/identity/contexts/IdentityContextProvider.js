@@ -250,7 +250,27 @@ const IdentityContextProvider = props => {
         // axios.interceptors.request.use(() => {})
     };
 
-    const getUserToken = async login => {
+    const _setTokenFromResponse = response => {
+        const token = response.data.token;
+        const user = response.data.user;
+        let appToken = null;
+        try {
+            appToken = new AppToken(user.user_id, user.email, user.name, hostURL, token, user.is_admin);
+        } catch (error) {
+            return;
+        }
+
+        appTokensService.addToken(appToken).then(
+            () => {
+                activateUserToken(appToken);
+                changeAuthStatusLoggedIn();
+            },
+            error => {
+                console.log('appTokensService.addToken', error);
+            },
+        );
+    };
+    const getUserToken = async () => {
         const clientId = await getClientId();
         axios
             .post(hostURL + '/identity/api/token', {
@@ -258,29 +278,7 @@ const IdentityContextProvider = props => {
             })
             .then(
                 response => {
-                    console.log('getUserToken', response);
-                    const token = response.data.token;
-                    const user = response.data.user;
-                    console.log('token creating');
-                    let appToken = null;
-                    try {
-                        appToken = new AppToken(user.user_id, login, user.name, hostURL, token, user.is_admin);
-                    } catch (error) {
-                        console.log('token error', error);
-                        return;
-                    }
-                    console.log('token', appToken);
-
-                    appTokensService.addToken(appToken).then(
-                        () => {
-                            console.log('token', 'saved');
-                            activateUserToken(appToken);
-                            changeAuthStatusLoggedIn();
-                        },
-                        error => {
-                            console.log('appTokensService.addToken', error);
-                        },
-                    );
+                    _setTokenFromResponse(response);
 
                     // console.log('cookies', Cookies.get());
                 },
@@ -355,32 +353,40 @@ const IdentityContextProvider = props => {
         }
         setErrorMessage('');
         setAuthLoginStatus(AUTH_LOGIN_IN_PROCESS);
-
-        CSRF().then(
-            () => {
-                // console.log('.login')
-                // console.log('crf login', response)
-                // console.log(userEmail)
-                // console.log(userPassword)
-                // LOGIN
-                axios
-                    .post(getUrlLogin(), {
-                        email: userEmail,
-                        password: userPassword,
-                    })
-                    .then(
-                        () => {
+        const loginRequestData = {
+            email: userEmail,
+            password: userPassword,
+        };
+        const loginRequest = () => {
+            CSRF().then(
+                () => {
+                    // console.log('.login')
+                    // console.log('crf login', response)
+                    // console.log(userEmail)
+                    // console.log(userPassword)
+                    // LOGIN
+                    axios.post(getUrlLogin(), loginRequestData).then(
+                        r => {
+                            // console.log(r, authMode);
                             // console.log('login', 'logged', authMode);
-                            setAuthLoginStatus(AUTH_LOGIN_AWAIT);
+                            // console.log(authMode === AUTH_MODE_BEARER_TOKEN, r.data?.token,  r.data?.user);
                             if (authMode === AUTH_MODE_BEARER_TOKEN) {
-                                getUser(true);
+                                if (r.data?.token && r.data?.user) {
+                                    _setUserFromResponse(r);
+                                    _setTokenFromResponse(r);
+                                } else {
+                                    setAuthLoginStatus(AUTH_LOGIN_AWAIT);
+                                    getUser(true);
+                                }
                             } else {
+                                setAuthLoginStatus(AUTH_LOGIN_AWAIT);
                                 setAuthStatus('');
                                 navigate('/identity/loading');
                             }
                         },
                         // LOGIN ERROR
                         error => {
+                            console.log(error);
                             if (checkCsrfMismatch(error)) {
                                 Cookies.remove('XSRF-TOKEN');
                             }
@@ -392,18 +398,33 @@ const IdentityContextProvider = props => {
                             }
                         },
                     );
-            },
-            // COOKIE ERROR{
-            error => {
-                setAuthLoginStatus(AUTH_LOGIN_AWAIT);
-                console.log('csrf', error);
-                if (error.code === 'ERR_NETWORK') {
-                    setErrorMessage('Cannot establish connection with ' + hostURL);
-                    return;
-                }
-                setErrorMessage('Could not complete the login');
-            },
-        );
+                },
+                // COOKIE ERROR{
+                error => {
+                    setAuthLoginStatus(AUTH_LOGIN_AWAIT);
+                    console.log('csrf', error);
+                    if (error.code === 'ERR_NETWORK') {
+                        setErrorMessage('Cannot establish connection with ' + hostURL);
+                        return;
+                    }
+                    setErrorMessage('Could not complete the login');
+                },
+            );
+        };
+        if (authMode === AUTH_MODE_BEARER_TOKEN) {
+            getClientId().then(
+                clientId => {
+                    loginRequestData.token_is_required = true;
+                    loginRequestData.token_name = clientId;
+                    loginRequest();
+                },
+                error => {
+                    console.log('error getting ClientId: ' + error);
+                },
+            );
+        } else {
+            loginRequest();
+        }
     };
 
     /**
@@ -472,46 +493,47 @@ const IdentityContextProvider = props => {
         afterLogout();
     };
 
+    const _setUserFromResponse = response => {
+        setUserId(response.data.user.user_id);
+        setUserName(response.data.user.name);
+        setUserEmail(response.data.user.email);
+        setUserIsAdmin(response.data.user.is_admin === '1');
+    };
     const getUser = (getToken = true) => {
         changeAuthStatusLoading();
-        CSRF().then(() =>
-            axios.get(getUrlUser()).then(
-                response => {
-                    // console.log('getUser', response);
-                    switch (response.data.message) {
-                        default:
-                        case 'guest':
-                            authMode === AUTH_MODE_BEARER_TOKEN
-                                ? appTokensService.load().then(() => {
-                                      changeAuthStatusLogin();
-                                  })
-                                : changeAuthStatusLogin();
-                            break;
-                        case 'loggedIn':
-                            setUserId(response.data.user.user_id);
-                            setUserName(response.data.user.name);
-                            setUserEmail(response.data.user.email);
-                            setUserIsAdmin(response.data.user.is_admin === '1');
-                            console.log(
-                                'getUserToken act',
-                                authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken,
-                            );
-                            if (authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken) {
-                                getUserToken(response.data.user.email).then(() => {});
-                            } else {
-                                changeAuthStatusLoggedIn();
-                            }
-                            break;
-                        case 'firstUser':
-                            changeAuthStatusSignup();
-                            break;
-                    }
-                },
-                error => {
-                    console.log('identityContext.getUser error', error);
-                    navigate('/identity/login');
-                },
-            ),
+        CSRF().then(
+            () =>
+                axios.get(getUrlUser()).then(
+                    response => {
+                        console.log('getUser', response);
+                        switch (response.data.message) {
+                            default:
+                            case 'guest':
+                                authMode === AUTH_MODE_BEARER_TOKEN
+                                    ? appTokensService.load().then(() => {
+                                          changeAuthStatusLogin();
+                                      })
+                                    : changeAuthStatusLogin();
+                                break;
+                            case 'loggedIn':
+                                _setUserFromResponse(response);
+                                if (authMode === AUTH_MODE_BEARER_TOKEN && userToken === '' && getToken) {
+                                    getUserToken(response.data.user.email).then(() => {});
+                                } else {
+                                    changeAuthStatusLoggedIn();
+                                }
+                                break;
+                            case 'firstUser':
+                                changeAuthStatusSignup();
+                                break;
+                        }
+                    },
+                    error => {
+                        console.log('identityContext.getUser error', error);
+                        navigate('/identity/login');
+                    },
+                ),
+            error => console.log('getUser csrf error', error),
         );
     };
 
