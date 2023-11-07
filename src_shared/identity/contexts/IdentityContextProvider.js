@@ -266,6 +266,7 @@ const IdentityContextProvider = props => {
                 changeAuthStatusLoggedIn();
             },
             error => {
+                setAuthLoginStatus(AUTH_LOGIN_AWAIT);
                 console.log('appTokensService.addToken', error);
             },
         );
@@ -360,14 +361,14 @@ const IdentityContextProvider = props => {
         const loginRequest = () => {
             CSRF().then(
                 () => {
-                    // console.log('.login')
+                    console.log('.login');
                     // console.log('crf login', response)
                     // console.log(userEmail)
                     // console.log(userPassword)
                     // LOGIN
                     axios.post(getUrlLogin(), loginRequestData).then(
                         r => {
-                            // console.log(r, authMode);
+                            console.log(r, authMode);
                             // console.log('login', 'logged', authMode);
                             // console.log(authMode === AUTH_MODE_BEARER_TOKEN, r.data?.token,  r.data?.user);
                             if (authMode === AUTH_MODE_BEARER_TOKEN) {
@@ -387,10 +388,10 @@ const IdentityContextProvider = props => {
                         // LOGIN ERROR
                         error => {
                             console.log(error);
+                            setAuthLoginStatus(AUTH_LOGIN_AWAIT);
                             if (checkCsrfMismatch(error)) {
                                 Cookies.remove('XSRF-TOKEN');
                             }
-                            setAuthLoginStatus(AUTH_LOGIN_AWAIT);
                             if (error.response) {
                                 setErrorMessage(error.response.data.message);
                             } else {
