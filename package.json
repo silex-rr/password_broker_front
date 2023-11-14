@@ -49,6 +49,7 @@
     "react-native": "0.72.4",
     "react-native-draggable": "^3.3.0",
     "react-native-paper": "^5.10.3",
+    "react-native-sqlite-storage": "github:silex-rr/react-native-sqlite-storage#master",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-vector-icons": "^10.0.0",
     "react-native-windows": "0.72.6",
