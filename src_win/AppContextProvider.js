@@ -11,8 +11,9 @@ import {OfflineDatabaseService} from '../src_shared/utils/native/OfflineDatabase
 import {AppTokensService} from '../src_shared/utils/native/AppTokensService';
 import {Storage} from '../src_shared/utils/native/Storage';
 
-const offlineDatabaseService = new OfflineDatabaseService();
-const appTokensService = new AppTokensService(new Storage(Storage.CONNECTION_SQLITE));
+const storage = new Storage(Storage.CONNECTION_SQLITE);
+const offlineDatabaseService = new OfflineDatabaseService(storage);
+const appTokensService = new AppTokensService(storage);
 const AppContextProvider = props => {
     const hostURL = process.env.REACT_APP_PASSWORD_BROKER_HOST;
     const [modalContent, setModalContent] = useState(<View />);
