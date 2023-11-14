@@ -9,9 +9,10 @@ import * as RNFS from '@dr.pogodin/react-native-fs'; //'react-native-fs';
 import URI from 'uri-js';
 import {OfflineDatabaseService} from '../src_shared/utils/native/OfflineDatabaseService';
 import {AppTokensService} from '../src_shared/utils/native/AppTokensService';
+import {Storage} from '../src_shared/utils/native/Storage';
 
 const offlineDatabaseService = new OfflineDatabaseService();
-const appTokensService = new AppTokensService();
+const appTokensService = new AppTokensService(new Storage(Storage.CONNECTION_SQLITE));
 const AppContextProvider = props => {
     const hostURL = process.env.REACT_APP_PASSWORD_BROKER_HOST;
     const [modalContent, setModalContent] = useState(<View />);
