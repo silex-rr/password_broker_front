@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AES, enc, MD5} from 'crypto-js';
 
 export class OfflineDatabaseService {
@@ -28,9 +27,11 @@ export class OfflineDatabaseService {
     saltTimestamp = 0;
     salt = '';
     pinCode = '';
-    constructor() {
+    storage = '';
+    constructor(storage) {
         this.databaseStatus = this.constructor.STATUS_AWAIT;
         this.keyStatus = this.constructor.STATUS_AWAIT;
+        this.storage = storage;
     }
 
     /**
@@ -109,7 +110,7 @@ export class OfflineDatabaseService {
         }
         this.loadedSaltName = saltName;
         this.saltStatus = this.constructor.STATUS_LOADING;
-        const salt = await AsyncStorage.getItem(saltName);
+        const salt = await this.storage.get(saltName);
         if (this.loadedSaltName !== saltName) {
             //Another loading has been started
             return;
@@ -152,7 +153,7 @@ export class OfflineDatabaseService {
         }
         this.loadedKeyName = keyName;
         this.keyStatus = this.constructor.STATUS_LOADING;
-        const key = await AsyncStorage.getItem(keyName);
+        const key = await this.storage.get(keyName);
         if (this.loadedKeyName !== keyName) {
             //Another loading has been started
             return;
@@ -199,7 +200,7 @@ export class OfflineDatabaseService {
         this.databaseStatus = this.constructor.STATUS_LOADING;
         let database = '';
         try {
-            database = await AsyncStorage.getItem(databaseName);
+            database = await this.storage.get(databaseName);
         } catch (error) {
             this.databaseStatus = this.constructor.STATUS_CORRUPTED;
             return;
@@ -313,7 +314,7 @@ export class OfflineDatabaseService {
         });
         // console.log('saveDatabase', databaseName, jsonString);
         const jsonStringEncrypted = AES.encrypt(jsonString, this.pinCode).toString();
-        await AsyncStorage.setItem(databaseName, jsonStringEncrypted);
+        await this.storage.set(databaseName, jsonStringEncrypted);
         this.unloadDatabase();
     }
 
@@ -342,7 +343,7 @@ export class OfflineDatabaseService {
         });
         // console.log('saveKey', keyName, jsonString);
         const jsonStringEncrypted = AES.encrypt(jsonString, this.pinCode).toString();
-        await AsyncStorage.setItem(keyName, jsonStringEncrypted);
+        await this.storage.set(keyName, jsonStringEncrypted);
     }
 
     /**
@@ -370,7 +371,7 @@ export class OfflineDatabaseService {
         });
         // console.log('saveSalt', saltName, jsonString);
         const jsonStringEncrypted = AES.encrypt(jsonString, this.pinCode).toString();
-        await AsyncStorage.setItem(saltName, jsonStringEncrypted);
+        await this.storage.set(saltName, jsonStringEncrypted);
     }
 
     /**
