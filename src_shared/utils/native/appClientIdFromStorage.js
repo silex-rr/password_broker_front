@@ -1,10 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {v4 as UUIDv4, validate} from 'uuid';
-export const appClientIdFromStorage = async () => {
+
+export const appClientIdFromStorage = async storage => {
     const uuid_key = 'CLIENT_ID';
     let uuid = null;
     try {
-        uuid = await AsyncStorage.getItem(uuid_key);
+        uuid = await storage.get(uuid_key);
     } catch (e) {}
 
     if (uuid && validate(uuid)) {
@@ -14,7 +14,7 @@ export const appClientIdFromStorage = async () => {
     uuid = UUIDv4();
 
     try {
-        uuid = await AsyncStorage.setItem(uuid_key, uuid);
+        uuid = await storage.set(uuid_key, uuid);
     } catch (e) {}
 
     return uuid;
