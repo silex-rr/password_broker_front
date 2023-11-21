@@ -51,6 +51,7 @@
     "react-native-paper": "^5.10.3",
     "react-native-sqlite-storage": "github:silex-rr/react-native-sqlite-storage#master",
     "react-native-url-polyfill": "^2.0.0",
+    "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^10.0.0",
     "react-native-windows": "0.72.6",
     "react-router-dom": "^6.9.0",
