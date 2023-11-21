@@ -420,6 +420,8 @@ const IdentityContextProvider = props => {
                     loginRequest();
                 },
                 error => {
+                    setAuthLoginStatus(AUTH_LOGIN_AWAIT);
+                    setErrorMessage('unable to get ClientId from storage: ' + JSON.stringify(error));
                     console.log('error getting ClientId: ' + error);
                 },
             );
