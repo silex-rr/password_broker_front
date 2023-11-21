@@ -1,9 +1,11 @@
 import {ConnectionSQLite} from './storages/ConnectionSQLite';
 import {ConnectionAsyncStorage} from './storages/ConnectionAsyncStorage';
+import {ConnectionRNFS} from './storages/ConnectionRNFS';
 
 export class Storage {
     static CONNECTION_ASYNC_STORAGE = 'async_storage';
     static CONNECTION_SQLITE = 'sqlite';
+    static CONNECTION_RNFS = 'rnfs';
 
     connection_name = '';
     /**
@@ -20,6 +22,10 @@ export class Storage {
             case Storage.CONNECTION_SQLITE:
                 this.connection_name = Storage.CONNECTION_SQLITE;
                 this.connection = new ConnectionSQLite();
+                break;
+            case Storage.CONNECTION_RNFS:
+                this.connection_name = Storage.CONNECTION_RNFS;
+                this.connection = new ConnectionRNFS();
                 break;
             default:
                 throw new Error(
