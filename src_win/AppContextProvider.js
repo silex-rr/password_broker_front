@@ -11,7 +11,7 @@ import {OfflineDatabaseService} from '../src_shared/utils/native/OfflineDatabase
 import {AppTokensService} from '../src_shared/utils/native/AppTokensService';
 import {Storage} from '../src_shared/utils/native/Storage';
 
-const storage = new Storage(Storage.CONNECTION_SQLITE);
+const storage = new Storage(Storage.CONNECTION_RNFS);
 const offlineDatabaseService = new OfflineDatabaseService(storage);
 const appTokensService = new AppTokensService(storage);
 const AppContextProvider = props => {
@@ -25,7 +25,7 @@ const AppContextProvider = props => {
         if (clientId) {
             return clientId;
         }
-        const uuid = await appClientIdFromStorage();
+        const uuid = await appClientIdFromStorage(storage);
         setClientId(uuid);
 
         return uuid;
