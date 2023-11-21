@@ -1,21 +1,26 @@
-import {v4 as UUIDv4, validate} from 'uuid';
+import {validate} from 'uuid';
+import uuid from 'react-native-uuid';
 
 export const appClientIdFromStorage = async storage => {
     const uuid_key = 'CLIENT_ID';
-    let uuid = null;
+    let clientId = null;
     try {
-        uuid = await storage.get(uuid_key);
-    } catch (e) {}
-
-    if (uuid && validate(uuid)) {
-        return uuid;
+        clientId = await storage.get(uuid_key);
+    } catch (e) {
+        throw new Error('Cant read CLIENT_ID' + JSON.stringify(e));
     }
 
-    uuid = UUIDv4();
+    if (clientId && validate(clientId)) {
+        return clientId;
+    }
+
+    clientId = uuid.v4();
 
     try {
-        uuid = await storage.set(uuid_key, uuid);
-    } catch (e) {}
+        await storage.set(uuid_key, clientId);
+    } catch (e) {
+        throw new Error('Cant write CLIENT_ID' + JSON.stringify(e));
+    }
 
-    return uuid;
+    return clientId;
 };
