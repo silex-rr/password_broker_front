@@ -13,6 +13,7 @@ import {useNavigate} from 'react-router-dom';
 import {AppToken} from '../../utils/native/AppToken';
 import {DATABASE_MODE_OFFLINE} from '../constants/DatabaseModeStates';
 import {REGISTRATION_AWAIT, REGISTRATION_IN_PROCESS} from '../constants/RegistrationStates';
+import {searchRequestString} from '../../utils/searchRequestString';
 
 const IdentityContextProvider = props => {
     const getClientId = props.getClientId
@@ -541,17 +542,8 @@ const IdentityContextProvider = props => {
     };
 
     const getUsers = (page = 1, perPage = 20, searchQuery = '') => {
-        const req = [];
-        if (page) {
-            req.push(`page=${page}`);
-        }
-        if (perPage) {
-            req.push(`perPage=${perPage}`);
-        }
-        if (searchQuery) {
-            req.push(`q=${searchQuery}`);
-        }
-        const reqString = req.length > 0 ? '?' + req.join('&') : '';
+        const reqString = searchRequestString(searchQuery, page, perPage);
+
         const url = hostURL + `/identity/api/users/search${reqString}`;
 
         return new Promise((resolve, reject) => {
