@@ -11,6 +11,7 @@ import React, {useContext} from 'react';
 import PasswordBrokerContextProvider from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContextProvider';
 import EntryGroupContextProvider from '../../../src_shared/passwordBroker/contexts/EntryGroupContextProvider';
 import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
+import PasswordBrokerSearchContainer from "../components/PasswordBrokerSearchContainer";
 
 const PasswordBrokerRouter = () => {
     const {writeFile} = useContext(AppContext);
@@ -28,6 +29,7 @@ const PasswordBrokerRouter = () => {
                 writeFile={writeFile}>
                 <Routes>
                     <Route path="/entryGroup/:entryGroupId" element={<PasswordBrokerContainer />} />
+                    <Route path="/entrySearch/:searchQuery" element={<PasswordBrokerSearchContainer />} />
                     <Route path="/" element={<PasswordBrokerContainer />} />
                 </Routes>
             </EntryGroupContextProvider>

@@ -20,6 +20,13 @@ import PasswordBrokerContext from './PasswordBrokerContext';
 import {DATABASE_MODE_OFFLINE, DATABASE_MODE_ONLINE} from '../../identity/constants/DatabaseModeStates';
 // import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import IdentityContext from '../../identity/contexts/IdentityContext';
+import {
+    ENTRY_SEARCH_RESULT_AWAIT,
+    ENTRY_SEARCH_RESULT_LOADED,
+    ENTRY_SEARCH_RESULT_LOADING,
+    ENTRY_SEARCH_RESULT_REQUIRED_LOADING,
+} from '../constants/EntrySearchStates';
+import {searchRequestString} from '../../utils/searchRequestString';
 
 const PasswordBrokerContextProvider = props => {
     const AppContext = props.AppContext;
@@ -59,13 +66,86 @@ const PasswordBrokerContextProvider = props => {
     const [moveEntryGroupMode, setMoveEntryGroupMode] = useState(false);
     const [databaseModePB, setDatabaseModePB] = useState(databaseMode);
 
+    const [entrySearchQuery, setEntrySearchQuery] = useState('');
+    const [entrySearchPerPage, setEntrySearchPerPage] = useState(20);
+    const [entrySearchPage, setEntrySearchPage] = useState(1);
+    const [entrySearchRequestString, setEntrySearchRequestString] = useState('');
+    const [entrySearchState, setEntrySearchState] = useState(ENTRY_SEARCH_RESULT_AWAIT);
+    const [entrySearchResult, setEntrySearchResult] = useState([]);
+
     const navigate = useNavigate();
 
     let loadEntryGroupAbortController = null;
     let loadEntryGroupUsersAbortController = null;
 
+    let entrySearchAbortController = null;
+
     const handleMoveEntryGroupMode = () => {
         setMoveEntryGroupMode(!moveEntryGroupMode);
+    };
+
+    const handleEntrySearch = (page = 1, perPage = 20, searchQuery = '') => {
+        let requireUpdate = false;
+        if (page !== entrySearchPage) {
+            setEntrySearchPage(page);
+            requireUpdate = true;
+        }
+        if (perPage !== entrySearchPerPage) {
+            setEntrySearchPerPage(perPage);
+            requireUpdate = true;
+        }
+        if (searchQuery !== entrySearchQuery) {
+            setEntrySearchQuery(searchQuery);
+            requireUpdate = true;
+        }
+        if (requireUpdate) {
+            if (entrySearchAbortController) {
+                entrySearchAbortController.abort();
+            }
+            setEntrySearchState(ENTRY_SEARCH_RESULT_REQUIRED_LOADING);
+        }
+    };
+    const getEntrySearchResult = (page = 1, perPage = 20, searchQuery = '') => {
+        if (entrySearchState === ENTRY_SEARCH_RESULT_LOADING) {
+            return new Promise((resolve, reject) => {
+                reject('loading in progress');
+            });
+        }
+        setEntrySearchState(ENTRY_SEARCH_RESULT_LOADING);
+        setEntrySearchResult([]);
+
+        const reqString = searchRequestString(searchQuery, page, perPage);
+
+        if (reqString === entrySearchRequestString) {
+            return new Promise(resolve => {
+                setEntrySearchState(ENTRY_SEARCH_RESULT_LOADED);
+                resolve(entrySearchResult);
+            });
+        }
+
+        setEntrySearchRequestString(reqString);
+        const url = baseUrl + `/entrySearch${reqString}`;
+
+        return new Promise((resolve, reject) => {
+            entrySearchAbortController = new AbortController();
+            axios
+                .get(url, {
+                    signal: entrySearchAbortController.signal,
+                })
+                .then(
+                    response => {
+                        setEntrySearchState(ENTRY_SEARCH_RESULT_LOADED);
+                        setEntrySearchResult(response.data);
+                        resolve(response.data);
+                    },
+                    error => {
+                        if (entrySearchState !== ENTRY_SEARCH_RESULT_REQUIRED_LOADING) {
+                            setEntrySearchState(ENTRY_SEARCH_RESULT_AWAIT);
+                        }
+                        reject(error);
+                    },
+                );
+        });
     };
 
     const loadEntryGroupTrees = useCallback(() => {
@@ -295,6 +375,14 @@ const PasswordBrokerContextProvider = props => {
                 entryGroupStatus: entryGroupStatus,
                 entryGroupRole: entryGroupRole,
                 setEntryGroupStatus: setEntryGroupStatus,
+
+                entrySearchQuery: entrySearchQuery,
+                entrySearchPage: entrySearchPage,
+                entrySearchPerPage: entrySearchPerPage,
+                entrySearchState: entrySearchState,
+                entrySearchResult: entrySearchResult,
+                handleEntrySearch: handleEntrySearch,
+                getEntrySearchResult: getEntrySearchResult,
 
                 entryGroupFieldForEditId: entryGroupFieldForEditId,
                 setEntryGroupFieldForEditId: setEntryGroupFieldForEditId,
