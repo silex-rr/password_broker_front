@@ -34,7 +34,6 @@ const SearchResult = () => {
         }
     }, [entrySearchPage, entrySearchPerPage, entrySearchQuery, handleEntrySearch, searchQuery]);
 
-
     let data = '';
 
     switch (entrySearchState) {
