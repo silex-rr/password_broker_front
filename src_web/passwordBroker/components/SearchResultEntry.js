@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import Moment from 'react-moment';
+import {MdKeyboardDoubleArrowDown, MdKeyboardDoubleArrowUp} from 'react-icons/md';
+import EntryFields from './MainBody/EntryGroup/EntryFields';
 
 const SearchResultEntry = ({
     entry_id,
@@ -7,7 +9,7 @@ const SearchResultEntry = ({
     title,
     created_at,
     updated_at,
-    deleted_at,
+    // deleted_at,
     passwords,
     links,
     notes,
@@ -15,18 +17,21 @@ const SearchResultEntry = ({
     entry_group,
 }) => {
     const [entryFieldsIsVisible, setEntryFieldsIsVisible] = useState(false);
+    const EntryFieldsVisibilityHandler = () => {
+        setEntryFieldsIsVisible(!entryFieldsIsVisible);
+    };
 
-    const EntryFieldsVisibilityHandler = () => {};
+    const fields = [...passwords, ...links, ...notes, ...files];
 
     return (
         <React.Fragment>
             <tr key={entry_id + '_main'}>
                 <td className="cursor-pointer bg-slate-700 text-slate-100" onClick={EntryFieldsVisibilityHandler}>
+                    <MdKeyboardDoubleArrowDown className={'inline text-xl' + (entryFieldsIsVisible ? ' hidden' : '')} />
+                    <MdKeyboardDoubleArrowUp className={'inline text-xl' + (entryFieldsIsVisible ? '' : ' hidden')} />
                     {title}
                 </td>
-                <td className="bg-slate-700 text-slate-100">
-                    {entry_group.name}
-                </td>
+                <td className="bg-slate-700 text-slate-100">{entry_group.name}</td>
                 <td className="bg-slate-700 text-slate-100">
                     <Moment format="YYYY.MM.DD HH:mm">{created_at}</Moment>
                 </td>
@@ -35,7 +40,15 @@ const SearchResultEntry = ({
                 </td>
             </tr>
             <tr key={entry_id + '_fields'} className={entryFieldsIsVisible ? '' : 'hidden'}>
-                <td colSpan="4" className="bg-slate-700 px-0 pt-0 text-slate-100" />
+                <td colSpan="4" className="bg-slate-700 px-0 pt-0 text-slate-100">
+                    <EntryFields
+                        entryGroupId={entry_group_id}
+                        entryId={entry_id}
+                        fields={fields}
+                        hideAdd={true}
+                        hideEdit={true}
+                    />
+                </td>
             </tr>
         </React.Fragment>
     );
