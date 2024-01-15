@@ -4,7 +4,7 @@ import SearchResultEntry from './SearchResultEntry';
 const SearchResultEntries = ({data}) => {
     const entries = [];
     for (let i = 0; i < data.length; i++) {
-        entries.push(<SearchResultEntry {...data[i]} />);
+        entries.push(<SearchResultEntry key={'entry_' + i} {...data[i]} />);
     }
     console.log(data, entries);
 
