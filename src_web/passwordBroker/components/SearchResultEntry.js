@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import Moment from 'react-moment';
 import {MdKeyboardDoubleArrowDown, MdKeyboardDoubleArrowUp} from 'react-icons/md';
 import EntryFields from './MainBody/EntryGroup/EntryFields';
+import PasswordBrokerContext from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 
 const SearchResultEntry = ({
     entry_id,
@@ -16,9 +17,14 @@ const SearchResultEntry = ({
     files,
     entry_group,
 }) => {
+    const {selectEntryGroup} = useContext(PasswordBrokerContext);
     const [entryFieldsIsVisible, setEntryFieldsIsVisible] = useState(false);
     const EntryFieldsVisibilityHandler = () => {
         setEntryFieldsIsVisible(!entryFieldsIsVisible);
+    };
+
+    const handleEntryGroupClick = () => {
+        selectEntryGroup(entry_group_id);
     };
 
     const fields = [...passwords, ...links, ...notes, ...files];
@@ -29,9 +35,11 @@ const SearchResultEntry = ({
                 <td className="cursor-pointer bg-slate-700 text-slate-100" onClick={EntryFieldsVisibilityHandler}>
                     <MdKeyboardDoubleArrowDown className={'inline text-xl' + (entryFieldsIsVisible ? ' hidden' : '')} />
                     <MdKeyboardDoubleArrowUp className={'inline text-xl' + (entryFieldsIsVisible ? '' : ' hidden')} />
-                    {title}
+                    <span className="pl-2">{title}</span>
                 </td>
-                <td className="bg-slate-700 text-slate-100">{entry_group.name}</td>
+                <td className="cursor-pointer bg-slate-700 text-slate-100" onClick={handleEntryGroupClick}>
+                    {entry_group.name}
+                </td>
                 <td className="bg-slate-700 text-slate-100">
                     <Moment format="YYYY.MM.DD HH:mm">{created_at}</Moment>
                 </td>
