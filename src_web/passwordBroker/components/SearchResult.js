@@ -54,6 +54,9 @@ const SearchResult = () => {
     return (
         <div className="basis-3/4 bg-slate-600 p-0 text-slate-100">
             <div className="grid grid-rows-3">
+                <div className="row-span-3 bg-slate-200 p-1 text-2xl text-slate-700">
+                    Search results for: "{searchQuery}"
+                </div>
                 <div className="row-span-3 p-5">{data}</div>
             </div>
         </div>
