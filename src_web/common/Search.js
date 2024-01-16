@@ -1,12 +1,13 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Input} from 'react-daisyui';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {MdKeyboardDoubleArrowRight, MdSearch} from 'react-icons/md';
 
 const Search = () => {
     const [globalSearch, setGlobalSearch] = useState('');
     const globalSearchInput = useRef();
     const navigateFunction = useNavigate();
+    const {searchQuery: searchQuery} = useParams();
     const globalSearchChangeHandler = e => {
         setGlobalSearch(e.target.value);
     };
@@ -20,6 +21,12 @@ const Search = () => {
     const focusOnGlobalSearch = () => {
         globalSearchInput.current.focus();
     };
+
+    useEffect(() => {
+        if (typeof searchQuery === 'string') {
+            setGlobalSearch(searchQuery);
+        }
+    }, [searchQuery, setGlobalSearch]);
 
     return (
         <div className="item-center m-0 flex justify-center rounded-sm bg-slate-800 p-0">
