@@ -4,7 +4,7 @@ import {
     ENTRY_ADDING_AWAIT,
     ENTRY_ADDING_IN_PROGRESS,
 } from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryAddingStates';
-import {Button, Input} from 'react-daisyui';
+import {Input} from 'react-daisyui';
 import axios from 'axios';
 import {ENTRY_GROUP_REQUIRED_LOADING} from '../../../../../src_shared/passwordBroker/constants/EntryGroupStatus';
 
@@ -78,7 +78,9 @@ const EntryAdd = props => {
     let addEntryKey = 'add-entry-for-';
     return (
         <div className="inline-block px-2 pb-2">
-            <label htmlFor={addEntryKey + entryGroupId} className="btn btn-sm bg-slate-800">
+            <label
+                htmlFor={addEntryKey + entryGroupId}
+                className="btn btn-sm bg-slate-800 text-slate-100 hover:text-slate-800">
                 add new Entry
             </label>
 
@@ -112,13 +114,15 @@ const EntryAdd = props => {
                             />
                         </div>
                         <div className="modal-action flex flex-row justify-around">
-                            <Button
-                                className={`btn-success btn-sm basis-1/3 ${
-                                    addingEntryState === ENTRY_ADDING_AWAIT ? '' : ' loading'
-                                }`}
-                                onClick={addNewEntry}>
-                                {addingEntryState === ENTRY_ADDING_AWAIT ? 'add' : ''}
-                            </Button>
+                            <span className="btn btn-success btn-sm basis-1/3" onClick={addNewEntry}>
+                                <span
+                                    className={
+                                        'loading loading-spinner' +
+                                        (addingEntryState === ENTRY_ADDING_AWAIT ? ' hidden' : ' ')
+                                    }
+                                />
+                                {addingEntryState === ENTRY_ADDING_AWAIT ? 'add' : 'adding'}
+                            </span>
 
                             <label
                                 htmlFor={addEntryKey + entryGroupId}

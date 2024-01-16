@@ -5,7 +5,7 @@ import {
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
 } from '../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
-import {Button, Input} from 'react-daisyui';
+import {Input} from 'react-daisyui';
 import {FIELD_ADDING_AWAIT} from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
 import EntryFieldContext from '../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
 import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
@@ -112,7 +112,9 @@ const EntryFieldsAdd = props => {
 
     return (
         <div className="px-2 pb-2">
-            <label htmlFor={'add-field-for-' + entryId} className="btn btn-sm bg-slate-800">
+            <label
+                htmlFor={'add-field-for-' + entryId}
+                className="btn btn-sm bg-slate-800 text-slate-100 hover:text-slate-800">
                 add new field
             </label>
 
@@ -169,14 +171,15 @@ const EntryFieldsAdd = props => {
                         {masterPasswordField}
 
                         <div className="modal-action flex flex-row justify-around">
-                            <Button
-                                className={
-                                    'btn-success btn-sm basis-1/3' +
-                                    (addingFieldState === FIELD_ADDING_AWAIT ? '' : ' loading')
-                                }
-                                onClick={sendFormHandler}>
-                                {addingFieldState === FIELD_ADDING_AWAIT ? 'add' : ''}
-                            </Button>
+                            <span className={'btn btn-success btn-sm basis-1/3'} onClick={sendFormHandler}>
+                                <span
+                                    className={
+                                        'loading loading-spinner' +
+                                        (addingFieldState === FIELD_ADDING_AWAIT ? ' hidden' : ' ')
+                                    }
+                                />
+                                {addingFieldState === FIELD_ADDING_AWAIT ? 'add' : 'adding'}
+                            </span>
 
                             <label
                                 htmlFor={'add-field-for-' + entryId}

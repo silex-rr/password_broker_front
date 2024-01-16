@@ -47,7 +47,11 @@ const EntryGroup = props => {
                     <EntryGroupAdd
                         entryGroupId={entryGroupId}
                         entryGroupTitle={props.entryGroup.name}
-                        button={<div className="btn btn-sm bg-slate-800">add new child Entry Group</div>}
+                        button={
+                            <div className="btn btn-sm bg-slate-800 text-slate-100 hover:text-slate-800">
+                                add new child Entry Group
+                            </div>
+                        }
                     />
                 </div>
             ) : (
