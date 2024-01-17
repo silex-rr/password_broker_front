@@ -8,6 +8,7 @@ import {
     ENTRY_SEARCH_RESULT_REQUIRED_LOADING,
 } from '../../../src_shared/passwordBroker/constants/EntrySearchStates';
 import SearchResultEntries from './SearchResultEntries';
+import PaginationButton from '../../common/Pagination';
 
 const SearchResult = () => {
     const {searchQuery: searchQuery} = useParams();
@@ -34,6 +35,10 @@ const SearchResult = () => {
         }
     }, [entrySearchPage, entrySearchPerPage, entrySearchQuery, handleEntrySearch, searchQuery]);
 
+    const handlePagination = page => {
+        handleEntrySearch(page, entrySearchPerPage, searchQuery);
+    };
+
     let data = '';
 
     switch (entrySearchState) {
@@ -45,9 +50,20 @@ const SearchResult = () => {
             data = 'await';
             break;
         case ENTRY_SEARCH_RESULT_LOADED:
-            console.log(entrySearchResult);
-            console.log(entrySearchResult.data);
-            data = <SearchResultEntries data={entrySearchResult.data} />;
+            const pagination = (
+                <PaginationButton
+                    currentPage={entrySearchResult.current_page}
+                    lastPage={entrySearchResult.last_page}
+                    handlePagination={handlePagination}
+                />
+            );
+            data = (
+                <React.Fragment>
+                    {pagination}
+                    <SearchResultEntries data={entrySearchResult.data} />
+                    {pagination}
+                </React.Fragment>
+            );
             break;
     }
 
