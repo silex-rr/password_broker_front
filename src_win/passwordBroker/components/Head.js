@@ -12,6 +12,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import tw from 'twrnc';
 // import {Link} from 'react-router-native';
 import {useNavigate} from 'react-router-dom';
+import Search from './Search';
 
 const Head = () => {
     const identityContext = useContext(IdentityContext);
@@ -68,17 +69,26 @@ const Head = () => {
             </View>
             <View style={tw`flex justify-around px-5`}>
                 <View style={tw`p-0 font-bold flex flex-row`}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            masterPasswordIconClickHandler;
-                        }}
-                        style={tw`px-2`}>
-                        {masterPasswordIcon}
-                    </TouchableOpacity>
-                    <Text style={tw`px-2`}>{userName}</Text>
-                    <TouchableOpacity onPress={logoutClickHandler}>
-                        <Text>logout</Text>
-                    </TouchableOpacity>
+                    <View style={tw`px-2`}>
+                        <Search />
+                    </View>
+                    <View style={tw`py-1`}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                masterPasswordIconClickHandler;
+                            }}
+                            style={tw`px-2`}>
+                            {masterPasswordIcon}
+                        </TouchableOpacity>
+                    </View>
+                    <View style={tw`py-1`}>
+                        <Text style={tw`px-2`}>{userName}</Text>
+                    </View>
+                    <View style={tw`py-1`}>
+                        <TouchableOpacity onPress={logoutClickHandler}>
+                            <Text>logout</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </View>
