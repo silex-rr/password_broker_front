@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import AppContext from "../../../AppContext";
 import AdminPanelLoading from "../AdminPanelLoading";
 import Moment from "react-moment";
-import PaginationButton from '../Pagination';
+import PaginationButton from '../../../common/Pagination';
 import SearchField from "../SearchField";
 
 const Logs = props => {
