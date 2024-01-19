@@ -11,7 +11,7 @@ export const File = ({entryId}) => {
             <Text>Does not support on Windows</Text>
             {/*<Button*/}
             {/*    id={"add-field-for-" + entryId + "-value"}*/}
-            {/*    style={tw`w-full basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}*/}
+            {/*    style={tw`w-full basis-2/3 bg-slate-800 text-slate-200 `}*/}
 
             {/*    title="open picker for single file selection"*/}
             {/*    onPress={async () => {*/}

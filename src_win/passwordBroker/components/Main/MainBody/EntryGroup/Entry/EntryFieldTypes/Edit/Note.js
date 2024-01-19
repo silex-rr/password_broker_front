@@ -9,7 +9,7 @@ const Note = ({fieldValue, changeValue}) => {
                 onChangeText={changeValue}
                 placeholder="type new note"
                 value={fieldValue}
-                style={tw`textarea-bordered w-full bg-slate-800 text-slate-200 placeholder-slate-300`}
+                style={tw`textarea-bordered w-full bg-slate-800 text-slate-200 `}
             />
         </View>
     );
