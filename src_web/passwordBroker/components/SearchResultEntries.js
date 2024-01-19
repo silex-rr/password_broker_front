@@ -6,7 +6,6 @@ const SearchResultEntries = ({data}) => {
     for (let i = 0; i < data.length; i++) {
         entries.push(<SearchResultEntry key={'entry_' + i} {...data[i]} />);
     }
-    console.log(data, entries);
 
     return (
         <div className="overflow-x-auto">
