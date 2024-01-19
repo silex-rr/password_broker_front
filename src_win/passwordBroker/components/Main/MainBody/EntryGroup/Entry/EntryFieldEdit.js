@@ -91,7 +91,7 @@ const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle
                         value={addingFieldTitle}
                         onChangeText={changeTitle}
                         placeholder="type title for new field"
-                        style={tw`basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}
+                        style={tw`basis-2/3 bg-slate-800 text-slate-200 `}
                     />
                 </View>
 
@@ -152,7 +152,7 @@ const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle
     //                             placeholder={fieldTitleDefault}
     //                             className={
     //                                 'input-bordered input-sm basis-2/3 bg-slate-800 text-slate-200 ' +
-    //                                 'placeholder-slate-300'
+    //                                 ''
     //                             }
     //                         />
     //                     </div>
