@@ -13,6 +13,7 @@ import PasswordBrokerContextProvider from '../../../src_shared/passwordBroker/co
 import EntryFieldContextProvider from '../../../src_shared/passwordBroker/contexts/EntryFieldContextProvider';
 import EntryGroupContextProvider from '../../../src_shared/passwordBroker/contexts/EntryGroupContextProvider';
 import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
+import PasswordBrokerSearchContainer from '../components/PasswordBrokerSearchContainer';
 
 const PasswordBrokerRouter = () => {
     const {copyToClipboard, writeFile, offlineDatabaseService} = useContext(AppContext);
@@ -34,6 +35,7 @@ const PasswordBrokerRouter = () => {
                 <EntryFieldContextProvider>
                     <Routes>
                         <Route path="/entryGroup/:entryGroupId" element={<PasswordBrokerContainer />} />
+                        <Route path="/entrySearch/:searchQuery" element={<PasswordBrokerSearchContainer />} />
                         <Route path="/" element={<PasswordBrokerContainer />} />
                     </Routes>
                     <ModalOverlay />
