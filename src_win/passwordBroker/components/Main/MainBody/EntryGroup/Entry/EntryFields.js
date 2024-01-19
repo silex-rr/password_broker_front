@@ -14,18 +14,13 @@ import EntryFieldEdit from './EntryFieldEdit';
 import UserApplicationContext from '../../../../../../../src_shared/identity/contexts/UserApplicationContext';
 import {DATABASE_MODE_OFFLINE} from '../../../../../../../src_shared/identity/constants/DatabaseModeStates';
 
-const EntryFields = ({
-    fields,
-    entryGroupId,
-    entryId,
-    entryTitle,
-
-    setEntryFieldsStatus,
-}) => {
+const EntryFields = ({fields, entryGroupId, entryId, entryTitle, hideEdit, hideAdd, setEntryFieldsStatus}) => {
     const fieldComponents = [];
 
     for (let i = 0; i < fields.length; i++) {
-        fieldComponents.push(<EntryField key={fields[i].field_id} {...fields[i]} />);
+        fieldComponents.push(
+            <EntryField key={fields[i].field_id} {...fields[i]} entry_group_id={entryGroupId} hideEdit={!!hideEdit} />,
+        );
     }
 
     const {entryGroupFieldForEditId, entryGroupFieldForEditDecryptedValue, entryGroupFieldForEditState} =
@@ -111,18 +106,22 @@ const EntryFields = ({
 
             {fieldComponents}
 
-            <EntryFieldAddButton
-                entryGroupId={entryGroupId}
-                entryId={entryId}
-                entryTitle={entryTitle}
-                disabled={disableButtons}
-                setEntryFieldsStatus={setEntryFieldsStatus}>
-                <View style={tw`flex flex-row m-2`}>
-                    <View style={tw`rounded py-2 px-10 ${buttonColor}`}>
-                        <Text style={tw`text-slate-200 text-center`}>add new Field</Text>
+            {hideAdd ? (
+                ''
+            ) : (
+                <EntryFieldAddButton
+                    entryGroupId={entryGroupId}
+                    entryId={entryId}
+                    entryTitle={entryTitle}
+                    disabled={disableButtons}
+                    setEntryFieldsStatus={setEntryFieldsStatus}>
+                    <View style={tw`flex flex-row m-2`}>
+                        <View style={tw`rounded py-2 px-10 ${buttonColor}`}>
+                            <Text style={tw`text-slate-200 text-center`}>add new Field</Text>
+                        </View>
                     </View>
-                </View>
-            </EntryFieldAddButton>
+                </EntryFieldAddButton>
+            )}
         </React.Fragment>
     );
 };
