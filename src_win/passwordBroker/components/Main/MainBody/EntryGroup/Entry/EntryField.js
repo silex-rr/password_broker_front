@@ -10,6 +10,8 @@ const EntryField = props => {
     const entryId = props.entry_id;
     const type = props.type;
     const title = props.title;
+    const entryGroupId = props.entry_group_id;
+    const hideEdit = props.hideEdit;
 
     const [decryptedValue, setDecryptedValue] = useState('');
     const [decryptedValueVisible, setDecryptedValueVisible] = useState(false);
@@ -20,7 +22,7 @@ const EntryField = props => {
     //,
 
     const passwordBrokerContext = useContext(PasswordBrokerContext);
-    const {baseUrl, entryGroupId} = passwordBrokerContext;
+    const {baseUrl} = passwordBrokerContext;
 
     const entryGroupContext = useContext(EntryGroupContext);
     const {loadEntryFieldValueAndButtons} = entryGroupContext;
@@ -40,6 +42,7 @@ const EntryField = props => {
             setTrashed,
         },
         props,
+        hideEdit,
     );
     //hover:bg-slate-600
 
