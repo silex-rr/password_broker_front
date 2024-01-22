@@ -21,6 +21,7 @@ import {
     FIELD_EDITING_AWAIT,
     FIELD_EDITING_EDITING,
     FIELD_EDITING_IN_PROGRESS,
+    FIELD_EDITING_MODAL_SHOULD_BE_CLOSE,
 } from '../constants/EntryGroupEntryFieldEditingStates';
 import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from '../constants/EntryGroupEntryFieldsStatus';
 
@@ -48,7 +49,7 @@ const EntryFieldContextProvider = props => {
     const [errorMessage, setErrorMessage] = useState([]);
 
     const addNewField = (entryGroupId, entryId) => {
-        if (addingFieldState !== FIELD_ADDING_EDITING) {
+        if (addingFieldState === FIELD_ADDING_IN_PROGRESS) {
             return;
         }
         let masterPasswordForm = masterPassword;
@@ -171,7 +172,7 @@ const EntryFieldContextProvider = props => {
                 () => {
                     beforeModalOpen();
                     setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING);
-                    setEntryGroupFieldForEditState(FIELD_EDITING_AWAIT);
+                    setEntryGroupFieldForEditState(FIELD_EDITING_MODAL_SHOULD_BE_CLOSE);
                     setMasterPasswordState(MASTER_PASSWORD_VALIDATED);
                 },
                 error => {

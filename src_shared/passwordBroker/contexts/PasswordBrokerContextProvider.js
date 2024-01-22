@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {
     ENTRY_GROUP_TREES_LOADED,
@@ -17,11 +17,29 @@ import {ENTRY_GROUP_MENU_MAIN} from '../constants/EntryGroupMenu';
 import {MASTER_PASSWORD_FILLED_IN, MASTER_PASSWORD_IS_EMPTY} from '../constants/MasterPasswordStates';
 import axios from 'axios';
 import PasswordBrokerContext from './PasswordBrokerContext';
+import {DATABASE_MODE_OFFLINE, DATABASE_MODE_ONLINE} from '../../identity/constants/DatabaseModeStates';
+// import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
+import IdentityContext from '../../identity/contexts/IdentityContext';
+import {
+    ENTRY_SEARCH_RESULT_AWAIT,
+    ENTRY_SEARCH_RESULT_LOADED,
+    ENTRY_SEARCH_RESULT_LOADING,
+    ENTRY_SEARCH_RESULT_REQUIRED_LOADING,
+} from '../constants/EntrySearchStates';
+import {searchRequestString} from '../../utils/searchRequestString';
 
 const PasswordBrokerContextProvider = props => {
     const AppContext = props.AppContext;
+    const UserApplicationContext = props.UserApplicationContext;
 
-    const {hostURL, showMasterPasswordModal} = useContext(AppContext);
+    const {databaseMode} = useContext(UserApplicationContext);
+
+    /**
+     * @type {OfflineDatabaseService}
+     */
+    const offlineDatabaseService = useContext(AppContext).offlineDatabaseService;
+    const {showMasterPasswordModal} = useContext(AppContext);
+    const {hostURL} = useContext(IdentityContext);
     const baseUrl = hostURL + '/passwordBroker/api';
 
     const [entryGroupTrees, setEntryGroupTrees] = useState([]);
@@ -46,17 +64,99 @@ const PasswordBrokerContextProvider = props => {
     const [masterPasswordCallback, setMasterPasswordCallback] = useState(() => () => {});
 
     const [moveEntryGroupMode, setMoveEntryGroupMode] = useState(false);
+    const [databaseModePB, setDatabaseModePB] = useState(databaseMode);
+
+    const [entrySearchQuery, setEntrySearchQuery] = useState('');
+    const [entrySearchPerPage, setEntrySearchPerPage] = useState(20);
+    const [entrySearchPage, setEntrySearchPage] = useState(1);
+    const [entrySearchRequestString, setEntrySearchRequestString] = useState('');
+    const [entrySearchState, setEntrySearchState] = useState(ENTRY_SEARCH_RESULT_AWAIT);
+    const [entrySearchResult, setEntrySearchResult] = useState([]);
 
     const navigate = useNavigate();
 
     let loadEntryGroupAbortController = null;
     let loadEntryGroupUsersAbortController = null;
 
+    let entrySearchAbortController = null;
+
     const handleMoveEntryGroupMode = () => {
         setMoveEntryGroupMode(!moveEntryGroupMode);
     };
 
-    const loadEntryGroupTrees = () => {
+    const handleEntrySearch = (page = 1, perPage = 20, searchQuery = '') => {
+        let requireUpdate = false;
+        if (page !== entrySearchPage) {
+            setEntrySearchPage(page);
+            requireUpdate = true;
+        }
+        if (perPage !== entrySearchPerPage) {
+            setEntrySearchPerPage(perPage);
+            requireUpdate = true;
+        }
+        if (searchQuery !== entrySearchQuery) {
+            setEntrySearchQuery(searchQuery);
+            requireUpdate = true;
+        }
+        if (requireUpdate) {
+            if (entrySearchAbortController) {
+                entrySearchAbortController.abort();
+            }
+            setEntrySearchState(ENTRY_SEARCH_RESULT_REQUIRED_LOADING);
+        }
+    };
+    const getEntrySearchResult = (page = 1, perPage = 20, searchQuery = '') => {
+        if (entrySearchState === ENTRY_SEARCH_RESULT_LOADING) {
+            return new Promise((resolve, reject) => {
+                reject('loading in progress');
+            });
+        }
+        setEntrySearchState(ENTRY_SEARCH_RESULT_LOADING);
+        setEntrySearchResult([]);
+
+        const reqString = searchRequestString(searchQuery, page, perPage);
+
+        if (reqString === entrySearchRequestString) {
+            return new Promise(resolve => {
+                setEntrySearchState(ENTRY_SEARCH_RESULT_LOADED);
+                resolve(entrySearchResult);
+            });
+        }
+
+        setEntrySearchRequestString(reqString);
+        const url = baseUrl + `/entrySearch${reqString}`;
+
+        return new Promise((resolve, reject) => {
+            entrySearchAbortController = new AbortController();
+            axios
+                .get(url, {
+                    signal: entrySearchAbortController.signal,
+                })
+                .then(
+                    response => {
+                        setEntrySearchState(ENTRY_SEARCH_RESULT_LOADED);
+                        setEntrySearchResult(response.data);
+                        resolve(response.data);
+                    },
+                    error => {
+                        if (entrySearchState !== ENTRY_SEARCH_RESULT_REQUIRED_LOADING) {
+                            setEntrySearchState(ENTRY_SEARCH_RESULT_AWAIT);
+                        }
+                        reject(error);
+                    },
+                );
+        });
+    };
+
+    const loadEntryGroupTrees = useCallback(() => {
+        if (databaseMode === DATABASE_MODE_OFFLINE) {
+            const dataBase = offlineDatabaseService.getDataBase();
+            // console.log('loadEntryGroupTrees-offline', dataBase);
+            setEntryGroupTrees(dataBase.trees);
+            setEntryGroupTreesStatus(ENTRY_GROUP_TREES_LOADED);
+            return;
+        }
+
         axios.get(baseUrl + '/entryGroupsAsTree/').then(
             response => {
                 setEntryGroupTrees(response.data.trees);
@@ -67,7 +167,7 @@ const PasswordBrokerContextProvider = props => {
                 console.log(error);
             },
         );
-    };
+    }, [baseUrl, databaseMode, offlineDatabaseService]);
 
     const selectEntryGroup = useCallback(
         entryGroupID => {
@@ -98,6 +198,37 @@ const PasswordBrokerContextProvider = props => {
     );
 
     const loadEntryGroup = entryGroupIdForLoading => {
+        const loadedGroupProcessor = data => {
+            const materialized_path = data.entryGroup.materialized_path;
+            const path_list = materialized_path.split('.');
+            let changed = false;
+            for (let i = 0; i < path_list.length; i++) {
+                if (entryGroupTreesOpened.includes(path_list[i])) {
+                    continue;
+                }
+                entryGroupTreesOpened.push(path_list[i]);
+                changed = true;
+            }
+
+            if (changed) {
+                setEntryGroupTreesOpened(entryGroupTreesOpened);
+            }
+            loadEntryGroupEntries(entryGroupIdForLoading, data);
+        };
+
+        if (databaseMode === DATABASE_MODE_OFFLINE) {
+            const dataBase = offlineDatabaseService.getDataBase();
+
+            const group = dataBase.groups.find(
+                groupCandidate => groupCandidate.entry_group_id === entryGroupIdForLoading,
+            );
+            // console.log('loadEntryGroup-offline', group);
+            loadedGroupProcessor({
+                entryGroup: group,
+                role: group.admins[0],
+            });
+            return;
+        }
         loadEntryGroupAbortController = new AbortController();
 
         axios
@@ -107,21 +238,23 @@ const PasswordBrokerContextProvider = props => {
             .then(
                 response => {
                     loadEntryGroupAbortController = null;
-                    const materialized_path = response.data.entryGroup.materialized_path;
-                    const path_list = materialized_path.split('.');
-                    let changed = false;
-                    for (let i = 0; i < path_list.length; i++) {
-                        if (entryGroupTreesOpened.includes(path_list[i])) {
-                            continue;
-                        }
-                        entryGroupTreesOpened.push(path_list[i]);
-                        changed = true;
-                    }
-
-                    if (changed) {
-                        setEntryGroupTreesOpened(entryGroupTreesOpened);
-                    }
-                    loadEntryGroupEntries(entryGroupIdForLoading, response.data);
+                    loadedGroupProcessor(response.data);
+                    //
+                    // const materialized_path = response.data.entryGroup.materialized_path;
+                    // const path_list = materialized_path.split('.');
+                    // let changed = false;
+                    // for (let i = 0; i < path_list.length; i++) {
+                    //     if (entryGroupTreesOpened.includes(path_list[i])) {
+                    //         continue;
+                    //     }
+                    //     entryGroupTreesOpened.push(path_list[i]);
+                    //     changed = true;
+                    // }
+                    //
+                    // if (changed) {
+                    //     setEntryGroupTreesOpened(entryGroupTreesOpened);
+                    // }
+                    // loadEntryGroupEntries(entryGroupIdForLoading, response.data);
                 },
                 error => {
                     console.log(error);
@@ -150,8 +283,16 @@ const PasswordBrokerContextProvider = props => {
     };
 
     const loadEntryGroupEntries = (entryGroupID, data) => {
+        if (databaseMode === DATABASE_MODE_OFFLINE) {
+            data.entries = data.entryGroup.entries;
+            setEntryGroupData(data);
+            setEntryGroupRole(data.role.role);
+            setEntryGroupStatus(ENTRY_GROUP_LOADED);
+            return;
+        }
         axios.get(baseUrl + '/entryGroups/' + entryGroupID + '/entries').then(response => {
             data.entries = response.data;
+            // console.log(data);
             setEntryGroupData(data);
             setEntryGroupRole(data.role.role);
             setEntryGroupStatus(ENTRY_GROUP_LOADED);
@@ -198,6 +339,25 @@ const PasswordBrokerContextProvider = props => {
         setMasterPasswordState(MASTER_PASSWORD_FILLED_IN);
     };
 
+    useEffect(() => {
+        if (![DATABASE_MODE_OFFLINE, DATABASE_MODE_ONLINE].includes(databaseMode)) {
+            return;
+        }
+        if (databaseMode !== databaseModePB) {
+            setDatabaseModePB(databaseMode);
+            setEntryGroupTreesStatus(ENTRY_GROUP_TREES_REQUIRED_LOADING);
+            setEntryGroupId('');
+            setEntryGroupStatus(ENTRY_GROUP_NOT_SELECTED);
+        }
+    }, [
+        databaseMode,
+        databaseModePB,
+        setDatabaseModePB,
+        setEntryGroupTreesStatus,
+        setEntryGroupId,
+        setEntryGroupStatus,
+    ]);
+
     return (
         <PasswordBrokerContext.Provider
             value={{
@@ -215,6 +375,14 @@ const PasswordBrokerContextProvider = props => {
                 entryGroupStatus: entryGroupStatus,
                 entryGroupRole: entryGroupRole,
                 setEntryGroupStatus: setEntryGroupStatus,
+
+                entrySearchQuery: entrySearchQuery,
+                entrySearchPage: entrySearchPage,
+                entrySearchPerPage: entrySearchPerPage,
+                entrySearchState: entrySearchState,
+                entrySearchResult: entrySearchResult,
+                handleEntrySearch: handleEntrySearch,
+                getEntrySearchResult: getEntrySearchResult,
 
                 entryGroupFieldForEditId: entryGroupFieldForEditId,
                 setEntryGroupFieldForEditId: setEntryGroupFieldForEditId,
@@ -250,6 +418,8 @@ const PasswordBrokerContextProvider = props => {
                 setMoveEntryGroupMode: setMoveEntryGroupMode,
                 handleMoveEntryGroupMode: handleMoveEntryGroupMode,
                 AppContext: AppContext,
+                databaseMode: databaseMode,
+                offlineDatabaseService: offlineDatabaseService,
             }}>
             {props.children}
         </PasswordBrokerContext.Provider>

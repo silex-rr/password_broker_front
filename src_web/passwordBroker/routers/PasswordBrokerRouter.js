@@ -7,13 +7,16 @@ import File from '../components/MainBody/EntryGroup/EntryFieldTypes/View/File';
 import EntryFieldButton from '../components/MainBody/EntryGroup/EntryFieldButton';
 import AppContext from '../../AppContext';
 import copy from 'copy-to-clipboard';
-import React from 'react';
+import React, {useContext} from 'react';
 import PasswordBrokerContextProvider from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContextProvider';
 import EntryGroupContextProvider from '../../../src_shared/passwordBroker/contexts/EntryGroupContextProvider';
+import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
+import PasswordBrokerSearchContainer from "../components/PasswordBrokerSearchContainer";
 
 const PasswordBrokerRouter = () => {
+    const {writeFile} = useContext(AppContext);
     return (
-        <PasswordBrokerContextProvider AppContext={AppContext}>
+        <PasswordBrokerContextProvider AppContext={AppContext} UserApplicationContext={UserApplicationContext}>
             <EntryGroupContextProvider
                 entryFieldTypes={{
                     Link: Link,
@@ -22,9 +25,11 @@ const PasswordBrokerRouter = () => {
                     File: File,
                 }}
                 EntryFieldButton={EntryFieldButton}
-                copyToClipboard={copy}>
+                copyToClipboard={copy}
+                writeFile={writeFile}>
                 <Routes>
                     <Route path="/entryGroup/:entryGroupId" element={<PasswordBrokerContainer />} />
+                    <Route path="/entrySearch/:searchQuery" element={<PasswordBrokerSearchContainer />} />
                     <Route path="/" element={<PasswordBrokerContainer />} />
                 </Routes>
             </EntryGroupContextProvider>

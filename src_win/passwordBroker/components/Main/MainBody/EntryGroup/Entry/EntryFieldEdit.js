@@ -6,8 +6,11 @@ import {
     FIELD_TYPE_PASSWORD,
 } from '../../../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
 import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
-// eslint-disable-next-line max-len
-import {FIELD_EDITING_IN_PROGRESS} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
+
+import {
+    FIELD_EDITING_AWAIT,
+    FIELD_EDITING_IN_PROGRESS,
+} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
 import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
 import Password from './EntryFieldTypes/Edit/Password';
 import Note from './EntryFieldTypes/Edit/Note';
@@ -19,7 +22,8 @@ import AppContext from '../../../../../../AppContext';
 const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle}) => {
     const passwordBrokerContext = useContext(PasswordBrokerContext);
     const {modalClose} = useContext(AppContext);
-    const {entryGroupFieldForEditId, entryGroupFieldForEditState} = passwordBrokerContext;
+    const {entryGroupFieldForEditId, entryGroupFieldForEditState, setEntryGroupFieldForEditState} =
+        passwordBrokerContext;
     const {
         updateField,
         addingFieldType,
@@ -62,6 +66,11 @@ const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle
         updateField(entryGroupId, entryId, entryGroupFieldForEditId, setEntryFieldsStatus);
     };
 
+    const closeClickHandler = () => {
+        setEntryGroupFieldForEditState(FIELD_EDITING_AWAIT);
+        modalClose();
+    };
+
     const addButtonStyle = {
         ...tw`rounded py-2 px-10 w-1/3`,
         backgroundColor: '#36d399',
@@ -82,7 +91,7 @@ const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle
                         value={addingFieldTitle}
                         onChangeText={changeTitle}
                         placeholder="type title for new field"
-                        style={tw`basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300`}
+                        style={tw`basis-2/3 bg-slate-800 text-slate-200 `}
                     />
                 </View>
 
@@ -98,7 +107,7 @@ const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle
                             )}
                         </View>
                     </Pressable>
-                    <Pressable onPress={modalClose} style={tw`rounded py-2 px-10 border border-red-400 w-1/3`}>
+                    <Pressable onPress={closeClickHandler} style={tw`rounded py-2 px-10 border border-red-400 w-1/3`}>
                         <Text style={tw`text-red-400 text-center w-full`}>CLOSE</Text>
                     </Pressable>
                 </View>
@@ -143,7 +152,7 @@ const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle
     //                             placeholder={fieldTitleDefault}
     //                             className={
     //                                 'input-bordered input-sm basis-2/3 bg-slate-800 text-slate-200 ' +
-    //                                 'placeholder-slate-300'
+    //                                 ''
     //                             }
     //                         />
     //                     </div>

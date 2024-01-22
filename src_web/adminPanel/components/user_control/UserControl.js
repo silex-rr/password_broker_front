@@ -9,7 +9,7 @@ import {
 } from './UserControlStatus';
 import AdminPanelLoading from '../AdminPanelLoading';
 import { FaEdit, FaTrashAlt } from 'react-icons/fa';
-import PaginationButton from '../Pagination';
+import PaginationButton from '../../../common/Pagination';
 import SearchField from '../SearchField';
 import UserControlNavigation from './UserControlNagivation';
 import AppContext from '../../../AppContext';

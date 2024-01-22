@@ -1,11 +1,12 @@
 import React, {useContext, useState} from 'react';
 import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
 import {Navigate} from 'react-router-dom';
-import {LOGGED_IN} from '../../../src_shared/identity/constants/AuthStatus';
-import {Text, TextInput, TouchableOpacity, View} from 'react-native-windows';
+import {LOADING, LOGGED_IN} from '../../../src_shared/identity/constants/AuthStatus';
+import {ActivityIndicator, Text, TextInput, TouchableOpacity, View} from 'react-native-windows';
 import tw from 'twrnc';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AuthLoginTokens from './AuthLoginTokens';
+import {AUTH_LOGIN_AWAIT} from '../../../src_shared/identity/constants/AuthLoginStatus';
 
 const AuthLogin = () => {
     const {
@@ -19,12 +20,17 @@ const AuthLogin = () => {
         errorMessage,
         authStatus,
         appTokensService,
+        authLoginStatus,
     } = useContext(IdentityContext);
 
     const [tokens, setTokens] = useState(appTokensService.getTokens());
 
     if (authStatus === LOGGED_IN) {
         return <Navigate to="/" replace />;
+    }
+
+    if (authStatus === LOADING) {
+        return <Navigate to="/identity/loading" replace />;
     }
     //console-network
     //database
@@ -82,8 +88,17 @@ const AuthLogin = () => {
             </View>
 
             <View style={tw`flex justify-center w-full mt-10`}>
-                <TouchableOpacity onPress={login}>
-                    <Text style={tw`text-slate-700 text-center rounded py-2 px-10 border border-slate-700`}>Login</Text>
+                <TouchableOpacity
+                    onPress={login}
+                    style={tw`rounded py-2 px-10 border border-slate-700 flex flex-row justify-center`}>
+                    {authLoginStatus !== AUTH_LOGIN_AWAIT ? (
+                        <View style={tw`px-4 w-5`}>
+                            <ActivityIndicator size="small" color="#000000" />
+                        </View>
+                    ) : (
+                        ''
+                    )}
+                    <Text style={tw`text-slate-700`}>{authLoginStatus === AUTH_LOGIN_AWAIT ? 'Login' : 'Loading'}</Text>
                 </TouchableOpacity>
             </View>
 

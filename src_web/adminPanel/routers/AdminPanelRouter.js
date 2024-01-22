@@ -7,11 +7,12 @@ import AppContext from '../../AppContext';
 import PasswordBrokerContextProvider from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContextProvider';
 import {AdminPanelProvider} from '../contexts/AdminPanelContext';
 import UserUpdate from '../components/user_control/UserUpdate';
-
-const AdminPanelRouter = props => {
+import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
+import React from 'react';
+const AdminPanelRouter = () => {
     return (
         <AdminPanelProvider>
-            <PasswordBrokerContextProvider AppContext={AppContext}>
+            <PasswordBrokerContextProvider AppContext={AppContext} UserApplicationContext={UserApplicationContext}>
                 <Routes>
                     <Route path="/*" element={<AdminPanelContainer />} />
                     <Route

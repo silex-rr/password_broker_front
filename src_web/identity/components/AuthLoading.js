@@ -21,7 +21,7 @@ const AuthLoading = () => {
     switch (authStatus) {
         case LOGGED_IN:
             let path = '/';
-            if (location.state.from.pathname) {
+            if (location?.state?.from?.pathname) {
                 path = location.state.from.pathname;
             }
             // console.log(path)

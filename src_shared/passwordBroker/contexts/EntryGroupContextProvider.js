@@ -8,14 +8,13 @@ import {
     MASTER_PASSWORD_INVALID,
     MASTER_PASSWORD_VALIDATED,
 } from '../constants/MasterPasswordStates';
-import {Buffer} from 'buffer';
+// import {Buffer} from 'buffer';
 import {
     FIELD_TYPE_FILE,
     FIELD_TYPE_LINK,
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
 } from '../constants/MainBodyEntryGroupEntryFieldTypes';
-import {stringToBlob} from '../../utils/stringToBlob';
 import {ROLE_CAN_EDIT} from '../constants/EntryGroupRole';
 import {
     FIELD_EDITING_AWAIT,
@@ -23,12 +22,20 @@ import {
     FIELD_EDITING_LOADING_DATA,
 } from '../constants/EntryGroupEntryFieldEditingStates';
 import EntryGroupContext from './EntryGroupContext';
+import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates';
+// import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
+import {CryptoService} from '../../utils/native/CryptoService';
+import UserApplicationContext from '../../identity/contexts/UserApplicationContext';
+
+const Buffer = require('buffer/').Buffer;
 
 const EntryGroupContextProvider = props => {
     const {Link, Password, Note, File} = props.entryFieldTypes;
     const EntryFieldButton = props.EntryFieldButton;
     const copy = props.copyToClipboard;
-
+    const writeFile = props.writeFile;
+    const {iconDisableColor} = useContext(UserApplicationContext);
+    const passwordBrokerContext = useContext(PasswordBrokerContext);
     const {
         masterPassword,
         masterPasswordState,
@@ -46,13 +53,21 @@ const EntryGroupContextProvider = props => {
         setEntryGroupTreesStatus,
         entryGroupTreesOpened,
         setEntryGroupTreesOpened,
-    } = useContext(PasswordBrokerContext);
+
+        entryGroupData,
+        databaseMode,
+    } = passwordBrokerContext;
+
+    /**
+     * @type {OfflineDatabaseService}
+     */
+    const offlineDatabaseService = passwordBrokerContext.offlineDatabaseService;
 
     const [addingEntryGroupState, setAddingEntryGroupState] = useState(ENTRY_GROUP_ADDING_AWAIT);
     const [addingEntryGroupTitle, setAddingEntryGroupTitle] = useState('');
     const [addingEntryGroupErrorMessage, setAddingEntryGroupErrorMessage] = useState('');
     const addingEntryGroupModalVisibilityCheckboxRef = useRef();
-
+    const cryptoService = new CryptoService();
     const addNewEntryGroup = (entryGroupId = null) => {
         if (addingEntryGroupState !== ENTRY_GROUP_ADDING_AWAIT) {
             return;
@@ -119,6 +134,46 @@ const EntryGroupContextProvider = props => {
             const getDecryptedFieldValue = masterPasswordNew => {
                 setButtonLoading(button);
 
+                if (databaseMode === DATABASE_MODE_OFFLINE) {
+                    offlineDatabaseService.reloadKeyAndSalt().then(() => {
+                        const rsaPrivateKey = offlineDatabaseService.getKey();
+                        const salt = offlineDatabaseService.getSalt();
+                        // console.log('rsaPrivateKey', rsaPrivateKey);
+                        // console.log('salt', salt);
+                        const entry = entryGroupData.entries.find(
+                            entryCandidate => entryCandidate.entry_id === fieldProps.entry_id,
+                        );
+                        const field = entry[fieldProps.type + 's'].find(
+                            fieldCandidate => (fieldCandidate.field_id = fieldProps.field_id),
+                        );
+                        const encrypted_value = Buffer.from(field.encrypted_value_base64, 'base64').toString('binary');
+                        const initialization_vector = Buffer.from(
+                            field.initialization_vector_base64,
+                            'base64',
+                        ).toString('binary');
+
+                        // const encrypted_aes_password = Buffer.from(
+                        //     entryGroupData.entryGroup.admins[0].encrypted_aes_password_base64,
+                        //     'base64',
+                        // ).toString('binary');
+                        // console.log('encrypted_value_b64', field.encrypted_value_base64);
+                        // console.log('offlineDatabaseService', offlineDatabaseService);
+                        const fieldValue = cryptoService.decryptFieldValue(
+                            encrypted_value,
+                            initialization_vector,
+                            entryGroupData.entryGroup.admins[0].encrypted_aes_password_base64,
+                            rsaPrivateKey,
+                            masterPasswordNew,
+                            salt,
+                        );
+                        // console.log('decryptedFieldValue', fieldValue);
+                        setMasterPasswordState(MASTER_PASSWORD_VALIDATED);
+                        setButtonLoading('');
+                        onSucceed(fieldValue);
+                    });
+                    return;
+                }
+
                 axios
                     .post(url + '/decrypted', {
                         master_password: masterPasswordNew,
@@ -173,15 +228,16 @@ const EntryGroupContextProvider = props => {
 
         const handleDownload = () => {
             loadDecryptedValue(decoded => {
-                const blob = stringToBlob(decoded, fileMime);
-                const href = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = href;
-                link.setAttribute('download', fileName);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(href);
+                writeFile(decoded, fileName, fileMime);
+                // const blob = stringToBlob(decoded, fileMime);
+                // const href = URL.createObjectURL(blob);
+                // const link = document.createElement('a');
+                // link.href = href;
+                // link.setAttribute('download', fileName);
+                // document.body.appendChild(link);
+                // link.click();
+                // document.body.removeChild(link);
+                // URL.revokeObjectURL(href);
             }, 'download');
         };
 
@@ -191,6 +247,9 @@ const EntryGroupContextProvider = props => {
 
         let value = '';
         const buttons = [];
+
+        const disableButtons = databaseMode === DATABASE_MODE_OFFLINE;
+        const iconColor = disableButtons ? iconDisableColor : '';
 
         const visibilityButton = (
             <EntryFieldButton
@@ -229,7 +288,8 @@ const EntryGroupContextProvider = props => {
                 onclick={handleHistoryButton}
                 loading={buttonLoading === 'history'}
                 tip="history"
-                colour={historyVisible ? 'text-yellow-500' : ''}
+                colour={historyVisible ? 'text-yellow-500' : iconColor}
+                disabled={disableButtons}
             />
         );
 
@@ -324,10 +384,11 @@ const EntryGroupContextProvider = props => {
                 <EntryFieldButton
                     key="editButton"
                     icon="FaEdit"
-                    colour="text-blue-300"
                     onclick={handleEdit}
                     loading={buttonLoading === 'edit'}
                     tip="edit"
+                    colour={historyVisible ? 'text-blue-300' : iconColor}
+                    disabled={disableButtons}
                 />,
             );
 
@@ -335,10 +396,11 @@ const EntryGroupContextProvider = props => {
                 <EntryFieldButton
                     key="deleteButton"
                     icon="FaTrashAlt"
-                    colour="text-red-400"
                     onclick={handleDelete}
                     loading={buttonLoading === 'delete'}
                     tip="delete"
+                    colour={historyVisible ? 'text-red-400' : iconColor}
+                    disabled={disableButtons}
                 />,
             );
         }

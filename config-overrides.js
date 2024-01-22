@@ -6,4 +6,4 @@ module.exports = {
         paths.appSrc = path.resolve(__dirname, '');
         return paths;
     },
-}
+};

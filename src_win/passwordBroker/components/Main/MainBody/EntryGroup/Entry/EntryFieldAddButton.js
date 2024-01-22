@@ -6,7 +6,7 @@ import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/co
 // eslint-disable-next-line max-len
 import {FIELD_ADDING_EDITING} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
 
-const EntryFieldAddButton = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus, children}) => {
+const EntryFieldAddButton = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus, children, disabled}) => {
     const {modalShow} = useContext(AppContext);
 
     const {beforeModalOpen, setAddingFieldState} = useContext(EntryFieldContext);
@@ -25,7 +25,11 @@ const EntryFieldAddButton = ({entryGroupId, entryId, entryTitle, setEntryFieldsS
         );
     };
 
-    return <Pressable onPress={openModal}>{children}</Pressable>;
+    return (
+        <Pressable onPress={openModal} disabled={disabled}>
+            {children}
+        </Pressable>
+    );
 };
 
 export default EntryFieldAddButton;

@@ -11,11 +11,12 @@ const EntryFieldButton = ({
     // tip,
     colour = '',
     loading = false,
+    disabled = false,
 }) => {
     let iconElement = <View />;
 
     const iconSize = 24;
-    const iconColor = '#f1f5f9';
+    const iconColor = colour ? colour : '#f1f5f9';
 
     switch (icon) {
         case 'FaCopy':
@@ -59,7 +60,7 @@ const EntryFieldButton = ({
     colour = colour === '' ? 'text-slate-100' : colour;
     //focus:outline-none
     return (
-        <TouchableOpacity onPress={onclick}>
+        <TouchableOpacity onPress={onclick} disabled={disabled}>
             <View
                 style={tw`${colour}  ml-2 w-7 items-baseline`}
 

@@ -4,30 +4,36 @@ import PasswordBrokerRouter from './passwordBroker/routers/PasswordBrokerRouter'
 import IdentityRouter from './identity/routers/IdentityRouter';
 import React, {useContext} from 'react';
 import AppContext from './AppContext';
-import {AppTokensService} from '../src_shared/utils/native/AppTokensService';
 import IdentityContextProvider from '../src_shared/identity/contexts/IdentityContextProvider';
+import UserApplicationContextProvider from '../src_shared/identity/contexts/UserApplicationContextProvider';
 
 const AppRouter = () => {
-    const {hostURL, getAppUUId} = useContext(AppContext);
+    const {hostURL, getClientId, offlineDatabaseService, appTokensService} = useContext(AppContext);
 
     return (
         <NativeRouter>
             <IdentityContextProvider
                 hostURL={hostURL}
                 tokenMode={true}
-                getAppUUId={getAppUUId}
-                AppTokensService={new AppTokensService()}>
-                <Routes>
-                    <Route
-                        path={'/*'}
-                        element={
-                            <RequireAuth>
-                                <PasswordBrokerRouter />
-                            </RequireAuth>
-                        }
-                    />
-                    <Route path="/identity/*" element={<IdentityRouter />} />
-                </Routes>
+                getClientId={getClientId}
+                appTokensService={appTokensService}
+                AppContext={AppContext}>
+                <UserApplicationContextProvider
+                    getClientId={getClientId}
+                    hostURL={hostURL}
+                    offlineDatabaseService={offlineDatabaseService}>
+                    <Routes>
+                        <Route
+                            path={'/*'}
+                            element={
+                                <RequireAuth>
+                                    <PasswordBrokerRouter />
+                                </RequireAuth>
+                            }
+                        />
+                        <Route path="/identity/*" element={<IdentityRouter />} />
+                    </Routes>
+                </UserApplicationContextProvider>
             </IdentityContextProvider>
         </NativeRouter>
     );

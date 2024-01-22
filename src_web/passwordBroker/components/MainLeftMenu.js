@@ -53,7 +53,7 @@ const MainLeftMenu = () => {
 
     //RiFolderSettingsFill
     return (
-        <aside className="basis-1/4 bg-slate-900 pr-1 text-slate-400">
+        <React.Fragment>
             <div className="w-full bg-slate-200 px-3 py-1 text-slate-800">
                 <EntryGroupAdd
                     entryGroupId={null}
@@ -108,7 +108,7 @@ const MainLeftMenu = () => {
                     {trees}
                 </DndProvider>
             </div>
-        </aside>
+        </React.Fragment>
     );
 };
 

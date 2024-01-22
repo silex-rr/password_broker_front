@@ -52,6 +52,7 @@ DerivedData
 *.ipa
 *.xcuserstate
 ios/.xcode.env.local
+*_old.
 
 # Android/IntelliJ
 #
@@ -94,3 +95,6 @@ yarn-error.log
 .metro-health-check*
 ./msbuild.binlog
 msbuild.binlog
+/app_old.json
+/metro.config_old.js
+/windows_old/

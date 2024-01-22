@@ -12,7 +12,7 @@ const Password = ({entryId, fieldLogin, fieldValue, changeLogin, changeValue}) =
                 <TextInput
                     id={'add-field-for-' + entryId + '-login'}
                     style={tw`basis-2/3 bg-slate-800
-                             text-slate-200 placeholder-slate-300`}
+                             text-slate-200 `}
                     onChangeText={changeLogin}
                     placeholder="type new login"
                     value={fieldLogin}
@@ -25,7 +25,7 @@ const Password = ({entryId, fieldLogin, fieldValue, changeLogin, changeValue}) =
                 <TextInput
                     id={'add-field-for-' + entryId + '-value'}
                     style={tw`basis-2/3 bg-slate-800 
-                                text-slate-200 placeholder-slate-300`}
+                                text-slate-200 `}
                     onChangeText={changeValue}
                     placeholder="type new password"
                     secureTextEntry={true}

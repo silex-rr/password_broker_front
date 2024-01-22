@@ -12,18 +12,21 @@ import EntryFields from './EntryFields';
 import {Text, View} from 'react-native-windows';
 import {DataTable} from 'react-native-paper';
 import tw from 'twrnc';
-// eslint-disable-next-line max-len
-import {FIELD_EDITING_AWAIT} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
-// eslint-disable-next-line max-len
-import {FIELD_ADDING_AWAIT} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
+
+import {
+    FIELD_EDITING_AWAIT,
+    FIELD_EDITING_MODAL_SHOULD_BE_CLOSE,
+} from '../../../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
 import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/contexts/EntryFieldContext';
 import AppContext from '../../../../../../AppContext';
+import {DATABASE_MODE_OFFLINE} from '../../../../../../../src_shared/identity/constants/DatabaseModeStates';
 
 const Entry = props => {
     const entryGroupId = props.entry_group_id;
     const entryId = props.entry_id;
 
-    const {baseUrl, entryGroupFieldForEditState} = useContext(PasswordBrokerContext);
+    const {baseUrl, entryGroupFieldForEditState, setEntryGroupFieldForEditState, entryGroupData, databaseMode} =
+        useContext(PasswordBrokerContext);
 
     const {addingFieldState} = useContext(EntryFieldContext);
     const {modalClose, modalVisible} = useContext(AppContext);
@@ -32,17 +35,22 @@ const Entry = props => {
     const [entryFieldsIsVisible, setEntryFieldVisible] = useState(false);
 
     useEffect(() => {
-        if (
-            modalVisible &&
-            entryGroupFieldForEditState === FIELD_EDITING_AWAIT &&
-            addingFieldState === FIELD_ADDING_AWAIT
-        ) {
+        if (modalVisible && entryGroupFieldForEditState === FIELD_EDITING_MODAL_SHOULD_BE_CLOSE) {
             modalClose();
+            setEntryGroupFieldForEditState(FIELD_EDITING_AWAIT);
         }
 
         if (entryFieldsStatus === ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING) {
             setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADING);
+            if (databaseMode === DATABASE_MODE_OFFLINE) {
+                const entry = entryGroupData.entries.find(entryCandidate => entryCandidate.entry_id === entryId);
+                const fields = entry.passwords.concat(entry.notes, entry.links, entry.files);
+                setEntryFieldsData(fields);
+                setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADED);
+                return;
+            }
             axios.get(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields').then(response => {
+                console.log(response.data);
                 setEntryFieldsData(response.data);
                 setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADED);
             });
@@ -58,6 +66,9 @@ const Entry = props => {
         entryGroupFieldForEditState,
         addingFieldState,
         modalClose,
+        setEntryGroupFieldForEditState,
+        databaseMode,
+        entryGroupData.entries,
     ]);
 
     const entryFieldsVisibility = () => {

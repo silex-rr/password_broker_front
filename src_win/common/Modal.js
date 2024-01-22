@@ -5,7 +5,6 @@ import AppContext from '../AppContext';
 import tw from 'twrnc';
 const Modal = () => {
     const {modalVisible, modalContent, modalStyle} = useContext(AppContext);
-
     if (!modalVisible) {
         return <View />;
     }

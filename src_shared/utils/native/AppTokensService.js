@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AppToken} from './AppToken';
 
 export class AppTokensService {
@@ -9,13 +8,18 @@ export class AppTokensService {
      * @type AppToken[]
      */
     tokens = [];
-    constructor() {}
+    storage = null;
+
+    constructor(storage) {
+        this.storage = storage;
+    }
+
     async load(force = false) {
         if (this.loaded && force === false) {
             return;
         }
         // console.log(1)
-        const tokens_json = await AsyncStorage.getItem(this.constructor.TOKENS_STORAGE_KEY);
+        const tokens_json = await this.storage.get(this.constructor.TOKENS_STORAGE_KEY);
         if (tokens_json === null) {
             this.tokens = [];
             this.loaded = true;
@@ -44,7 +48,16 @@ export class AppTokensService {
             if (!tokens_raw[i].login || !tokens_raw[i].url || !tokens_raw[i].token) {
                 continue;
             }
-            tokens.push(new AppToken(tokens_raw[i].login, tokens_raw[i].url, tokens_raw[i].token));
+            tokens.push(
+                new AppToken(
+                    tokens_raw[i].user_id,
+                    tokens_raw[i].login,
+                    tokens_raw[i].name,
+                    tokens_raw[i].url,
+                    tokens_raw[i].token,
+                    tokens_raw[i].is_admin,
+                ),
+            );
         }
         // console.log(4, tokens)
         this.tokens = tokens;
@@ -59,7 +72,7 @@ export class AppTokensService {
         if (typeof tokens !== 'object') {
             return;
         }
-        await AsyncStorage.setItem(this.constructor.TOKENS_STORAGE_KEY, JSON.stringify(tokens));
+        await this.storage.set(this.constructor.TOKENS_STORAGE_KEY, JSON.stringify(tokens));
         this.tokens = tokens;
     }
 
@@ -77,8 +90,8 @@ export class AppTokensService {
         await this.load(true);
     }
 
-    async addTokenByParams(login, url, token) {
-        await this.addToken(new AppToken(login, url, token));
+    async addTokenByParams(user_id, login, name, url, token, is_admin) {
+        await this.addToken(new AppToken(user_id, login, name, url, token, is_admin));
     }
 
     /**
