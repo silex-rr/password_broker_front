@@ -80,7 +80,6 @@ const UserApplicationContextProvider = props => {
             setOfflineSaltStatus(offlineSaltStatus);
         },
         //Dependency avoided intentionally to put all state on default
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         [],
     );
 
@@ -352,7 +351,7 @@ const UserApplicationContextProvider = props => {
         setDatabaseMode(DATABASE_MODE_SWITCHING_TO_OFFLINE);
         offlineDatabaseService.loadDataBaseWithKeyAndSaltByToken(userAppToken).then(
             () => setDatabaseMode(DATABASE_MODE_OFFLINE),
-            error => console.log(error),
+            error => console.log('switchDatabaseToOffline Error:', error),
         );
     };
 
