@@ -76,8 +76,11 @@ export class OfflineDatabaseService {
         // console.log('loadDataBaseWithKeyAndSaltByToken', databaseName, databaseKeyName, saltName);
         try {
             await this.loadDatabase(databaseName, force);
+            console.log('OfflineDatabaseService.loadDataBaseWithKeyAndSaltByToken loadDatabase done');
             await this.loadDatabaseKey(databaseKeyName, force);
+            console.log('OfflineDatabaseService.loadDataBaseWithKeyAndSaltByToken loadDatabaseKey done');
             await this.loadDatabaseSalt(saltName, force);
+            console.log('OfflineDatabaseService.loadDataBaseWithKeyAndSaltByToken loadDatabaseSalt done');
         } catch (e) {
             console.log('loadDataBaseWithKeyAndSaltByToken error', e);
         }
