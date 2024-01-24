@@ -12,7 +12,7 @@ module.exports = {
     },
     extends: ['plugin:prettier/recommended', 'plugin:react/recommended'],
     parserOptions: {
-        ecmaVersion: 2020, // or 2018 or 2017
+        ecmaVersion: 2022, // or 2018 or 2017
         sourceType: 'module',
         ecmaFeatures: {
             jsx: true, // Includes JSX syntax
