@@ -1,5 +1,5 @@
-import {useNavigate} from 'react-router-native';
 import React, {useContext, useEffect} from 'react';
+import {useNavigate} from 'react-router-native';
 import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
 import {Text, View} from 'react-native-windows';
 import tw from 'twrnc';
@@ -11,9 +11,9 @@ const AuthLogout = () => {
     const navigate = useNavigate();
     const {logout} = identityContext;
     useEffect(() => {
-        logout(navigate, databaseMode).then(() => {
+        logout(databaseMode).then(() => {
             userApplicationUnload();
-            navigate('/');
+            navigate('/identity/login');
         });
     }, [logout, navigate, databaseMode, userApplicationUnload]);
     return (
