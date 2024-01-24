@@ -2,6 +2,8 @@ module.exports = {
     root: true,
     parser: '@babel/eslint-parser',
     parserOptions: {
+        ecmaVersion: 2020, // or 2018 or 2017
+        sourceType: 'module',
         requireConfigFile: true,
         babelOptions: {
             configFile: './../babel.config.js',
