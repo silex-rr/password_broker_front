@@ -67,6 +67,14 @@ const UserApplicationContextProvider = props => {
 
     const iconDisableColor = '#777777';
 
+    const isOfflineDatabaseReady = () => {
+        return (
+            offlineDatabaseStatus === OFFLINE_DATABASE_SYNCHRONIZED &&
+            offlinePrivateKeyStatus === OFFLINE_DATABASE_SYNCHRONIZED &&
+            offlineSaltStatus === OFFLINE_DATABASE_SYNCHRONIZED
+        );
+    };
+
     const userApplicationUnload = useCallback(
         () => {
             setApplicationId(applicationId);
@@ -208,12 +216,14 @@ const UserApplicationContextProvider = props => {
             try {
                 const response = await axios.get(hostURL + '/passwordBroker/api/entryGroupsWithFields');
                 await offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp);
+                logActivityManual('Offline Database is updated');
                 if (databaseMode === DATABASE_MODE_OFFLINE) {
                     await offlineDatabaseService.reloadDatabase();
                 }
                 return true;
             } catch (error) {
                 console.log('updateOfflineDatabase', error);
+                logActivityManual('Offline Database update error: ' + error);
                 return false;
             }
         };
@@ -368,7 +378,9 @@ const UserApplicationContextProvider = props => {
                 );
                 offlineDatabaseService.unloadDatabase();
                 setDatabaseMode(DATABASE_MODE_ONLINE);
-                updateOfflineDatabase(userAppToken);
+                setOfflineDatabaseStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
+                setOfflineSaltStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
+                setOfflinePrivateKeyStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
             },
         );
     };
@@ -523,6 +535,8 @@ const UserApplicationContextProvider = props => {
                 applicationIdState,
                 offlineDatabaseSyncMode,
                 databaseMode,
+
+                isOfflineDatabaseReady,
 
                 loadUserApplication,
                 getOfflineDatabaseSyncMode,
