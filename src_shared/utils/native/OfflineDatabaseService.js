@@ -1,4 +1,4 @@
-import {AES, enc, MD5} from 'crypto-js';
+import {AES, enc, MD5} from 'react-native-crypto-js';
 
 export class OfflineDatabaseService {
     static OFFLINE_DATABASE_STORAGE_PREFIX = 'OFFLINE_DATABASE_';
