@@ -27,6 +27,7 @@ import {
     OFFLINE_DATABASE_SYNCHRONIZED,
 } from '../constants/OfflineDatabaseStatus';
 import IdentityContext from './IdentityContext';
+import GlobalContext from '../../common/contexts/GlobalContext';
 // import {Buffer} from 'buffer';
 const Buffer = require('buffer/').Buffer;
 const UserApplicationContextProvider = props => {
@@ -48,6 +49,7 @@ const UserApplicationContextProvider = props => {
      * @var {AppToken} userAppToken
      */
     const {userAppToken} = identityContext;
+    const {logActivityManual} = useContext(GlobalContext);
 
     const defaultURL = hostURL + '/identity/api';
 
@@ -274,10 +276,10 @@ const UserApplicationContextProvider = props => {
             response => {
                 offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp).then(
                     () => {
-                        console.log('offline DB saved');
+                        logActivityManual('offline DB updated');
                     },
                     error => {
-                        console.log('offline DB saving is failed', error);
+                        logActivityManual('offline DB update failed ' + error);
                     },
                 );
             },
@@ -349,9 +351,25 @@ const UserApplicationContextProvider = props => {
 
     const switchDatabaseToOffline = () => {
         setDatabaseMode(DATABASE_MODE_SWITCHING_TO_OFFLINE);
+        logActivityManual('Switching database to offline mode');
         offlineDatabaseService.loadDataBaseWithKeyAndSaltByToken(userAppToken).then(
-            () => setDatabaseMode(DATABASE_MODE_OFFLINE),
-            error => console.log('switchDatabaseToOffline Error:', error),
+            () => {
+                setDatabaseMode(DATABASE_MODE_OFFLINE);
+                logActivityManual('Database switched to offline mode');
+            },
+            (databaseStatus, keyStatus, saltStatus) => {
+                logActivityManual(
+                    'Database switching error: databaseStatus: ' +
+                        databaseStatus +
+                        '; keyStatus: ' +
+                        keyStatus +
+                        '; saltStatus: ' +
+                        saltStatus,
+                );
+                offlineDatabaseService.unloadDatabase();
+                setDatabaseMode(DATABASE_MODE_ONLINE);
+                updateOfflineDatabase(userAppToken);
+            },
         );
     };
 
