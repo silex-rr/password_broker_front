@@ -4,19 +4,18 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="1275fdff-dc2d-48aa-9d9e-b2c1a5c591ee"
-    Publisher="CN=BLSV"
-    Version="1.0.18.0" />
+    Name="3923BLSV.PasswordBroker"
+    Publisher="CN=4B70D734-7250-4059-83B6-180962EC40C5"
+    Version="1.0.36.0" />
 
-  <mp:PhoneIdentity PhoneProductId="1275fdff-dc2d-48aa-9d9e-b2c1a5c591ee" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="5d8eb865-9c41-4f19-b8a8-1d84a0851ce2" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>PasswordBroker</DisplayName>
-    <PublisherDisplayName>silex</PublisherDisplayName>
+    <PublisherDisplayName>BLSV</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -57,7 +56,5 @@
 
   <Capabilities>
     <Capability Name="internetClient"/>
-    <rescap:Capability Name="broadFileSystemAccess" />
-    <rescap:Capability Name="documentsLibrary" />
   </Capabilities>
 </Package>
