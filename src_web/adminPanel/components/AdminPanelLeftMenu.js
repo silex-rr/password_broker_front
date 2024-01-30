@@ -18,6 +18,9 @@ const AdminPanelLeftMenu = () => {
                 <li className="relative px-2 py-2">
                     <AdminPanelLeftMenuNagivation path={'/admin/logs/'} name={'Logs'} />
                 </li>
+                <li className='relative px-2 py-2'>
+                    <AdminPanelLeftMenuNagivation path={'/admin/backup/'} name={'Backup'} />
+                </li>
             </ul>
         </section>
     );
