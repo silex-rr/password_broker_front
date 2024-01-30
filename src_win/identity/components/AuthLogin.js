@@ -25,6 +25,8 @@ const AuthLogin = () => {
 
     const [tokens, setTokens] = useState(appTokensService.getTokens());
 
+    console.log('AuthLogin.authStatus', authStatus);
+
     if (authStatus === LOGGED_IN) {
         return <Navigate to="/" replace />;
     }

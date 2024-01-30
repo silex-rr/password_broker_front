@@ -60,7 +60,7 @@ const MasterPasswordModal = () => {
             />
             <label htmlFor="masterPasswordModal" className="modal cursor-pointer">
                 <label className="modal-box relative w-1/3 max-w-none bg-slate-700" htmlFor="">
-                    <h3 className="text-lg font-bold">Enter your Master Password</h3>
+                    <h3 className="text-lg font-bold text-slate-200">Enter your Master Password</h3>
                     <div className="py-4">
                         <Input
                             id="masterPasswordInput"

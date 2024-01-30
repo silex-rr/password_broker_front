@@ -27,6 +27,7 @@ import {
     OFFLINE_DATABASE_SYNCHRONIZED,
 } from '../constants/OfflineDatabaseStatus';
 import IdentityContext from './IdentityContext';
+import GlobalContext from '../../common/contexts/GlobalContext';
 // import {Buffer} from 'buffer';
 const Buffer = require('buffer/').Buffer;
 const UserApplicationContextProvider = props => {
@@ -48,6 +49,7 @@ const UserApplicationContextProvider = props => {
      * @var {AppToken} userAppToken
      */
     const {userAppToken} = identityContext;
+    const {logActivityManual} = useContext(GlobalContext);
 
     const defaultURL = hostURL + '/identity/api';
 
@@ -65,6 +67,14 @@ const UserApplicationContextProvider = props => {
 
     const iconDisableColor = '#777777';
 
+    const isOfflineDatabaseReady = () => {
+        return (
+            offlineDatabaseStatus === OFFLINE_DATABASE_SYNCHRONIZED &&
+            offlinePrivateKeyStatus === OFFLINE_DATABASE_SYNCHRONIZED &&
+            offlineSaltStatus === OFFLINE_DATABASE_SYNCHRONIZED
+        );
+    };
+
     const userApplicationUnload = useCallback(
         () => {
             setApplicationId(applicationId);
@@ -80,7 +90,6 @@ const UserApplicationContextProvider = props => {
             setOfflineSaltStatus(offlineSaltStatus);
         },
         //Dependency avoided intentionally to put all state on default
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         [],
     );
 
@@ -207,12 +216,14 @@ const UserApplicationContextProvider = props => {
             try {
                 const response = await axios.get(hostURL + '/passwordBroker/api/entryGroupsWithFields');
                 await offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp);
+                logActivityManual('Offline Database is updated');
                 if (databaseMode === DATABASE_MODE_OFFLINE) {
                     await offlineDatabaseService.reloadDatabase();
                 }
                 return true;
             } catch (error) {
                 console.log('updateOfflineDatabase', error);
+                logActivityManual('Offline Database update error: ' + error);
                 return false;
             }
         };
@@ -275,10 +286,10 @@ const UserApplicationContextProvider = props => {
             response => {
                 offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp).then(
                     () => {
-                        console.log('offline DB saved');
+                        logActivityManual('offline DB updated');
                     },
                     error => {
-                        console.log('offline DB saving is failed', error);
+                        logActivityManual('offline DB update failed ' + error);
                     },
                 );
             },
@@ -350,9 +361,27 @@ const UserApplicationContextProvider = props => {
 
     const switchDatabaseToOffline = () => {
         setDatabaseMode(DATABASE_MODE_SWITCHING_TO_OFFLINE);
+        logActivityManual('Switching database to offline mode');
         offlineDatabaseService.loadDataBaseWithKeyAndSaltByToken(userAppToken).then(
-            () => setDatabaseMode(DATABASE_MODE_OFFLINE),
-            error => console.log(error),
+            () => {
+                setDatabaseMode(DATABASE_MODE_OFFLINE);
+                logActivityManual('Database switched to offline mode');
+            },
+            (databaseStatus, keyStatus, saltStatus) => {
+                logActivityManual(
+                    'Database switching error: databaseStatus: ' +
+                        databaseStatus +
+                        '; keyStatus: ' +
+                        keyStatus +
+                        '; saltStatus: ' +
+                        saltStatus,
+                );
+                offlineDatabaseService.unloadDatabase();
+                setDatabaseMode(DATABASE_MODE_ONLINE);
+                setOfflineDatabaseStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
+                setOfflineSaltStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
+                setOfflinePrivateKeyStatus(OFFLINE_DATABASE_DOWNLOAD_REQUIRED);
+            },
         );
     };
 
@@ -506,6 +535,8 @@ const UserApplicationContextProvider = props => {
                 applicationIdState,
                 offlineDatabaseSyncMode,
                 databaseMode,
+
+                isOfflineDatabaseReady,
 
                 loadUserApplication,
                 getOfflineDatabaseSyncMode,

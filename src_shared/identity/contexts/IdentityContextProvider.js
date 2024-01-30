@@ -475,13 +475,19 @@ const IdentityContextProvider = props => {
             if (authMode === AUTH_MODE_BEARER_TOKEN) {
                 deactivateUserToken();
             }
+            setAuthStatus(LOG_IN_FORM);
+            setErrorMessage('');
             setUserId('');
-            setUserIsAdmin(false);
             setUserName('');
             setUserNameInput('');
             setUserEmail('');
             setUserPassword('');
-            setAuthStatus('');
+            setUserPasswordConfirmation('');
+            setUserRegistrationMasterPassword('');
+            setUserRegistrationMasterPasswordConfirmation('');
+            setRegistrationState(REGISTRATION_AWAIT);
+            setUserIsAdmin(false);
+            setAuthLoginStatus(AUTH_LOGIN_AWAIT);
         };
 
         if (databaseMode === DATABASE_MODE_OFFLINE) {
@@ -501,7 +507,7 @@ const IdentityContextProvider = props => {
         setUserId(response.data.user.user_id);
         setUserName(response.data.user.name);
         setUserEmail(response.data.user.email);
-        setUserIsAdmin(response.data.user.is_admin === '1');
+        setUserIsAdmin(response.data.user.is_admin === '1' || response.data.user.is_admin === true);
     };
     const getUser = (getToken = true) => {
         changeAuthStatusLoading();

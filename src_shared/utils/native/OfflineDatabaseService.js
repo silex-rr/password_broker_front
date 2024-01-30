@@ -1,4 +1,4 @@
-import {AES, enc, MD5} from 'crypto-js';
+import {AES, enc, MD5} from 'react-native-crypto-js';
 
 export class OfflineDatabaseService {
     static OFFLINE_DATABASE_STORAGE_PREFIX = 'OFFLINE_DATABASE_';
@@ -67,19 +67,35 @@ export class OfflineDatabaseService {
     /**
      * @param {AppToken} appToken
      * @param {boolean} force
+     * @param {function} logActivityManual
      * @return {Promise<void>}
      */
-    async loadDataBaseWithKeyAndSaltByToken(appToken, force = false) {
+    async loadDataBaseWithKeyAndSaltByToken(appToken, force = false, logActivityManual = null) {
         const databaseName = this.getDatabaseNameByAppToken(appToken);
         const databaseKeyName = this.getDatabaseKeyNameByAppToken(appToken);
         const saltName = this.getDatabaseSaltNameByAppToken(appToken);
         // console.log('loadDataBaseWithKeyAndSaltByToken', databaseName, databaseKeyName, saltName);
         try {
             await this.loadDatabase(databaseName, force);
+            if (logActivityManual) {
+                logActivityManual('Offline DataBase loaded');
+            }
+            console.log('OfflineDatabaseService.loadDataBaseWithKeyAndSaltByToken loadDatabase done');
             await this.loadDatabaseKey(databaseKeyName, force);
+            if (logActivityManual) {
+                logActivityManual('Offline DataBase Key loaded');
+            }
+            console.log('OfflineDatabaseService.loadDataBaseWithKeyAndSaltByToken loadDatabaseKey done');
             await this.loadDatabaseSalt(saltName, force);
+            if (logActivityManual) {
+                logActivityManual('Offline DataBase Salt loaded');
+            }
+            console.log('OfflineDatabaseService.loadDataBaseWithKeyAndSaltByToken loadDatabaseSalt done');
         } catch (e) {
             console.log('loadDataBaseWithKeyAndSaltByToken error', e);
+            if (logActivityManual) {
+                logActivityManual('Offline DataBase loading error: ' + e);
+            }
         }
         // console.log('loadDataBaseWithKeyAndSaltByToken', 'loaded');
         return new Promise((resolve, reject) => {

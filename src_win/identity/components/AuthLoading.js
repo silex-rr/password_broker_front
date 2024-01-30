@@ -22,7 +22,7 @@ const AuthLoading = () => {
             }
         }
     }, [appTokensService, authMode, authStatus, changeAuthStatusLogin, getUser, location, userAppToken]);
-    console.log('authStatus', authStatus);
+    console.log('AuthLoading.authStatus', authStatus);
     switch (authStatus) {
         case LOGGED_IN:
             // console.log(path);

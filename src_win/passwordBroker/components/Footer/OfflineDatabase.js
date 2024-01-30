@@ -28,6 +28,8 @@ const OfflineDatabase = () => {
         offlineDatabaseSyncMode,
         databaseMode,
 
+        isOfflineDatabaseReady,
+
         loadUserApplication,
         getOfflineDatabaseSyncMode,
         enableOfflineDatabaseSyncMode,
@@ -132,7 +134,7 @@ const OfflineDatabase = () => {
                 <MaterialCommunityIcons name={toggleSyncIcon} size={iconSize} color={iconSyncColor} />
             </Text>
             <Text style={tw`pl-2`}>Offline mode:</Text>
-            <Text style={tw`pl-1`} onPress={toggleDatabaseMode}>
+            <Text style={tw`pl-1`} onPress={toggleDatabaseMode} disabled={!isOfflineDatabaseReady()}>
                 <MaterialCommunityIcons name={toggleIsOfflineIcon} size={iconSize} color={iconDatabaseIsOfflineColor} />
             </Text>
         </View>

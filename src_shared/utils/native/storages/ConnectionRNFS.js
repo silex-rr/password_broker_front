@@ -27,9 +27,9 @@ export class ConnectionRNFS {
         try {
             const path = this.createFilePath(name);
             const exists = await RNFS.exists(path);
-            console.log('file exists: ', exists);
+            console.log(`ConnectionRNFS: ${name} exists: `, exists);
             if (!exists) {
-                console.log('does not exists');
+                console.log(`ConnectionRNFS: ${name} does not exists`);
                 return null;
             }
             const content = await RNFS.readFile(path, 'base64');
