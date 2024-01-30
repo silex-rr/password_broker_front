@@ -2,10 +2,17 @@ import React, { useState } from "react";
 
 const Backup = () => {
     const [backupTime, setBackupTime] = useState("12:00");
+    const [isBackupOn, setIsBackupOn] = useState(false);
+    const [sendConfirmation, setSendConfirmation] = useState(false);
+    const [email, setEmail] = useState("");
 
     const handleNewTime = () => {
         // Perform the POST request with the selected backupTime
         console.log("POST request with backupTime:", backupTime);
+        // Include logic for sending confirmation email if sendConfirmation is true
+        if (sendConfirmation) {
+            console.log(`Sending confirmation email to: ${email}`);
+        }
     };
 
     const availableBackupTimes = [
@@ -18,7 +25,19 @@ const Backup = () => {
 
     return (
         <div className="backup-block w-80 mx-auto p-4">
-            <section className="backup-time-select">
+            <div className="mb-4">
+                <label htmlFor="backup-toggle" className="flex items-center">
+                    <input
+                        id="backup-toggle"
+                        type="checkbox"
+                        checked={isBackupOn}
+                        onChange={() => setIsBackupOn(!isBackupOn)}
+                        className="mr-2"
+                    />
+                    Turn on backup
+                </label>
+            </div>
+            <section className={`backup-time-select ${isBackupOn ? '' : 'opacity-50'}`}>
                 <label htmlFor="backup-time">Select a backup hour: </label>
                 <select
                     id="backup-time"
@@ -26,6 +45,7 @@ const Backup = () => {
                     value={backupTime}
                     onChange={(e) => setBackupTime(e.target.value)}
                     className="w-full p-2 border rounded"
+                    disabled={!isBackupOn}
                 >
                     {availableBackupTimes.map((time) => (
                         <option key={time} value={time}>
@@ -34,10 +54,33 @@ const Backup = () => {
                     ))}
                 </select>
             </section>
-            <div className="mt-4 text-center">
+            <div className="mb-4 p-5 m-3">
+                <label htmlFor="send-confirmation" className="flex items-center">
+                    <input
+                        id="send-confirmation"
+                        type="checkbox"
+                        checked={sendConfirmation}
+                        onChange={() => setSendConfirmation(!sendConfirmation)}
+                        className="mr-2"
+                    />
+                    Send backup confirmation on email
+                </label>
+                {sendConfirmation && (
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full p-2 border rounded"
+                    />
+                )}
+            </div>
+            <div className="text-center">
                 <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 ${isBackupOn ? '' : 'cursor-not-allowed'}`}
                     onClick={handleNewTime}
+                    disabled={!isBackupOn}
                 >
                     Save backup time
                 </button>
