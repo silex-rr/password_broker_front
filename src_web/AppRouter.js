@@ -7,32 +7,35 @@ import React from 'react';
 import IdentityContextProvider from '../src_shared/identity/contexts/IdentityContextProvider';
 import UserApplicationContextProvider from '../src_shared/identity/contexts/UserApplicationContextProvider';
 import AppContext from './AppContext';
+import GlobalContextProvider from '../src_shared/common/contexts/GlobalContextProvider';
 const AppRouter = () => {
     return (
         <BrowserRouter>
-            <IdentityContextProvider AppContext={AppContext}>
-                <UserApplicationContextProvider>
-                    <Routes>
-                        <Route
-                            path="/*"
-                            element={
-                                <RequireAuth>
-                                    <PasswordBrokerRouter />
-                                </RequireAuth>
-                            }
-                        />
-                        <Route path="/identity/*" element={<AuthContainer />} />
-                        <Route
-                            path="/admin/*"
-                            element={
-                                <RequireAuth>
-                                    <AdminPanelRouter />
-                                </RequireAuth>
-                            }
-                        />
-                    </Routes>
-                </UserApplicationContextProvider>
-            </IdentityContextProvider>
+            <GlobalContextProvider>
+                <IdentityContextProvider AppContext={AppContext}>
+                    <UserApplicationContextProvider>
+                        <Routes>
+                            <Route
+                                path="/*"
+                                element={
+                                    <RequireAuth>
+                                        <PasswordBrokerRouter />
+                                    </RequireAuth>
+                                }
+                            />
+                            <Route path="/identity/*" element={<AuthContainer />} />
+                            <Route
+                                path="/admin/*"
+                                element={
+                                    <RequireAuth>
+                                        <AdminPanelRouter />
+                                    </RequireAuth>
+                                }
+                            />
+                        </Routes>
+                    </UserApplicationContextProvider>
+                </IdentityContextProvider>
+            </GlobalContextProvider>
         </BrowserRouter>
     );
 };
