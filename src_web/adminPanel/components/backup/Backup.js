@@ -143,7 +143,7 @@ const Backup = () => {
                         placeholder="Enter email address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full m-2 border rounded"
+                        className="w-[90%] m-2 border rounded"
                     />
                 )}
             </div>
