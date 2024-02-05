@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import {Button, Input} from 'react-daisyui';
+import React, {useContext, useRef} from 'react';
+import {Input} from 'react-daisyui';
 import {ENTRY_GROUP_ADDING_AWAIT} from '../../../../../src_shared/passwordBroker/constants/EntryGroupAddingStates';
 import EntryGroupContext from '../../../../../src_shared/passwordBroker/contexts/EntryGroupContext';
 
@@ -12,8 +12,8 @@ const EntryGroupAdd = props => {
         setAddingEntryGroupTitle: setAddingEntryGroupTitle,
         addingEntryGroupErrorMessage: addingEntryGroupErrorMessage,
         setAddingEntryGroupErrorMessage: setAddingEntryGroupErrorMessage,
-        addingEntryGroupModalVisibilityCheckboxRef: addingEntryGroupModalVisibilityCheckboxRef,
     } = useContext(EntryGroupContext);
+    const visibilityRef = useRef();
 
     const entryGroupTitleParent = props.entryGroupTitle;
     const entryGroupId = props.entryGroupId;
@@ -29,23 +29,29 @@ const EntryGroupAdd = props => {
         }
     };
 
+    const addButtonHandler = () => {
+        addNewEntryGroup(entryGroupId, visibilityRef);
+    };
+
     let addEntryKey = 'add-entry-group-for-';
     let modalTitle = 'Adding new Entry Group';
     if (entryGroupId !== null) {
         modalTitle = 'Adding new Entry Group to the Entry Group ' + entryGroupTitleParent;
     }
+
+    const visibilityRefId = addEntryKey + (entryGroupId ? '-' + entryGroupId : '');
     return (
         <div className="inline-block px-2">
-            <label htmlFor={addEntryKey + entryGroupId}>{props.button}</label>
+            <label htmlFor={visibilityRefId}>{props.button}</label>
 
             <input
-                ref={addingEntryGroupModalVisibilityCheckboxRef}
+                ref={visibilityRef}
                 type="checkbox"
-                id={addEntryKey + entryGroupId}
+                id={visibilityRefId}
                 className="modal-toggle"
                 onChange={openModal}
             />
-            <label htmlFor={addEntryKey + entryGroupId} className="modal cursor-pointer">
+            <label htmlFor={visibilityRefId} className="modal cursor-pointer">
                 <label className="modal-box relative w-1/3 max-w-none bg-slate-700 text-slate-200" htmlFor="">
                     <h3 className="text-lg font-bold">{modalTitle}</h3>
                     <div className="py-4">
@@ -68,14 +74,15 @@ const EntryGroupAdd = props => {
                             />
                         </div>
                         <div className="modal-action flex flex-row justify-around">
-                            <Button
-                                className={
-                                    'btn-success btn-sm basis-1/3 ' +
-                                    (addingEntryGroupState === ENTRY_GROUP_ADDING_AWAIT ? '' : 'loading')
-                                }
-                                onClick={() => addNewEntryGroup(entryGroupId)}>
-                                {addingEntryGroupState === ENTRY_GROUP_ADDING_AWAIT ? 'add' : ''}
-                            </Button>
+                            <span className={'btn btn-success btn-sm basis-1/3'} onClick={addButtonHandler}>
+                                <span
+                                    className={
+                                        'loading loading-spinner' +
+                                        (addingEntryGroupState === ENTRY_GROUP_ADDING_AWAIT ? ' hidden' : ' ')
+                                    }
+                                />
+                                {addingEntryGroupState === ENTRY_GROUP_ADDING_AWAIT ? 'add' : 'adding'}
+                            </span>
 
                             <label
                                 htmlFor={addEntryKey + entryGroupId}

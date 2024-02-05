@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import PasswordBrokerContext from './PasswordBrokerContext';
 import {ENTRY_GROUP_ADDING_AWAIT, ENTRY_GROUP_ADDING_IN_PROGRESS} from '../constants/EntryGroupAddingStates';
 import axios from 'axios';
@@ -66,9 +66,8 @@ const EntryGroupContextProvider = props => {
     const [addingEntryGroupState, setAddingEntryGroupState] = useState(ENTRY_GROUP_ADDING_AWAIT);
     const [addingEntryGroupTitle, setAddingEntryGroupTitle] = useState('');
     const [addingEntryGroupErrorMessage, setAddingEntryGroupErrorMessage] = useState('');
-    const addingEntryGroupModalVisibilityCheckboxRef = useRef();
     const cryptoService = new CryptoService();
-    const addNewEntryGroup = (entryGroupId = null) => {
+    const addNewEntryGroup = (entryGroupId = null, visibilityRef = null) => {
         if (addingEntryGroupState !== ENTRY_GROUP_ADDING_AWAIT) {
             return;
         }
@@ -87,7 +86,9 @@ const EntryGroupContextProvider = props => {
                 }
                 setEntryGroupTreesStatus(ENTRY_GROUP_TREES_REQUIRED_LOADING);
                 setAddingEntryGroupState(ENTRY_GROUP_ADDING_AWAIT);
-                addingEntryGroupModalVisibilityCheckboxRef.current.checked = false;
+                if (visibilityRef && visibilityRef.current) {
+                    visibilityRef.current.checked = false;
+                }
                 setAddingEntryGroupErrorMessage('');
             },
             error => {
@@ -419,7 +420,6 @@ const EntryGroupContextProvider = props => {
                 addingEntryGroupTitle: addingEntryGroupTitle,
                 setAddingEntryGroupTitle: setAddingEntryGroupTitle,
                 addingEntryGroupErrorMessage: addingEntryGroupErrorMessage,
-                addingEntryGroupModalVisibilityCheckboxRef: addingEntryGroupModalVisibilityCheckboxRef,
                 setAddingEntryGroupErrorMessage: setAddingEntryGroupErrorMessage,
             }}>
             {props.children}
