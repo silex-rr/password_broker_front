@@ -43,10 +43,28 @@ const EntryFieldsAdd = props => {
     const modalVisibilityCheckboxRef = useRef();
     const modalFieldTypeSelectorRef = useRef();
 
+    const passwordHolder = useRef();
+    const passwordEyeOpenHolder = useRef();
+    const passwordEyeCloseHolder = useRef();
+    const togglePassword = (e, hideForce = false) => {
+        if (passwordHolder.current.type === 'text' || hideForce) {
+            passwordHolder.current.type = 'password';
+            passwordEyeCloseHolder.current.classList.add('hidden');
+            passwordEyeOpenHolder.current.classList.remove('hidden');
+        } else {
+            passwordHolder.current.type = 'text';
+            passwordEyeOpenHolder.current.classList.add('hidden');
+            passwordEyeCloseHolder.current.classList.remove('hidden');
+        }
+    };
+
     const openModal = e => {
         if (e.target.checked) {
             beforeModalOpen();
-            modalFieldTypeSelectorRef.current.value = FIELD_TYPE_PASSWORD;
+            changeType(FIELD_TYPE_PASSWORD);
+            // modalFieldTypeSelectorRef.current.value = FIELD_TYPE_PASSWORD;
+        } else {
+            togglePassword(null, true);
         }
     };
 
@@ -63,6 +81,10 @@ const EntryFieldsAdd = props => {
                     fieldValue={addingFieldValue}
                     changeLogin={changeLogin}
                     changeValue={changeValue}
+                    passwordHolder={passwordHolder}
+                    passwordEyeOpenHolder={passwordEyeOpenHolder}
+                    passwordEyeCloseHolder={passwordEyeCloseHolder}
+                    togglePassword={togglePassword}
                 />
             );
             break;
@@ -127,7 +149,7 @@ const EntryFieldsAdd = props => {
             />
             <label htmlFor={'add-field-for-' + entryId} className="modal cursor-pointer">
                 <label className="modal-box relative w-1/3 max-w-none bg-slate-700" htmlFor="">
-                    <h3 className="text-lg font-bold">Adding new field for entry "{entryTitle}"</h3>
+                    <h3 className="text-lg font-bold">Adding new field for entry &quot;{entryTitle}&quot;</h3>
                     <div className="py-4">
                         <div className="flex flex-row items-center py-1.5">
                             <label
@@ -183,7 +205,7 @@ const EntryFieldsAdd = props => {
 
                             <label
                                 htmlFor={'add-field-for-' + entryId}
-                                className="btn btn-error btn-outline btn-sm right-0 basis-1/3">
+                                className="btn btn-outline btn-error btn-sm right-0 basis-1/3">
                                 close
                             </label>
                         </div>

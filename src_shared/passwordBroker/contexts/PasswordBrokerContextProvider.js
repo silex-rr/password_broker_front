@@ -27,10 +27,12 @@ import {
     ENTRY_SEARCH_RESULT_REQUIRED_LOADING,
 } from '../constants/EntrySearchStates';
 import {searchRequestString} from '../../utils/searchRequestString';
+import {PasswordGenerator} from '../../utils/PasswordGenerator';
 
 const PasswordBrokerContextProvider = props => {
     const AppContext = props.AppContext;
     const UserApplicationContext = props.UserApplicationContext;
+    const passwordGenerator = new PasswordGenerator();
 
     const {databaseMode} = useContext(UserApplicationContext);
 
@@ -420,6 +422,8 @@ const PasswordBrokerContextProvider = props => {
                 AppContext: AppContext,
                 databaseMode: databaseMode,
                 offlineDatabaseService: offlineDatabaseService,
+
+                passwordGenerator: passwordGenerator,
             }}>
             {props.children}
         </PasswordBrokerContext.Provider>

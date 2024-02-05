@@ -34,6 +34,7 @@ const EntryFieldContextProvider = props => {
         AppContext,
         entryGroupFieldForEditState,
         setEntryGroupFieldForEditState,
+        passwordGenerator,
     } = useContext(PasswordBrokerContext);
 
     const {appType} = useContext(AppContext);
@@ -211,9 +212,10 @@ const EntryFieldContextProvider = props => {
     };
 
     const changeType = value => {
-        setAddingFieldValue('');
         setAddingFieldFile(null);
         setAddingFieldType(value);
+
+        setAddingFieldValue(value === FIELD_TYPE_PASSWORD ? passwordGenerator.generate() : '');
     };
 
     const changeValue = (value, file = null) => {
