@@ -2,7 +2,7 @@ import React, { useState } from "react";
 // https://heroicons.com icons
 
 const Backup = () => {
-    // const [backupTime, setBackupTime] = useState("12:00");
+    const [emptyTime, setEmptyTime] = useState(false);
     const [isBackupOn, setIsBackupOn] = useState(false);
     const [sendConfirmation, setSendConfirmation] = useState(false);
     const [backupPassword, setBackupPassword] = useState(false);
@@ -20,33 +20,36 @@ const Backup = () => {
     };
 
     const handleNewTime = async () => {
-        console.log('func clicked')
-        const data = {
-            schedule: selectedBackupTimes,
-            enable: isBackupOn,
-            email_enable: sendConfirmation,
-            email: sendConfirmation ? email : null,
-            archive_password: backupPassword ? password : null,
-        };
+        console.log('func clicked', selectedBackupTimes.length)
+        if (selectedBackupTimes.length > 0) {
+            console.log('within if')
+            const data = {
+                schedule: selectedBackupTimes,
+                enable: isBackupOn,
+                email_enable: sendConfirmation,
+                email: sendConfirmation ? email : null,
+                archive_password: backupPassword ? password : null,
+            };
 
-        try {
-            console.log('try', data)
-            const response = await fetch("/system/api/setting/backupSetting/backup", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
+            try {
+                console.log('try', data)
+                const response = await fetch("/system/api/setting/backupSetting/backup", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                });
 
-            if (response.ok) {
-                console.log("Backup time saved successfully!");
-            } else {
-                console.error("Failed to save backup time");
+                if (response.ok) {
+                    console.log("Backup time saved successfully!");
+                } else {
+                    console.error("Failed to save backup time");
+                }
+            } catch (error) {
+                console.error("Error:", error);
             }
-        } catch (error) {
-            console.error("Error:", error);
-        }
+        } else (setEmptyTime(true))
 
     };
 
@@ -61,7 +64,7 @@ const Backup = () => {
     return (
         <div className="backup-block w-[80%] mx-auto p-4">
             <div className="">
-                <label htmlFor="backup-toggle" className="flex items-center">
+                <label htmlFor="backup-toggle" className="flex items-center text-lg">
                     <input
                         id="backup-toggle"
                         type="checkbox"
@@ -73,9 +76,16 @@ const Backup = () => {
                 </label>
             </div>
             <div hidden={!isBackupOn}>
+                <div
+                    className="text-red-500 font-bold"
+                    hidden={!emptyTime}
+                >
+                    picking time is required
+                </div>
                 <div className="m-3 w-[80%] ">
                     <label htmlFor="backupTimes">Select Backup Times:</label>
                     <div className="flex flex-wrap flex-row">
+
                         {availableBackupTimes.map((time, index) => (
                             <div
                                 key={index}
@@ -95,7 +105,7 @@ const Backup = () => {
                             className={` px-2 py-1 rounded ${isBackupOn
                                 ? 'bg-blue-500  hover:bg-blue-700'
                                 : 'cursor-not-allowed bg-gray-400'}`}
-                            onClick={() => setSelectedBackupTimes([])}>Reset</button>
+                            onClick={() => { setSelectedBackupTimes([]), setEmptyTime(false) }}>Reset</button>
                     </div>
                 </div>
 
@@ -190,7 +200,6 @@ const Backup = () => {
                             ? 'bg-blue-500  hover:bg-blue-700'
                             : 'cursor-not-allowed bg-gray-400'}`}
                         onClick={handleNewTime}
-                        disabled={!isBackupOn}
                     >
                         Save backup time
                     </button>
