@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import axios from 'axios';
+import AppContext from "../../../AppContext";
 // https://heroicons.com icons
 
 const Backup = () => {
@@ -10,6 +12,28 @@ const Backup = () => {
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false);
     const [selectedBackupTimes, setSelectedBackupTimes] = useState([]);
+    const { hostURL } = useContext(AppContext);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(hostURL + "/system/api/setting/backupSetting/backup");
+                const formData = response.data;
+
+                // Update state variables based on received FormData
+                setIsBackupOn(formData.get('enable'));
+                setSendConfirmation(formData.get('email_enable'));
+                setBackupPassword(formData.has('archive_password'));
+                setEmail(formData.get('email'));
+                setPassword(formData.get('archive_password'));
+                setSelectedBackupTimes(JSON.parse(formData.get('schedule')));
+            } catch (error) {
+                console.error("Error fetching backup data:", error);
+            }
+        };
+
+        fetchData();
+    }, [hostURL]);
 
     const handleBackupTimeChange = (time) => {
         if (selectedBackupTimes.includes(time)) {
@@ -19,29 +43,31 @@ const Backup = () => {
         }
     };
 
+
     const handleNewTime = async () => {
-        console.log('func clicked', selectedBackupTimes.length)
+        console.log('func clicked', selectedBackupTimes.length);
         if (selectedBackupTimes.length > 0) {
-            console.log('within if')
-            const data = {
-                schedule: selectedBackupTimes,
-                enable: isBackupOn,
-                email_enable: sendConfirmation,
-                email: sendConfirmation ? email : null,
-                archive_password: backupPassword ? password : null,
-            };
+            console.log('within if');
+            const formData = new FormData();
+            formData.append('schedule', JSON.stringify(selectedBackupTimes));
+            formData.append('enable', isBackupOn);
+            formData.append('email_enable', sendConfirmation);
+            if (sendConfirmation) {
+                formData.append('email', email);
+            }
+            if (backupPassword) {
+                formData.append('archive_password', password);
+            }
 
             try {
-                console.log('try', data)
-                const response = await fetch("/system/api/setting/backupSetting/backup", {
-                    method: "POST",
+                console.log('try', formData);
+                const response = await axios.post(hostURL + "/system/api/setting/backupSetting/backup", formData, {
                     headers: {
-                        "Content-Type": "application/json",
+                        'Content-Type': 'multipart/form-data',
                     },
-                    body: JSON.stringify(data),
                 });
 
-                if (response.ok) {
+                if (response.status === 200) {
                     console.log("Backup time saved successfully!");
                 } else {
                     console.error("Failed to save backup time");
@@ -49,9 +75,12 @@ const Backup = () => {
             } catch (error) {
                 console.error("Error:", error);
             }
-        } else (setEmptyTime(true))
-
+        } else {
+            setEmptyTime(true);
+        }
     };
+
+
 
     const availableBackupTimes = [
         "00:00", "01:00", "02:00", "03:00", "04:00",
