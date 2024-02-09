@@ -40,6 +40,8 @@ const OfflineDatabase = () => {
         iconDisableColor,
     } = useContext(UserApplicationContext);
 
+    const offlineDatabaseReady = isOfflineDatabaseReady();
+
     const toggleSyncIcon =
         offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? 'toggle-switch' : 'toggle-switch-off-outline';
     const toggleIsOfflineIcon = databaseMode === DATABASE_MODE_OFFLINE ? 'toggle-switch' : 'toggle-switch-off-outline';
@@ -64,6 +66,7 @@ const OfflineDatabase = () => {
     };
 
     const toggleDatabaseMode = () => {
+        console.log('toggleDatabaseMode', databaseMode);
         if (databaseMode === DATABASE_MODE_ONLINE) {
             switchDatabaseToOffline();
             return;
@@ -134,7 +137,7 @@ const OfflineDatabase = () => {
                 <MaterialCommunityIcons name={toggleSyncIcon} size={iconSize} color={iconSyncColor} />
             </Text>
             <Text style={tw`pl-2`}>Offline mode:</Text>
-            <Text style={tw`pl-1`} onPress={toggleDatabaseMode} disabled={!isOfflineDatabaseReady()}>
+            <Text style={tw`pl-1`} onPress={toggleDatabaseMode} disabled={offlineDatabaseReady}>
                 <MaterialCommunityIcons name={toggleIsOfflineIcon} size={iconSize} color={iconDatabaseIsOfflineColor} />
             </Text>
         </View>
