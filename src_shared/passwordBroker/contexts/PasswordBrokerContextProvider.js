@@ -114,8 +114,6 @@ const PasswordBrokerContextProvider = props => {
             });
         }
         setEntrySearchState(ENTRY_SEARCH_RESULT_LOADING);
-        setEntrySearchResult([]);
-
         const reqString = searchRequestString(searchQuery, page, perPage);
 
         if (reqString === entrySearchRequestString) {
@@ -124,6 +122,14 @@ const PasswordBrokerContextProvider = props => {
                 resolve(entrySearchResult);
             });
         }
+
+        setEntrySearchResult({
+            data: [],
+            current_page: 1,
+            last_page: 1,
+            per_page: 20,
+            total: 0,
+        });
 
         setEntrySearchRequestString(reqString);
         const url = baseUrl + `/entrySearch${reqString}`;
@@ -136,8 +142,8 @@ const PasswordBrokerContextProvider = props => {
                 })
                 .then(
                     response => {
-                        setEntrySearchState(ENTRY_SEARCH_RESULT_LOADED);
                         setEntrySearchResult(response.data);
+                        setEntrySearchState(ENTRY_SEARCH_RESULT_LOADED);
                         resolve(response.data);
                     },
                     error => {

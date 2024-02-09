@@ -13,8 +13,11 @@ import tw from 'twrnc';
 // import {Link} from 'react-router-native';
 import {useNavigate} from 'react-router-dom';
 import Search from './Search';
+import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
+import {DATABASE_MODE_OFFLINE} from '../../../src_shared/identity/constants/DatabaseModeStates';
 
 const Head = () => {
+    const {databaseMode} = useContext(UserApplicationContext);
     const identityContext = useContext(IdentityContext);
     const {userName} = identityContext;
     const passwordBrokerContext = useContext(PasswordBrokerContext);
@@ -69,9 +72,14 @@ const Head = () => {
             </View>
             <View style={tw`flex justify-around px-5`}>
                 <View style={tw`p-0 font-bold flex flex-row`}>
-                    <View style={tw`px-2`}>
-                        <Search />
-                    </View>
+                    {databaseMode === DATABASE_MODE_OFFLINE ? (
+                        ''
+                    ) : (
+                        <View style={tw`px-2`}>
+                            <Search />
+                        </View>
+                    )}
+
                     <View style={tw`py-1`}>
                         <TouchableOpacity
                             onPress={() => {

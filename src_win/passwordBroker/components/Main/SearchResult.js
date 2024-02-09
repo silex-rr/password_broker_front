@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react';
-import {useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import PasswordBrokerContext from '../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 import {
     ENTRY_SEARCH_RESULT_AWAIT,
@@ -10,6 +10,8 @@ import {
 import SearchResultEntries from './SearchResultEntries';
 import {Text, View} from 'react-native-windows';
 import tw from 'twrnc';
+import UserApplicationContext from '../../../../src_shared/identity/contexts/UserApplicationContext';
+import {DATABASE_MODE_OFFLINE} from '../../../../src_shared/identity/constants/DatabaseModeStates';
 // import PaginationButton from '../../common/Pagination';
 
 const SearchResult = () => {
@@ -25,6 +27,12 @@ const SearchResult = () => {
         handleEntrySearch,
     } = useContext(PasswordBrokerContext);
 
+    const {
+        databaseMode,
+    } = useContext(UserApplicationContext);
+
+    const navigate = useNavigate();
+
     useEffect(() => {
         if (entrySearchState === ENTRY_SEARCH_RESULT_REQUIRED_LOADING) {
             getEntrySearchResult(entrySearchPage, entrySearchPerPage, entrySearchQuery);
@@ -36,6 +44,12 @@ const SearchResult = () => {
             handleEntrySearch(entrySearchPage, entrySearchPerPage, searchQuery);
         }
     }, [entrySearchPage, entrySearchPerPage, entrySearchQuery, handleEntrySearch, searchQuery]);
+
+    useEffect(() => {
+        if (databaseMode === DATABASE_MODE_OFFLINE) {
+            navigate('/');
+        }
+    }, [databaseMode, navigate]);
 
     const handlePagination = page => {
         handleEntrySearch(page, entrySearchPerPage, searchQuery);

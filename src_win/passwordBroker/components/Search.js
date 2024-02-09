@@ -33,7 +33,7 @@ const Search = () => {
     const iconColor = '#e2e8f0';
 
     return (
-        <View style={tw`flex flex-row  m-0 flex justify-center rounded-sm bg-slate-800 p-0`}>
+        <View style={tw`flex flex-row m-0 flex justify-center rounded-sm bg-slate-800 p-0`}>
             <TouchableOpacity style={tw`px-2 py-1`} onPress={focusOnGlobalSearch}>
                 <MaterialIcons name="search" size={24} color={iconColor} />
             </TouchableOpacity>
@@ -42,7 +42,7 @@ const Search = () => {
                 ref={globalSearchInput}
                 value={globalSearch}
                 onChangeText={globalSearchChangeHandler}
-                style={{borderBottomWidth: 0, ...tw`bg-slate-800 text-slate-200 `}}
+                style={{borderBottomWidth: 0, ...tw`bg-slate-800 text-slate-200 w-32`}}
                 onKeyPress={e => {
                     if (e.nativeEvent.key === 'Enter') {
                         globalSearchActivate();
