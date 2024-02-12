@@ -306,7 +306,6 @@ const IdentityContextProvider = props => {
                     console.log(error);
                     if (error.code === 'ERR_NETWORK' && authMode === AUTH_MODE_BEARER_TOKEN) {
                         changeAuthStatusNetworkError();
-                        return;
                     }
                     typeof reject === 'function' && reject(error);
                 },
