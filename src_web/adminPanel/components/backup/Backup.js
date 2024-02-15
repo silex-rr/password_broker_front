@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import axios from 'axios';
 import AppContext from "../../../AppContext";
+
 // https://heroicons.com icons
 
 const Backup = () => {
@@ -11,7 +12,11 @@ const Backup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false);
+    const [backupSavingSuccess, setBackupSavingSuccess] = useState(false)
+    const [backupSavingFailed, setBackupSavingFailed] = useState(false)
     const [selectedBackupTimes, setSelectedBackupTimes] = useState([]);
+    const [errorDB, setErrorDB] = useState('')
+    const [dataToServer, setDataToServer] = useState(false)
     const { hostURL } = useContext(AppContext);
 
     useEffect(() => {
@@ -43,15 +48,17 @@ const Backup = () => {
         }
     };
 
-
     const handleNewTime = async () => {
         console.log('func clicked', selectedBackupTimes.length);
+        setDataToServer(true)
         if (selectedBackupTimes.length > 0) {
             console.log('within if');
             const formData = new FormData();
-            formData.append('schedule', JSON.stringify(selectedBackupTimes));
-            formData.append('enable', isBackupOn);
-            formData.append('email_enable', sendConfirmation);
+            for (let i = 0; i < selectedBackupTimes.length; i++) {
+                formData.append('schedule[]', selectedBackupTimes[i].split(':')[1]);
+            }
+            formData.append('enable', 'true');//isBackupOn ? true : false);
+            formData.append('email_enable', 'false');//, sendConfirmation);
             if (sendConfirmation) {
                 formData.append('email', email);
             }
@@ -61,27 +68,26 @@ const Backup = () => {
 
             try {
                 console.log('try', formData);
-                const response = await axios.post(hostURL + "/system/api/setting/backupSetting/backup", formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-
+                const response = await axios.post(hostURL + "/system/api/setting/backupSetting/backup", formData);
+                console.log('response status goes here', response.status)
                 if (response.status === 200) {
+                    setBackupSavingSuccess(true)
                     console.log("Backup time saved successfully!");
                 } else {
+                    setBackupSavingFailed(true)
+                    setErrorDB(response.status)
                     console.error("Failed to save backup time");
                 }
             } catch (error) {
+                setBackupSavingFailed(true)
+                setErrorDB(error.message)
                 console.error("Error:", error);
             }
         } else {
             setEmptyTime(true);
         }
+        setDataToServer(false)
     };
-
-
-
     const availableBackupTimes = [
         "00:00", "01:00", "02:00", "03:00", "04:00",
         "05:00", "06:00", "07:00", "08:00", "09:00",
@@ -114,7 +120,6 @@ const Backup = () => {
                 <div className="m-3 w-[80%] ">
                     <label htmlFor="backupTimes">Select Backup Times:</label>
                     <div className="flex flex-wrap flex-row">
-
                         {availableBackupTimes.map((time, index) => (
                             <div
                                 key={index}
@@ -127,7 +132,6 @@ const Backup = () => {
                             </div>
                         ))}
                     </div>
-
                     <div className="">
                         <p className="p-1 my-1">Selected Backup Times: {selectedBackupTimes.join(', ')}</p>
                         <button
@@ -137,25 +141,6 @@ const Backup = () => {
                             onClick={() => { setSelectedBackupTimes([]), setEmptyTime(false) }}>Reset</button>
                     </div>
                 </div>
-
-                {/* <section className={`backup-time-select m-3 ${isBackupOn ? '' : 'opacity-50'}`}>
-                    <label htmlFor="backup-time">Select a backup hour: </label>
-                    <select
-                        id="backup-time"
-                        name="backup-time"
-                        value={backupTime}
-                        onChange={(e) => setBackupTime(e.target.value)}
-                        className="w-full p-2 border rounded"
-                        disabled={!isBackupOn}
-                    >
-                        {availableBackupTimes.map((time) => (
-                            <option key={time} value={time}>
-                                {time}
-                            </option>
-                        ))} */}
-                {/* <option value='custom-time'>Custom Time</option> */}
-                {/* </select>
-                </section> */}
                 <div className="m-3 w-80 backup-password">
                     <label htmlFor="setup-password" >
                         <input
@@ -193,11 +178,8 @@ const Backup = () => {
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="swap-off m-0 w-6 h-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
                                 </svg>
-
-
                             </label>
                         </div>
-
                     )}
                 </div>
                 <div className="w-80 m-3">
@@ -230,8 +212,28 @@ const Backup = () => {
                             : 'cursor-not-allowed bg-gray-400'}`}
                         onClick={handleNewTime}
                     >
-                        Save backup time
+                        {dataToServer ? "Sending..." : "Save backup time"}
                     </button>
+                    <div className='flex justify-center m-4'>
+                        {backupSavingSuccess && (
+                            <div className="relative w-[30%]">
+                                <div className="absolute inset-0 bg-green-600 blur-[10px]">
+                                </div>
+                                <div className="relative z-10 bg-green-600">
+                                    The time has been saved
+                                </div>
+                            </div>
+                        )}
+                        {backupSavingFailed && (
+                            <div className="relative w-[30%]">
+                                <div className="absolute inset-0 bg-red-600 blur-[10px] ">
+                                </div>
+                                <div className="relative z-10 bg-red-600">
+                                    {errorDB}. Try again, please.
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
