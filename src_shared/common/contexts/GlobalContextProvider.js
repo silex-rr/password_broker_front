@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
 import GlobalContext from './GlobalContext';
 import moment from 'moment';
+
 const GlobalContextProvider = props => {
     const [activityLog, setActivityLog] = useState([]);
     const logActivity = activity => {
-        setActivityLog([activity, ...activityLog.slice(0, 20)]);
+        setActivityLog(prevActivityLog => [activity, ...prevActivityLog.slice(0, 20)]);
     };
     const logActivityManual = body => {
         logActivity({
