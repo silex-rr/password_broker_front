@@ -15,9 +15,9 @@ const Backup = () => {
     const [backupSavingSuccess, setBackupSavingSuccess] = useState(false)
     const [backupSavingFailed, setBackupSavingFailed] = useState(false)
     const [selectedBackupTimes, setSelectedBackupTimes] = useState([]);
-    const [errorDB, setErrorDB] = useState('')
+    // const [errorDB, setErrorDB] = useState('')
     const [dataToServer, setDataToServer] = useState(false)
-    const { getSystemBackupSettings, setSystemsBackupSettings } = useContext(SystemContext)
+    const { getSystemBackupSettings, setSystemBackupSettings } = useContext(SystemContext)
     const [currentBackupTime, setCurrentBackupTime] = useState([])
     const [fetchingServerData, setFetchingData] = useState(true)
     const { hostURL } = useContext(AppContext);
@@ -47,42 +47,13 @@ const Backup = () => {
         console.log('func clicked', selectedBackupTimes.length);
         setDataToServer(true)
         if (selectedBackupTimes.length > 0) {
-            console.log('within if');
-            const formData = new FormData();
-            for (let i = 0; i < selectedBackupTimes.length; i++) {
-                formData.append('schedule[]', selectedBackupTimes[i].split(':')[1]);
-            }
-            formData.append('enable', 'true');//isBackupOn ? true : false);
-            formData.append('email_enable', 'false');//, sendConfirmation);
-            if (sendConfirmation) {
-                formData.append('email', email);
-            }
-            if (backupPassword) {
-                formData.append('archive_password', password);
-            }
-
-            try {
-                console.log('try', formData);
-                const response = await axios.post(hostURL + "/system/api/setting/backupSetting/backup", formData);
-                console.log('response status goes here', response.status)
-                if (response.status === 200) {
-                    setBackupSavingSuccess(true)
-                    console.log("Backup time saved successfully!");
-                } else {
-                    setBackupSavingFailed(true)
-                    setErrorDB(response.status)
-                    console.error("Failed to save backup time");
-                }
-            } catch (error) {
-                setBackupSavingFailed(true)
-                setErrorDB(error.message)
-                console.error("Error:", error);
-            }
-        } else {
-            setEmptyTime(true);
-        }
-        setDataToServer(false)
-    };
+            setSystemBackupSettings(selectedBackupTimes, isBackupOn, sendConfirmation, email, password).then(
+                response => { console.log(response), setBackupSavingSuccess(true) },
+                error => { setBackupSavingFailed(true) }
+            )
+        };
+        setDataToServer(false) //button text
+    }
     const availableBackupTimes = [
         "00:00", "01:00", "02:00", "03:00", "04:00",
         "05:00", "06:00", "07:00", "08:00", "09:00",
