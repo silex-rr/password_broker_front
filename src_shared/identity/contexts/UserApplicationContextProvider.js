@@ -387,6 +387,7 @@ const UserApplicationContextProvider = props => {
 
     const switchDatabaseToOnline = () => {
         setDatabaseMode(DATABASE_MODE_ONLINE);
+        logActivityManual('Database switched to online mode');
     };
 
     const enableOfflineDatabaseSyncMode = () => {

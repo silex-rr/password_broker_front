@@ -21,6 +21,7 @@ import {
     DATABASE_MODE_ONLINE,
     DATABASE_MODE_SWITCHING_TO_OFFLINE,
 } from '../../../../src_shared/identity/constants/DatabaseModeStates';
+import GlobalContext from '../../../../src_shared/common/contexts/GlobalContext';
 
 const OfflineDatabase = () => {
     const {
@@ -39,8 +40,7 @@ const OfflineDatabase = () => {
         switchDatabaseToOnline,
         iconDisableColor,
     } = useContext(UserApplicationContext);
-
-    const offlineDatabaseReady = isOfflineDatabaseReady();
+    const {logActivityManual} = useContext(GlobalContext);
 
     const toggleSyncIcon =
         offlineDatabaseSyncMode === OFFLINE_DATABASE_SYNC_MODE_ENABLE ? 'toggle-switch' : 'toggle-switch-off-outline';
@@ -66,7 +66,11 @@ const OfflineDatabase = () => {
     };
 
     const toggleDatabaseMode = () => {
-        console.log('toggleDatabaseMode', databaseMode);
+        if (!isOfflineDatabaseReady() && databaseMode !== DATABASE_MODE_OFFLINE) {
+            logActivityManual('Offline Database isn`t ready');
+            return;
+        }
+
         if (databaseMode === DATABASE_MODE_ONLINE) {
             switchDatabaseToOffline();
             return;
@@ -137,7 +141,7 @@ const OfflineDatabase = () => {
                 <MaterialCommunityIcons name={toggleSyncIcon} size={iconSize} color={iconSyncColor} />
             </Text>
             <Text style={tw`pl-2`}>Offline mode:</Text>
-            <Text style={tw`pl-1`} onPress={toggleDatabaseMode} disabled={offlineDatabaseReady}>
+            <Text style={tw`pl-1`} onPress={toggleDatabaseMode}>
                 <MaterialCommunityIcons name={toggleIsOfflineIcon} size={iconSize} color={iconDatabaseIsOfflineColor} />
             </Text>
         </View>
