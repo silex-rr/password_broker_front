@@ -1,9 +1,9 @@
 import React, {useContext, useState} from 'react';
 import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
-// import EntryFieldHistory from "./EntryFieldHistory";
 import EntryGroupContext from '../../../../../../../src_shared/passwordBroker/contexts/EntryGroupContext';
 import {Text, View} from 'react-native-windows';
 import tw from 'twrnc';
+import EntryFieldHistory from './EntryFieldHistory';
 
 const EntryField = props => {
     const fieldId = props.field_id;
@@ -55,13 +55,10 @@ const EntryField = props => {
                 <View style={tw`px-2 basis-1/6`}>
                     <Text>{type}</Text>
                 </View>
-                <View style={tw`basis-3/6`}>{value}</View>
-                <View style={tw`px-2 basis-1/6 flex justify-end py-1 flex flex-row`}>{buttons}</View>
+                <View style={tw`basis-2/6`}>{value}</View>
+                <View style={tw`px-2 basis-2/6 flex justify-end py-1 flex flex-row flex-wrap`}>{buttons}</View>
             </View>
-            {/*<EntryFieldHistory*/}
-            {/*    fieldProps={props}*/}
-            {/*    historyVisible={historyVisible}*/}
-            {/*/>*/}
+            <EntryFieldHistory fieldProps={props} historyVisible={historyVisible} />
         </View>
     );
 };

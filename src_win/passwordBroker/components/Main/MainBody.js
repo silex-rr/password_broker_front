@@ -23,17 +23,12 @@ import {
 // import EntryGroupUsers from "./MainBody/EntryGroup/EntryGroupUsers";
 // import EntryGroupHistory from "./MainBody/EntryGroup/EntryGroupHistory";
 // import {EntryGroupProvider} from '../../../../src_shared/passwordBroker/contexts/EntryGroupContext';
-import {
-    ActivityIndicator,
-    // Pressable,
-    ScrollView,
-    Text,
-    View,
-} from 'react-native-windows';
+import {ActivityIndicator, ScrollView, Text, View} from 'react-native-windows';
 import tw from 'twrnc';
 // import Link from './MainBody/EntryGroup/EntryFieldTypes/Link';
 // import Password from './MainBody/EntryGroup/EntryFieldTypes/Password';
 import EntryGroupMenu from './MainBody/EntryGroupMenu/EntryGroupMenu';
+import EntryGroupHistory from './MainBody/EntryGroup/EntryGroupHistory';
 // import {ENTRY_GROUP_TREES_UPDATING} from '../../../../src_shared/passwordBroker/constants/EntryGroupTreesStatus';
 
 const MainBody = () => {
@@ -105,12 +100,12 @@ const MainBody = () => {
 
             switch (entryGroupData.role.role) {
                 case ROLE_ADMIN:
-                    menuElements.push({
-                        id: ENTRY_GROUP_MENU_SETTINGS,
-                        onPress: () => menuClickHandler(ENTRY_GROUP_MENU_SETTINGS),
-                        selected: entryGroupMenu === ENTRY_GROUP_MENU_SETTINGS,
-                        text: 'Settings',
-                    });
+                // menuElements.push({
+                //     id: ENTRY_GROUP_MENU_SETTINGS,
+                //     onPress: () => menuClickHandler(ENTRY_GROUP_MENU_SETTINGS),
+                //     selected: entryGroupMenu === ENTRY_GROUP_MENU_SETTINGS,
+                //     text: 'Settings',
+                // });
                 // eslint-disable-next-line no-fallthrough
                 case ROLE_MODERATOR:
                 // eslint-disable-next-line no-fallthrough
@@ -151,7 +146,7 @@ const MainBody = () => {
                     body = <EntryGroup {...entryGroupData} />;
                     break;
                 case ENTRY_GROUP_MENU_HISTORY:
-                    body = ''; //<EntryGroupHistory />
+                    body = <EntryGroupHistory />;
                     break;
                 case ENTRY_GROUP_MENU_USERS:
                     switch (entryGroupUsersStatus) {
