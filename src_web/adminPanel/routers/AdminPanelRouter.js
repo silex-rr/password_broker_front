@@ -1,16 +1,17 @@
-import {Route, Routes} from 'react-router';
+import { Route, Routes } from 'react-router';
 import AdminPanelContainer from '../components/AdminPanelContainer';
 import UserControl from '../components/user_control/UserControl';
 import AdminSettings from '../components/settings/AdminSettings';
 import Logs from '../components/logs/Logs';
 import AppContext from '../../AppContext';
 import PasswordBrokerContextProvider from '../../../src_shared/passwordBroker/contexts/PasswordBrokerContextProvider';
-import {AdminPanelProvider} from '../contexts/AdminPanelContext';
+import { AdminPanelProvider } from '../contexts/AdminPanelContext';
 import UserUpdate from '../components/user_control/UserUpdate';
 import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
 import React from 'react';
 import Backup from '../components/backup/Backup';
 import SystemContextProvider from '../../../src_shared/system/contexts/SystemContextProvider';
+import AddNewUser from '../components/user_control/UserAddNew';
 
 const AdminPanelRouter = () => {
     return (
@@ -26,6 +27,12 @@ const AdminPanelRouter = () => {
                                     <UserControl />
                                 </AdminPanelContainer>
                             }
+                        />
+                        <Route
+                            path="/user_control/add"
+                            element={<AdminPanelContainer>
+                                <AddNewUser />
+                            </AdminPanelContainer>}
                         />
                         <Route
                             path="/user_control/update/:userID"
