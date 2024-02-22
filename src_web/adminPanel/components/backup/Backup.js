@@ -1,6 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import axios from 'axios';
-import AppContext from "../../../AppContext";
+
 import SystemContext from "../../../../src_shared/system/contexts/SystemContext";
 // https://heroicons.com icons
 
@@ -15,25 +14,26 @@ const Backup = () => {
     const [backupSavingSuccess, setBackupSavingSuccess] = useState(false)
     const [backupSavingFailed, setBackupSavingFailed] = useState(false)
     const [selectedBackupTimes, setSelectedBackupTimes] = useState([]);
-    // const [errorDB, setErrorDB] = useState('')
+    const [errorDB, setErrorDB] = useState('')
     const [dataToServer, setDataToServer] = useState(false)
     const { getSystemBackupSettings, setSystemBackupSettings } = useContext(SystemContext)
-    const [currentBackupTime, setCurrentBackupTime] = useState([])
     const [fetchingServerData, setFetchingData] = useState(true)
-    const { hostURL } = useContext(AppContext);
+    const [currentBackupTime, setCurrentBackupTime] = useState([])
 
-    useEffect(() => {
-        // console.log('use effect')
+    const currentBackupSchedule = () => {
         getSystemBackupSettings().then(
             data => {
-                setCurrentBackupTime(data.schedule),
-                    setSelectedBackupTimes(data.schedule),
-                    setFetchingData(false),
-                    console.log('getSystem data', data.schedule)
-            },
-            error => { }
-        )
-    }, [hostURL]);
+                console.log('data within current backup time ', data)
+                setSelectedBackupTimes(data.schedule);
+                setCurrentBackupTime(data.schedule)
+                setFetchingData(false);
+            }
+        );
+    };
+
+    useEffect(() => {
+        currentBackupSchedule();
+    }, []);
 
     const handleBackupTimeChange = (time) => {
         if (selectedBackupTimes.includes(time)) {
@@ -43,17 +43,28 @@ const Backup = () => {
         }
     };
 
-    const handleNewTime = async () => {
+    const handleNewTime = async (event) => {
+        event.preventDefault();
         console.log('func clicked', selectedBackupTimes.length);
-        setDataToServer(true)
+        setDataToServer(true) //button text 'sending'
+        setBackupSavingFailed(false) //ensure there is no msg
+        setBackupSavingSuccess(false) //ensure there is no msg
         if (selectedBackupTimes.length > 0) {
             setSystemBackupSettings(selectedBackupTimes, isBackupOn, sendConfirmation, email, password).then(
-                response => { console.log(response), setBackupSavingSuccess(true) },
-                error => { setBackupSavingFailed(true) }
+                response => {
+                    console.log(response),
+                        setBackupSavingSuccess(true),
+                        setCurrentBackupTime(selectedBackupTimes)
+                },
+                error => { setBackupSavingFailed(true), setErrorDB(error) }
             )
-        };
-        setDataToServer(false) //button text
+            setEmptyTime(false)
+        } else {
+            setEmptyTime(true)
+        }
+        setDataToServer(false) //button text 'send'
     }
+
     const availableBackupTimes = [
         "00:00", "01:00", "02:00", "03:00", "04:00",
         "05:00", "06:00", "07:00", "08:00", "09:00",
@@ -83,7 +94,7 @@ const Backup = () => {
                 </div>
                 <div hidden={fetchingServerData}>
                     <div>
-                        Your current backup time is {currentBackupTime.length > 0 ? currentBackupTime : "not set up"}
+                        Your current backup time is {currentBackupTime.length > 0 ? currentBackupTime.join(' & ') : "not set up"}
                     </div>
                     <div
                         className="text-red-500 font-bold"
@@ -188,7 +199,7 @@ const Backup = () => {
                         >
                             {dataToServer ? "Sending..." : "Save backup time"}
                         </button>
-                        <div className='flex justify-center m-4'>
+                        <div className='flex justify-center m-4' hidden={emptyTime}>
                             {backupSavingSuccess && (
                                 <div className="relative w-[30%]">
                                     <div className="absolute inset-0 bg-green-600 blur-[10px]">
