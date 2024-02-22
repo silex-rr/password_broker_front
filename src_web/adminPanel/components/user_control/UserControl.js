@@ -79,57 +79,66 @@ const UserControl = () => {
         });
     }
     return (
-        <div className="mx-auto overflow-x-auto">
-            <div className="navbar bg-base-100">
-                <SearchField
-                    handleSearch={handleSearch}
-                    searchRequest={searchRequest}
-                    setSearchRequest={setSearchRequest}
-                />
-            </div>
+        <div>
             {userControlStatus != USER_CONTROL_LOADED && <AdminPanelLoading />}
             {userControlStatus === USER_CONTROL_LOADED && (
-                <div className="overflow-x-auto">
-                    <table className="table table-xs p-3">
-                        <thead>
-                            <tr>
-                                <th />
-                                <th>Email</th>
-                                <th>Name</th>
-                                <th>Created At</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map((user, index) => (
-                                <tr className="p-1 hover:bg-base-200" key={index}>
-                                    <td>{index + 1 + (currentPage > 1 ? (currentPage - 1) * 20 : 0)}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.name}</td>
-                                    <td>
-                                        <Moment format="YYYY.MM.DD HH:mm">{user.created_at}</Moment>
-                                    </td>
-                                    <td>
-                                        <UserControlNavigation
-                                            path={`/admin/user_control/update/${user.user_id}`}
-                                            name={<FaEdit />}
-                                        />
-                                    </td>
-                                    <td>
-                                        <button onClick={(e) => handleDelete(e, user)}>
-                                            <FaTrashAlt />
-                                        </button>
-                                    </td>
+                <div className="mx-auto overflow-x-auto">
+                    <div className="navbar bg-base-100 gap-4">
+                        <SearchField
+                            handleSearch={handleSearch}
+                            searchRequest={searchRequest}
+                            setSearchRequest={setSearchRequest}
+                        />
+                        <div className="btn btn-ghost">
+                            <UserControlNavigation
+                                path={`/admin/user_control/add`}
+                                name={`Add new user`}
+                            />
+                        </div>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="table table-xs p-3">
+                            <thead>
+                                <tr>
+                                    <th />
+                                    <th>Email</th>
+                                    <th>Name</th>
+                                    <th>Created At</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <PaginationButton
-                        currentPage={currentPage}
-                        lastPage={lastPage}
-                        handlePagination={handlePagination}
-                    />
+                            </thead>
+                            <tbody>
+                                {users.map((user, index) => (
+                                    <tr className="p-1 hover:bg-base-200" key={index}>
+                                        <td>{index + 1 + (currentPage > 1 ? (currentPage - 1) * 20 : 0)}</td>
+                                        <td>{user.email}</td>
+                                        <td>{user.name}</td>
+                                        <td>
+                                            <Moment format="YYYY.MM.DD HH:mm">{user.created_at}</Moment>
+                                        </td>
+                                        <td>
+                                            <UserControlNavigation
+                                                path={`/admin/user_control/update/${user.user_id}`}
+                                                name={<FaEdit />}
+                                            />
+                                        </td>
+                                        <td>
+                                            <button onClick={(e) => handleDelete(e, user)}>
+                                                <FaTrashAlt />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <PaginationButton
+                            currentPage={currentPage}
+                            lastPage={lastPage}
+                            handlePagination={handlePagination}
+                        />
+                    </div>
+
                 </div>
             )}
         </div>
