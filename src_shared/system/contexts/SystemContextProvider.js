@@ -18,7 +18,7 @@ const SystemContextProvider = props => {
         return new Promise((resolve, reject) => {
             axios.get(baseUrl + '/setting/backupSetting/backup').then(
                 response => {
-                    response.data.schedule = response.data.schedule.map(x => x + ':00');
+                    response.data.schedule = response.data.schedule.map(x => (x < 10 ? '0' : '') + x + ':00');
                     resolve(response.data);
                 },
                 error => {
