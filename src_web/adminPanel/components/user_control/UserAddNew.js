@@ -22,6 +22,8 @@ const AddNewUser = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showMasterPassword, setShowMasterPassword] = useState(false)
+    const [axiosError, setAxiosError] = useState(false) // show error msg div
+    const [errorMsg, setErrorMsg] = useState('')
 
     const validatePassword = (password) => {
         // Password validation: check if the password contains at least one number
@@ -29,6 +31,7 @@ const AddNewUser = () => {
     };
 
     const handleChange = (e) => {
+        setAxiosError(false)
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
@@ -46,7 +49,7 @@ const AddNewUser = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData)
+        console.log('form data: ', formData, 'validation: ', passwordValid)
         // Check if all passwords are valid
         const allPasswordsValid = Object.values(passwordValid).every((valid) => valid);
 
@@ -64,6 +67,8 @@ const AddNewUser = () => {
                     master_password_confirmation: ''
                 });
             } catch (error) {
+                setAxiosError(true)
+                setErrorMsg(error.message)
                 console.error('Error creating user:', error);
             }
         }
@@ -131,7 +136,7 @@ const AddNewUser = () => {
                         </div>
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium ">Confirm Password</label>
+                        <label htmlFor="confirmPassword" className={`block text-sm font-medium ${passwordValid.password_confirmation ? '' : 'text-red-500'}`}>Confirm Password</label>
                         <input
                             type={showPassword ? "text" : "password"}
                             id="password_confirmation"
@@ -139,7 +144,7 @@ const AddNewUser = () => {
                             value={formData.password_confirmation}
                             onChange={handleChange}
                             required
-                            className={`mt-1 h-8 focus:ring-indigo-500 focus:border-indigo-500 block w-[90%] shadow-sm sm:text-sm border-gray-300 rounded-md ${passwordValid.password_confirmation ? '' : 'border-red-500'}`}
+                            className={`mt-1 h-8 focus:ring-indigo-500 focus:border-indigo-500 block w-[90%] shadow-sm sm:text-sm rounded-md `}
                         />
                     </div>
                     <div className="mb-4">
@@ -195,6 +200,11 @@ const AddNewUser = () => {
 
 
             </form>
+            {axiosError &&
+                <div className='m-3 p-2 bg-red-500/[.06] border border-red-400 border-spacing-3'>
+                    {errorMsg}
+                </div>
+            }
         </div>
     );
 };
