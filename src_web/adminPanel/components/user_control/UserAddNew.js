@@ -24,7 +24,7 @@ const AddNewUser = () => {
     const [showMasterPassword, setShowMasterPassword] = useState(false)
     const [axiosError, setAxiosError] = useState(false) // show error msg div
     const [errorMsg, setErrorMsg] = useState('')
-
+    const [userCreated, setUserCreated] = useState(false)
     const validatePassword = (password) => {
         // Password validation: check if the password contains at least one number
         return /\d/.test(password);
@@ -45,18 +45,31 @@ const AddNewUser = () => {
                 [name]: isValid,
             }));
         }
+        if (name === 'password_confirmation' || name === 'master_password_confirmation') {
+            const passwordField = name.includes('master') ? 'master_password' : 'password';
+            const confirmationField = name;
+            if (formData[passwordField] !== value) {
+                setPasswordValid((prevValid) => ({
+                    ...prevValid,
+                    [confirmationField]: false,
+                }));
+            } else {
+                setPasswordValid((prevValid) => ({
+                    ...prevValid,
+                    [confirmationField]: true,
+                }));
+            }
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('form data: ', formData, 'validation: ', passwordValid)
         // Check if all passwords are valid
         const allPasswordsValid = Object.values(passwordValid).every((valid) => valid);
-
         if (allPasswordsValid) {
             try {
                 const response = await axios.post(hostURL + `/identity/api/registration`, { user: formData });
-                console.log('User created successfully:', response.data);
+                setUserCreated(true)
                 // Reset form data after successful submission
                 setFormData({
                     email: '',
@@ -69,7 +82,6 @@ const AddNewUser = () => {
             } catch (error) {
                 setAxiosError(true)
                 setErrorMsg(error.message)
-                console.error('Error creating user:', error);
             }
         }
     };
@@ -107,7 +119,7 @@ const AddNewUser = () => {
                 </div>
                 <section className='mt-4'>
                     <div className="mb-4">
-                        <label htmlFor="password" className="block text-sm font-medium ">Password</label>
+                        <label htmlFor="password" className={`block text-sm font-medium ${!passwordValid.password ? 'text-red-500' : ''}`}>{passwordValid.password ? 'Enter Password' : 'Passwords do not match'}</label>
                         <div className='flex'>
                             <input
                                 type={showPassword ? "text" : "password"}
@@ -116,7 +128,7 @@ const AddNewUser = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                className={`mt-1 h-8 focus:ring-indigo-500 focus:border-indigo-500 block w-[90%] shadow-sm sm:text-sm border-gray-300 rounded-md ${passwordValid.password ? '' : 'border-red-500'}`}
+                                className={`mt-1 h-8 focus:ring-indigo-500 focus:border-indigo-500 block w-[90%] shadow-sm sm:text-sm border-gray-300 rounded-md`}
                             />
                             <label className="swap">
                                 <input
@@ -136,7 +148,7 @@ const AddNewUser = () => {
                         </div>
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="confirmPassword" className={`block text-sm font-medium ${passwordValid.password_confirmation ? '' : 'text-red-500'}`}>Confirm Password</label>
+                        <label htmlFor="confirmPassword" className={`block text-sm font-medium ${passwordValid.password_confirmation ? '' : 'text-red-500'}`}>{passwordValid.password_confirmation ? 'Confirm Password' : "Passwords do not match"}</label>
                         <input
                             type={showPassword ? "text" : "password"}
                             id="password_confirmation"
@@ -148,7 +160,7 @@ const AddNewUser = () => {
                         />
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="master_password" className="block text-sm font-medium ">Master Password</label>
+                        <label htmlFor="master_password" className={`block text-sm font-medium ${passwordValid.master_password ? '' : 'text-red-500'}`}>{passwordValid.master_password ? "Enter Master Password" : "Master Passwords do not match"}</label>
                         <div className='flex'>
                             <input
                                 type={showMasterPassword ? 'text' : "password"}
@@ -157,7 +169,7 @@ const AddNewUser = () => {
                                 value={formData.master_password}
                                 onChange={handleChange}
                                 required
-                                className={`mt-1 h-8 focus:ring-indigo-500 focus:border-indigo-500 block w-[90%] shadow-sm sm:text-sm border-gray-300 rounded-md ${passwordValid.master_password ? '' : 'border-red-500'}`}
+                                className={`mt-1 h-8 focus:ring-indigo-500 focus:border-indigo-500 block w-[90%] shadow-sm sm:text-sm border-gray-300 rounded-md`}
                             />
                             <label className="swap">
                                 <input
@@ -177,7 +189,8 @@ const AddNewUser = () => {
                         </div>
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="master_password" className="block text-sm font-medium ">Master Password Confirmation</label>
+                        <label htmlFor="master_password" className={`block text-sm font-medium ${passwordValid.master_password_confirmation ? '' : 'text-red-500'}`}>
+                            {passwordValid.master_password_confirmation ? 'Confirm Master Password' : 'Master Passwords do not match'} </label>
                         <div className='flex'>
                             <input
                                 type={showMasterPassword ? 'text' : "password"}
@@ -186,7 +199,7 @@ const AddNewUser = () => {
                                 value={formData.master_password_confirmation}
                                 onChange={handleChange}
                                 required
-                                className={`mt-1 h-8 focus:ring-indigo-500 focus:border-indigo-500 block w-[90%] shadow-sm sm:text-sm border-gray-300 rounded-md ${passwordValid.master_password_confirmation ? '' : 'border-red-500'}`}
+                                className={`mt-1 h-8 focus:ring-indigo-500 focus:border-indigo-500 block w-[90%] shadow-sm sm:text-sm border-gray-300 rounded-md  ${passwordValid.master_password_confirmation ? '' : 'border-red-500'}`}
                             />
                         </div>
                     </div>
@@ -200,6 +213,11 @@ const AddNewUser = () => {
 
 
             </form>
+            {userCreated &&
+                <div className='m-3 p-2 bg-green-500/[.06] border border-green-700 border-spacing-3'>
+                    The User has been created successfully.
+                </div>
+            }
             {axiosError &&
                 <div className='m-3 p-2 bg-red-500/[.06] border border-red-400 border-spacing-3'>
                     {errorMsg}
