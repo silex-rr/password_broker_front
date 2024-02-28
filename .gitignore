@@ -99,3 +99,4 @@ msbuild.binlog
 /app_old.json
 /metro.config_old.js
 /windows_old/
+*_TemporaryKey.pfx
