@@ -12,7 +12,14 @@ const EntryFields = props => {
     const fields = [];
 
     for (let i = 0; i < props.fields.length; i++) {
-        fields.push(<EntryField {...props.fields[i]} entry_group_id={entryGroupId} hideEdit={hideEdit} />);
+        fields.push(
+            <EntryField
+                key={`${entryGroupId}-${props.fields[i].field_id}`}
+                {...props.fields[i]}
+                entry_group_id={entryGroupId}
+                hideEdit={hideEdit}
+            />,
+        );
     }
 
     return (
