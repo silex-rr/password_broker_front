@@ -20,6 +20,7 @@
 .env
 /.idea
 /.vscode
+/.vs
 *.rnd
 
 npm-debug.log*
