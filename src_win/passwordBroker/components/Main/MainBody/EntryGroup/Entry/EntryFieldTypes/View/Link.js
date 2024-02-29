@@ -1,9 +1,14 @@
 import {Text} from 'react-native-windows';
 import tw from 'twrnc';
 import React from 'react';
-//onPress={() => Linking.openURL(value)}
+import CopyToClipboard from './CopyToClipboard';
+
 const Link = ({value}) => {
-    return <Text style={tw`px-2`}>{value}</Text>;
+    return (
+        <CopyToClipboard value={value} style={tw`px-2`}>
+            <Text>{value}</Text>
+        </CopyToClipboard>
+    );
 };
 
 export default Link;

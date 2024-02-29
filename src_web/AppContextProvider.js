@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {APP_TYPE_WEB} from '../src_shared/constants/AppType';
 import AppContext from './AppContext';
 import {stringToBlob} from '../src_shared/utils/stringToBlob';
+import copy from 'copy-to-clipboard';
 
 const AppContextProvider = props => {
     const masterPasswordModalVisibilityCheckboxRef = useRef();
@@ -55,6 +56,7 @@ const AppContextProvider = props => {
                 masterPasswordModalVisibilityErrorRef: masterPasswordModalVisibilityErrorRef,
                 masterPasswordModalIsVisible: masterPasswordModalIsVisible,
                 setMasterPasswordModalIsVisible: setMasterPasswordModalIsVisible,
+                copyToClipboard: copy,
 
                 writeFile: writeFile,
             }}>
