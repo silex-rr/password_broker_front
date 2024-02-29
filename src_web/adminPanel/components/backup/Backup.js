@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-
+import AdminPanelLoading from "../AdminPanelLoading";
 import SystemContext from "../../../../src_shared/system/contexts/SystemContext";
 // https://heroicons.com icons
 
@@ -16,21 +16,46 @@ const Backup = () => {
     const [selectedBackupTimes, setSelectedBackupTimes] = useState([]);
     const [errorDB, setErrorDB] = useState('')
     const [dataToServer, setDataToServer] = useState(false)
-    const { getSystemBackupSettings, setSystemBackupSettings } = useContext(SystemContext)
+    const { getSystemBackupSettings, setSystemBackupSettings, getBackups } = useContext(SystemContext)
     const [fetchingServerData, setFetchingData] = useState(true)
     const [currentBackupTime, setCurrentBackupTime] = useState([])
+    const [currentBackups, setCurrentBackups] = useState(null)
+    const [fetchingBackups, setFetchingBackups] = useState(false)
+    const [hideBackupBlock, setHideBackupBlock] = useState(false)
 
     const currentBackupSchedule = () => {
         getSystemBackupSettings().then(
             data => {
-                // console.log('data within current backup time ', data)
+                console.log('data within current backup time ', data)
                 setSelectedBackupTimes(data.schedule);
-                setCurrentBackupTime(data.schedule)
+                setCurrentBackupTime(data.schedule);
+                setEmail(data.email);
+                setPassword(data.archive_password);
                 setFetchingData(false);
                 setIsBackupOn(true)
             }
         );
     };
+
+    const getCurrentBackups = () => {
+
+        setFetchingBackups(true)
+        console.log('withon current backups', fetchingBackups)
+        getBackups()
+            .then(data => {
+                console.log(data);
+                setCurrentBackups(data);
+                setFetchingBackups(false);
+            })
+            .catch(error => {
+                console.error("Error fetching backups:", error);
+                setFetchingBackups(false);
+            });
+    }
+
+    const createBackup = () => {
+        console.log('create a new backup button was clicked')
+    }
 
     useEffect(() => {
         currentBackupSchedule();
@@ -77,9 +102,9 @@ const Backup = () => {
     ];
 
     return (
-        <div className="backup-block w-[80%] mx-auto p-4">
-            <div className="flex h-5" hidden={!fetchingServerData}>
-                Loading your backup data from the server <span className="loading loading-dots loading-sm"></span>
+        <div className="backup-block w-[80%] portrait:w-full mx-auto p-4">
+            <div className="flex justify-center bg-slate-700" hidden={!fetchingServerData}>
+                <AdminPanelLoading />
             </div>
             <div hidden={fetchingServerData}>
                 <div hidden={isBackupOn} className="">
@@ -95,7 +120,7 @@ const Backup = () => {
                     </label>
                 </div>
                 <div className="" hidden={!isBackupOn}>
-                    <div hidden={fetchingServerData}>
+                    <section className="border border-grey-600" hidden={fetchingServerData}>
                         <div>
                             Your current backup time is {currentBackupTime.length > 0 ? currentBackupTime.join(' & ') : "not set up"}
                         </div>
@@ -223,7 +248,35 @@ const Backup = () => {
                                 )}
                             </div>
                         </div>
-                    </div>
+                    </section>
+                    <section className="my-4 border border-green-800">
+                        <div className="flex justify-between">
+                            <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={getCurrentBackups}>Get backups</button>
+                            <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={createBackup}>Create a new backup</button>
+                        </div>
+                        <div hidden={currentBackups == null}>
+                            <div className="flex justify-center px-4">
+                                <button className="px-4 my-4 w-[90%] py-2 rounded border border-blue-500 hover:bg-blue-700" onClick={() => setHideBackupBlock(!hideBackupBlock)}>{hideBackupBlock ? 'Show Backups' : 'Hide backups'}</button>
+                            </div>
+                            <div className="my-4 border flex justify-center w-full border-red-800" hidden={hideBackupBlock}>
+                                {fetchingBackups ? (
+                                    <div className="w-full">
+                                        <AdminPanelLoading />
+                                    </div>
+                                ) : (
+                                    currentBackups ? (
+                                        <div>
+                                            {/* Render backup data here */}
+                                        </div>
+                                    ) : (
+                                        <div>No backup data available.
+                                            Create a new one or get current backups.
+                                        </div>
+                                    )
+                                )}
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
