@@ -1,11 +1,12 @@
 import React from 'react';
 import SystemContext from './SystemContext';
 import axios from 'axios';
-import {useContext} from 'react';
+import { useContext } from 'react';
 import IdentityContext from '../../identity/contexts/IdentityContext';
+import { resolve } from 'uri-js';
 
 const SystemContextProvider = props => {
-    const {hostURL} = useContext(IdentityContext);
+    const { hostURL } = useContext(IdentityContext);
     const baseUrl = hostURL + '/system/api';
     /**
      * Retrieves the system backup settings.
@@ -64,11 +65,34 @@ const SystemContextProvider = props => {
         });
     };
 
+    const getBackups = (page = 1, perPage = 20) => {
+        // const reqString = searchRequestString(searchQuery, page, perPage);
+
+        const url = baseUrl + `/backups`;
+
+        return new Promise((resolve, reject) => {
+            axios.get(url).then(response => {
+                resolve(response.data);
+            }, reject);
+        });
+    };
+
+    const createBackup = () => {
+        const url = baseUrl + '/backups'
+
+        return new Promise((resolve, reject) => {
+            axios.post(url).then(response => {
+                resolve('');
+            }, reject)
+        })
+    }
+
     return (
         <SystemContext.Provider
             value={{
                 getSystemBackupSettings,
                 setSystemBackupSettings,
+                getBackups,
             }}>
             {props.children}
         </SystemContext.Provider>
