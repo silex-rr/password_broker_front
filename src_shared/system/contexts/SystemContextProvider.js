@@ -79,10 +79,9 @@ const SystemContextProvider = props => {
 
     const createBackup = () => {
         const url = baseUrl + '/backups'
-
         return new Promise((resolve, reject) => {
             axios.post(url).then(response => {
-                resolve('');
+                resolve();
             }, reject)
         })
     }
@@ -93,6 +92,7 @@ const SystemContextProvider = props => {
                 getSystemBackupSettings,
                 setSystemBackupSettings,
                 getBackups,
+                createBackup,
             }}>
             {props.children}
         </SystemContext.Provider>
