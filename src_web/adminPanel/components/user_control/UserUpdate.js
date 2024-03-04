@@ -103,7 +103,7 @@ const UserUpdate = props => {
                         />
                     </div>
                     {updateStatus === 'error' &&
-                        <p className='flex flex-row justify-center'> <FaXmark /> An error uccored, try again</p>}
+                        <p className='flex flex-row justify-center'> <FaXmark /> An error occured, try again</p>}
                     {updateStatus === 'updated' &&
                         <p className='flex flex-row justify-center'> <FaCheck /> The User was successfully updated</p>}
                     <button
