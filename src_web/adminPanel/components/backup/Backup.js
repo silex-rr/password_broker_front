@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import Moment from 'react-moment';
 import AdminPanelLoading from "../AdminPanelLoading";
 import SystemContext from "../../../../src_shared/system/contexts/SystemContext";
 // https://heroicons.com icons
@@ -16,10 +17,11 @@ const Backup = () => {
     const [selectedBackupTimes, setSelectedBackupTimes] = useState([]);
     const [errorDB, setErrorDB] = useState('')
     const [dataToServer, setDataToServer] = useState(false)
-    const { getSystemBackupSettings, setSystemBackupSettings, getBackups } = useContext(SystemContext)
+    const { getSystemBackupSettings, setSystemBackupSettings, getBackups, createBackup } = useContext(SystemContext)
     const [fetchingServerData, setFetchingData] = useState(true)
     const [currentBackupTime, setCurrentBackupTime] = useState([])
     const [currentBackups, setCurrentBackups] = useState(null)
+    const [backupFetchingStatus, setBackupFetchingStatus] = useState(0)
     const [fetchingBackups, setFetchingBackups] = useState(false)
     const [hideBackupBlock, setHideBackupBlock] = useState(false)
 
@@ -36,25 +38,33 @@ const Backup = () => {
             }
         );
     };
+    const dateMinuteFormat = (date) => {
+        return <Moment format="YYYY.MM.DD HH:mm">{date}</Moment>
+    }
+
+    const isValueNull = (value) => {
+        return value == null ? "--" : value
+    }
+
+    const isDateNull = (value) => {
+        console.log('date is null? :', value)
+        return value == null ? '--' : dateMinuteFormat(value)
+    }
 
     const getCurrentBackups = () => {
-
         setFetchingBackups(true)
         console.log('withon current backups', fetchingBackups)
         getBackups()
             .then(data => {
                 console.log(data);
-                setCurrentBackups(data);
+                setCurrentBackups(data.data);
+                setBackupFetchingStatus(data.status)
                 setFetchingBackups(false);
             })
             .catch(error => {
                 console.error("Error fetching backups:", error);
                 setFetchingBackups(false);
             });
-    }
-
-    const createBackup = () => {
-        console.log('create a new backup button was clicked')
     }
 
     useEffect(() => {
@@ -102,11 +112,11 @@ const Backup = () => {
     ];
 
     return (
-        <div className="backup-block w-[80%] portrait:w-full mx-auto p-4">
+        <div className="backup-block portrait:w-full mx-auto p-4">
             <div className="flex justify-center bg-slate-700" hidden={!fetchingServerData}>
                 <AdminPanelLoading />
             </div>
-            <div hidden={fetchingServerData}>
+            <div className="" hidden={fetchingServerData}>
                 <div hidden={isBackupOn} className="">
                     <label htmlFor="backup-toggle" className="flex items-center text-lg">
                         <input
@@ -120,7 +130,7 @@ const Backup = () => {
                     </label>
                 </div>
                 <div className="" hidden={!isBackupOn}>
-                    <section className="border border-grey-600" hidden={fetchingServerData}>
+                    <section className="border m-auto w-[80%] border-grey-600" hidden={fetchingServerData}>
                         <div>
                             Your current backup time is {currentBackupTime.length > 0 ? currentBackupTime.join(' & ') : "not set up"}
                         </div>
@@ -266,7 +276,21 @@ const Backup = () => {
                                 ) : (
                                     currentBackups ? (
                                         <div>
-                                            {/* Render backup data here */}
+                                            {currentBackups != null && (currentBackups.map((line, index) => (
+                                                <div className="grid grid-cols-10"
+                                                    key={`${index}-${line.size}-${line.state}`}>
+                                                    <div>{line.state}</div>
+                                                    <div>{isDateNull(line.created_at)}</div>
+                                                    <div>{isDateNull(line.backup_created)}</div>
+                                                    <div>{isDateNull(line.backup_deleted)}</div>
+                                                    <div>{isValueNull(line.backup_id)}</div>
+                                                    <div>{isValueNull(line.error_message)}</div>
+                                                    <div>{isValueNull(line.file_name)}</div>
+                                                    <div>{isValueNull(line.password)}</div>
+                                                    <div>{isValueNull(line.size)}</div>
+                                                    <div>{isDateNull(line.updated_at)}</div>
+                                                </div>
+                                            )))}
                                         </div>
                                     ) : (
                                         <div>No backup data available.
