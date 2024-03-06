@@ -1,7 +1,8 @@
 import React, { useState, useContext, useEffect } from "react";
-import Moment from 'react-moment';
+import PaginationButton from "../../../common/Pagination";
 import AdminPanelLoading from "../AdminPanelLoading";
 import SystemContext from "../../../../src_shared/system/contexts/SystemContext";
+import BackupList from "./BackupData";
 // https://heroicons.com icons
 
 const Backup = () => {
@@ -21,6 +22,10 @@ const Backup = () => {
     const [fetchingServerData, setFetchingData] = useState(true)
     const [currentBackupTime, setCurrentBackupTime] = useState([])
     const [currentBackups, setCurrentBackups] = useState(null)
+    //pagination
+    const [currentPage, setCurrentPage] = useState(1)
+    const [lastPage, setLastPage] = useState(1)
+    //pagnation ends
     const [backupFetchingStatus, setBackupFetchingStatus] = useState(0)
     const [fetchingBackups, setFetchingBackups] = useState(false)
     const [hideBackupBlock, setHideBackupBlock] = useState(false)
@@ -38,18 +43,6 @@ const Backup = () => {
             }
         );
     };
-    const dateMinuteFormat = (date) => {
-        return <Moment format="YYYY.MM.DD HH:mm">{date}</Moment>
-    }
-
-    const isValueNull = (value) => {
-        return value == null ? "--" : value
-    }
-
-    const isDateNull = (value) => {
-        console.log('date is null? :', value)
-        return value == null ? '--' : dateMinuteFormat(value)
-    }
 
     const getCurrentBackups = () => {
         setFetchingBackups(true)
@@ -130,7 +123,7 @@ const Backup = () => {
                     </label>
                 </div>
                 <div className="" hidden={!isBackupOn}>
-                    <section className="border m-auto w-[80%] border-grey-600" hidden={fetchingServerData}>
+                    <section className="m-auto w-[80%]" hidden={fetchingServerData}>
                         <div>
                             Your current backup time is {currentBackupTime.length > 0 ? currentBackupTime.join(' & ') : "not set up"}
                         </div>
@@ -259,7 +252,7 @@ const Backup = () => {
                             </div>
                         </div>
                     </section>
-                    <section className="my-4 border border-green-800">
+                    <section className="my-4 ">
                         <div className="flex justify-between">
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={getCurrentBackups}>Get backups</button>
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={createBackup}>Create a new backup</button>
@@ -268,30 +261,14 @@ const Backup = () => {
                             <div className="flex justify-center px-4">
                                 <button className="px-4 my-4 w-[90%] py-2 rounded border border-blue-500 hover:bg-blue-700" onClick={() => setHideBackupBlock(!hideBackupBlock)}>{hideBackupBlock ? 'Show Backups' : 'Hide backups'}</button>
                             </div>
-                            <div className="my-4 border flex justify-center w-full border-red-800" hidden={hideBackupBlock}>
+                            <div className="my-4  flex justify-center w-full " hidden={hideBackupBlock}>
                                 {fetchingBackups ? (
                                     <div className="w-full">
                                         <AdminPanelLoading />
                                     </div>
                                 ) : (
                                     currentBackups ? (
-                                        <div>
-                                            {currentBackups != null && (currentBackups.map((line, index) => (
-                                                <div className="grid grid-cols-10"
-                                                    key={`${index}-${line.size}-${line.state}`}>
-                                                    <div>{line.state}</div>
-                                                    <div>{isDateNull(line.created_at)}</div>
-                                                    <div>{isDateNull(line.backup_created)}</div>
-                                                    <div>{isDateNull(line.backup_deleted)}</div>
-                                                    <div>{isValueNull(line.backup_id)}</div>
-                                                    <div>{isValueNull(line.error_message)}</div>
-                                                    <div>{isValueNull(line.file_name)}</div>
-                                                    <div>{isValueNull(line.password)}</div>
-                                                    <div>{isValueNull(line.size)}</div>
-                                                    <div>{isDateNull(line.updated_at)}</div>
-                                                </div>
-                                            )))}
-                                        </div>
+                                        <BackupList backups={currentBackups} />
                                     ) : (
                                         <div>No backup data available.
                                             Create a new one or get current backups.
