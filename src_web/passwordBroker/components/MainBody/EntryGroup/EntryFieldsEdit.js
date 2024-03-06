@@ -4,6 +4,7 @@ import {
     FIELD_TYPE_LINK,
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
+    FIELD_TYPE_TOTP,
 } from '../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
 import {Button, Input} from 'react-daisyui';
 import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
@@ -16,6 +17,7 @@ import EntryFieldContext from '../../../../../src_shared/passwordBroker/contexts
 import Password from './EntryFieldTypes/Edit/Password';
 import Note from './EntryFieldTypes/Edit/Note';
 import Link from './EntryFieldTypes/Edit/Link';
+import TOTP from './EntryFieldTypes/Edit/TOTP';
 
 const EntryFieldsEdit = props => {
     const passwordBrokerContext = useContext(PasswordBrokerContext);
@@ -124,6 +126,9 @@ const EntryFieldsEdit = props => {
             break;
         case FIELD_TYPE_FILE:
             break;
+        case FIELD_TYPE_TOTP:
+            value = <TOTP entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
+            break;
     }
 
     const saveClickHandler = () => {
@@ -151,7 +156,7 @@ const EntryFieldsEdit = props => {
             <label htmlFor="entryFieldEditModal" className="modal cursor-pointer">
                 <label className="modal-box relative w-1/3 max-w-none bg-slate-700" htmlFor="">
                     <h3 className="text-lg font-bold">
-                        Editing field "{fieldTitleDefault}" for entry "{entryTitle}"
+                        Editing field &quot;{fieldTitleDefault}&quot; for entry &quot;{entryTitle}&quot;
                     </h3>
                     <div className="py-4">
                         <div className="flex flex-row items-center py-1.5">
@@ -187,7 +192,7 @@ const EntryFieldsEdit = props => {
 
                             <label
                                 htmlFor="entryFieldEditModal"
-                                className="btn btn-error btn-outline btn-sm right-0 basis-1/3">
+                                className="btn btn-outline btn-error btn-sm right-0 basis-1/3">
                                 close
                             </label>
                         </div>

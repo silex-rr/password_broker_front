@@ -1,15 +1,12 @@
 import React, {useContext, useState} from 'react';
 import PasswordBrokerContext from './PasswordBrokerContext';
-import {
-    FIELD_ADDING_AWAIT,
-    FIELD_ADDING_EDITING,
-    FIELD_ADDING_IN_PROGRESS,
-} from '../constants/EntryGroupEntryFieldAddingStates';
+import {FIELD_ADDING_AWAIT, FIELD_ADDING_IN_PROGRESS} from '../constants/EntryGroupEntryFieldAddingStates';
 import {
     FIELD_TYPE_FILE,
     FIELD_TYPE_LINK,
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
+    FIELD_TYPE_TOTP,
 } from '../constants/MainBodyEntryGroupEntryFieldTypes';
 import FormData from 'form-data';
 import {APP_TYPE_WIN} from '../../constants/AppType';
@@ -74,6 +71,7 @@ const EntryFieldContextProvider = props => {
             // eslint-disable-next-line no-fallthrough
             case FIELD_TYPE_LINK:
             case FIELD_TYPE_NOTE:
+            case FIELD_TYPE_TOTP:
                 data.append('value', addingFieldValue);
                 break;
             case FIELD_TYPE_FILE:
