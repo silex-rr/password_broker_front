@@ -1,6 +1,7 @@
 import React from 'react';
 import {ClockLoader} from 'react-spinners';
 import {FaCopy, FaDownload, FaEdit, FaHistory, FaRegEye, FaRegEyeSlash, FaTrashAlt} from 'react-icons/fa';
+import {IoTimerOutline} from 'react-icons/io5';
 
 const EntryFieldButton = ({icon, onclick, tip, colour = '', loading = false}) => {
     let iconElement = <span />;
@@ -26,6 +27,9 @@ const EntryFieldButton = ({icon, onclick, tip, colour = '', loading = false}) =>
             break;
         case 'FaTrashAlt':
             iconElement = <FaTrashAlt />;
+            break;
+        case 'IoTimerOutline':
+            iconElement = <IoTimerOutline />;
             break;
     }
 

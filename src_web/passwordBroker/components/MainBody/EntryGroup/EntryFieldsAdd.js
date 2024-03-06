@@ -4,6 +4,7 @@ import {
     FIELD_TYPE_LINK,
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
+    FIELD_TYPE_TOTP,
 } from '../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
 import {Input} from 'react-daisyui';
 import {FIELD_ADDING_AWAIT} from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldAddingStates';
@@ -15,6 +16,7 @@ import Link from './EntryFieldTypes/Edit/Link';
 import Note from './EntryFieldTypes/Edit/Note';
 import Password from './EntryFieldTypes/Edit/Password';
 import File from './EntryFieldTypes/Edit/File';
+import TOTP from './EntryFieldTypes/Edit/TOTP';
 
 const EntryFieldsAdd = props => {
     const {masterPassword} = useContext(PasswordBrokerContext);
@@ -96,6 +98,9 @@ const EntryFieldsAdd = props => {
             break;
         case FIELD_TYPE_FILE:
             value = <File entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
+            break;
+        case FIELD_TYPE_TOTP:
+            value = <TOTP entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
     }
 
@@ -182,6 +187,7 @@ const EntryFieldsAdd = props => {
                                 defaultValue={FIELD_TYPE_PASSWORD}
                                 onChange={e => changeType(e.target.value)}>
                                 <option value={FIELD_TYPE_PASSWORD}>{FIELD_TYPE_PASSWORD}</option>
+                                <option value={FIELD_TYPE_TOTP}>{FIELD_TYPE_TOTP}</option>
                                 <option value={FIELD_TYPE_LINK}>{FIELD_TYPE_LINK}</option>
                                 <option value={FIELD_TYPE_NOTE}>{FIELD_TYPE_NOTE}</option>
                                 <option value={FIELD_TYPE_FILE}>{FIELD_TYPE_FILE}</option>
