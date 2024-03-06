@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import PaginationButton from "../../../common/Pagination";
 import AdminPanelLoading from "../AdminPanelLoading";
 import SystemContext from "../../../../src_shared/system/contexts/SystemContext";
-import BackupList from "./BackupData";
+import BackupList from "./BackupTable";
 // https://heroicons.com icons
 
 const Backup = () => {
