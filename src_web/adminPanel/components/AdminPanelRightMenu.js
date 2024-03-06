@@ -1,6 +1,6 @@
 import React from 'react';
 const AdminPanelRightMenu = props => {
-    const head = 'User list';
+    const head = '';
     const body = props.children;
     return (
         // <div className="basis-3/4 bg-slate-600 p-0 text-slate-100">
