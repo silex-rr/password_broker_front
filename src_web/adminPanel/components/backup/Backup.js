@@ -6,29 +6,35 @@ import BackupTable from "./BackupTable";
 // https://heroicons.com icons
 
 const Backup = () => {
-    const [emptyTime, setEmptyTime] = useState(false);
+    const { getSystemBackupSettings, setSystemBackupSettings, getBackups, createBackup } = useContext(SystemContext)
     const [isBackupOn, setIsBackupOn] = useState(false);
+    const [currentBackupTime, setCurrentBackupTime] = useState([])
+    //backup time form starts
+    const [emptyTime, setEmptyTime] = useState(false);
     const [sendConfirmation, setSendConfirmation] = useState(false);
     const [backupPassword, setBackupPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false);
+    const [selectedBackupTimes, setSelectedBackupTimes] = useState([]);
+    //backup time form ends
+    //backup save starts
     const [backupSavingSuccess, setBackupSavingSuccess] = useState(false)
     const [backupSavingFailed, setBackupSavingFailed] = useState(false)
-    const [selectedBackupTimes, setSelectedBackupTimes] = useState([]);
     const [errorDB, setErrorDB] = useState('')
     const [dataToServer, setDataToServer] = useState(false)
-    const { getSystemBackupSettings, setSystemBackupSettings, getBackups, createBackup } = useContext(SystemContext)
+    //backup save ends
+    //get backups starts
     const [fetchingServerData, setFetchingData] = useState(true)
-    const [currentBackupTime, setCurrentBackupTime] = useState([])
     const [currentBackups, setCurrentBackups] = useState(null)
-    //pagination
+    const [fetchingBackups, setFetchingBackups] = useState(false)
+    const [hideBackupBlock, setHideBackupBlock] = useState(false)
+    const [backupFetchingStatus, setBackupFetchingStatus] = useState(0)
+    //get backups ends
+    //pagination starts
     const [currentPage, setCurrentPage] = useState(1)
     const [lastPage, setLastPage] = useState(1)
     //pagnation ends
-    const [backupFetchingStatus, setBackupFetchingStatus] = useState(0)
-    const [fetchingBackups, setFetchingBackups] = useState(false)
-    const [hideBackupBlock, setHideBackupBlock] = useState(false)
 
     const currentBackupSchedule = () => {
         getSystemBackupSettings().then(
