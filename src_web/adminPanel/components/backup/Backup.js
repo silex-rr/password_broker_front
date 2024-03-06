@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import PaginationButton from "../../../common/Pagination";
 import AdminPanelLoading from "../AdminPanelLoading";
 import SystemContext from "../../../../src_shared/system/contexts/SystemContext";
-import BackupList from "./BackupTable";
+import BackupTable from "./BackupTable";
 // https://heroicons.com icons
 
 const Backup = () => {
@@ -268,7 +268,7 @@ const Backup = () => {
                                     </div>
                                 ) : (
                                     currentBackups ? (
-                                        <BackupList backups={currentBackups} />
+                                        <BackupTable backups={currentBackups} />
                                     ) : (
                                         <div>No backup data available.
                                             Create a new one or get current backups.
