@@ -1,8 +1,18 @@
+import { useState } from 'react';
 import Moment from 'react-moment';
 
 const BackupTable = ({ backups }) => {
+    const [showPassword, setShowPassword] = useState(false)
 
     const currentBackups = backups
+
+    const togglePassword = () => {
+        return showPassword ? value : 'Show Password'
+    }
+
+    const isPassword = (value) => {
+        return value == null ? "No password" : togglePassword(value)
+    }
 
     const dateMinuteFormat = (date) => {
         return <Moment format="YYYY.MM.DD HH:mm">{date}</Moment>
@@ -33,7 +43,7 @@ const BackupTable = ({ backups }) => {
     }
 
     return (
-        <div className='overflow-x-scroll'>
+        <div className='overflow-y-auto'>
             <table class="table-auto">
                 <thead>
                     <tr className='whitespace-no-wrap'>
@@ -52,7 +62,9 @@ const BackupTable = ({ backups }) => {
                             <td className='text-xs'>{isValueNull(line.backup_id)}</td>
                             <td>{isValueNull(line.error_message)}</td>
                             <td className='text-xs'>{isValueNull(line.file_name)}</td>
-                            <td>{isValueNull(line.password)}</td>
+                            <td className={`w-${tableHead['Password']}/12 hover:cursor-pointer`}
+                                onClick={(() => setShowPassword(!showPassword))}>{isPassword(line.password)}
+                            </td>
                             <td>{isValueNull(line.size)}</td>
                             <td>{isDateNull(line.updated_at)}</td>
                         </tr>
