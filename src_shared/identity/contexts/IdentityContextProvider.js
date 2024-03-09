@@ -60,6 +60,9 @@ const IdentityContextProvider = props => {
     const [authLoginStatus, setAuthLoginStatus] = useState(AUTH_LOGIN_AWAIT);
     const navigate = useNavigate();
 
+    const [recoveryBackupFile, setRecoveryBackupFile] = useState(undefined);
+    const [recoveryBackupPassword, setRecoveryBackupPassword] = useState(null);
+
     const changeAuthMode = newAuthMode => {
         if (![AUTH_MODE_BEARER_TOKEN, AUTH_MODE_COOKIE].includes(newAuthMode)) {
             return;
@@ -631,6 +634,11 @@ const IdentityContextProvider = props => {
                 authLoginStatus,
                 authMode,
                 changeAuthMode,
+
+                recoveryBackupFile,
+                setRecoveryBackupFile,
+                recoveryBackupPassword,
+                setRecoveryBackupPassword,
             }}>
             {props.children}
         </IdentityContext.Provider>
