@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {AUTH_MODE_BEARER_TOKEN, AUTH_MODE_COOKIE} from '../constants/AuthMode';
 import {AUTH_LOGIN_AWAIT, AUTH_LOGIN_IN_PROCESS} from '../constants/AuthLoginStatus';
-import {LOADING, LOG_IN_FORM, LOGGED_IN, NETWORK_ERROR, SIGN_UP_FORM} from '../constants/AuthStatus';
+import {INITIAL_RECOVERY, LOADING, LOG_IN_FORM, LOGGED_IN, NETWORK_ERROR, SIGN_UP_FORM} from '../constants/AuthStatus';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import IdentityContext from './IdentityContext';
@@ -81,6 +81,10 @@ const IdentityContextProvider = props => {
     };
     const changeAuthStatusLoggedIn = () => {
         setAuthStatus(LOGGED_IN);
+    };
+
+    const changeAuthStatusToInitialRecovery = () => {
+        setAuthStatus(INITIAL_RECOVERY);
     };
 
     const changeAuthStatusNetworkError = () => {
@@ -601,6 +605,7 @@ const IdentityContextProvider = props => {
                 changeAuthStatusLoading,
                 changeAuthStatusNetworkError,
                 changeAuthStatusLoggedIn,
+                changeAuthStatusToInitialRecovery,
                 userId,
                 userName,
                 userNameInput,
