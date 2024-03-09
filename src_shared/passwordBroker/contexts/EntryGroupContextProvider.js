@@ -127,6 +127,8 @@ const EntryGroupContextProvider = props => {
             setHistoryVisible,
             // trashed,
             setTrashed,
+            totpActivated,
+            setTotpActivated,
         } = states;
 
         const loadDecryptedValue = (onSucceed, button = '') => {
@@ -232,6 +234,7 @@ const EntryGroupContextProvider = props => {
         const handleGenerateTotp = () => {
             loadDecryptedValue(decoded => {
                 setDecryptedValue(decoded);
+                setTotpActivated(!totpActivated);
             }, 'totp_gen');
         };
 
@@ -307,9 +310,9 @@ const EntryGroupContextProvider = props => {
                 key="totpButton"
                 icon="IoTimerOutline"
                 onclick={handleGenerateTotp}
-                loading={buttonLoading === 'TOTP'}
+                loading={buttonLoading === 'totp_gen'}
                 tip="genereta TOTP"
-                colour={historyVisible ? 'text-yellow-500' : iconColor}
+                colour={totpActivated ? 'text-emerald-300' : iconColor}
                 disabled={disableButtons}
             />
         );
@@ -343,7 +346,13 @@ const EntryGroupContextProvider = props => {
                 break;
 
             case FIELD_TYPE_TOTP:
-                value = <TOTP value={decryptedValueVisible ? decryptedValue : ''} />;
+                value = (
+                    <TOTP
+                        decryptedValueVisible={decryptedValueVisible}
+                        value={decryptedValue}
+                        totpActivated={totpActivated}
+                    />
+                );
                 buttons.push(totpButton);
                 buttons.push(visibilityButton);
                 break;

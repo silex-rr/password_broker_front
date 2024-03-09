@@ -16,6 +16,7 @@ const EntryField = props => {
     const [buttonLoading, setButtonLoading] = useState('');
     const [historyVisible, setHistoryVisible] = useState(false);
     const [trashed, setTrashed] = useState(false);
+    const [totpActivated, setTotpActivated] = useState(false);
 
     //,
 
@@ -38,6 +39,8 @@ const EntryField = props => {
             setHistoryVisible,
             trashed,
             setTrashed,
+            totpActivated,
+            setTotpActivated,
         },
         props,
         hideEdit,
