@@ -16,6 +16,7 @@ const EntryGroupHistoryItem = data => {
     const [decryptedValueVisible, setDecryptedValueVisible] = useState(false);
     const [buttonLoading, setButtonLoading] = useState('');
     const [historyVisible, setHistoryVisible] = useState(false);
+    const [totpActivated, setTotpActivated] = useState(false);
 
     const passwordBrokerContext = useContext(PasswordBrokerContext);
     const {baseUrl, entryGroupId} = passwordBrokerContext;
@@ -42,6 +43,8 @@ const EntryGroupHistoryItem = data => {
             setButtonLoading,
             historyVisible,
             setHistoryVisible,
+            totpActivated,
+            setTotpActivated,
         },
         data.field,
         true,
