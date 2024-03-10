@@ -4,22 +4,61 @@ import React, {useContext, useState} from 'react';
 import {LuDatabaseBackup} from 'react-icons/lu';
 import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
 import {useNavigate} from 'react-router-dom';
+import RecoveryContext from '../../../src_shared/identity/contexts/RecoveryContext';
+import {
+    RECOVERY_STATE_AWAIT,
+    RECOVERY_STATE_DONE,
+    RECOVERY_STATE_ERROR,
+    RECOVERY_STATE_IN_PROCESS,
+} from '../../../src_shared/identity/constants/RecoveryState';
 
 const InitialRecovery = () => {
+    const {changeAuthStatusSignup} = useContext(IdentityContext);
+
     const {
         recoveryBackupFile,
         setRecoveryBackupFile,
         recoveryBackupPassword,
         setRecoveryBackupPassword,
-        changeAuthStatusSignup,
-    } = useContext(IdentityContext);
+        recoveryError,
+        recoveryRequest,
+        recoveryState,
+    } = useContext(RecoveryContext);
+
     const [hideRecoveryPassword, setHideRecoveryPassword] = useState(true);
     const navigate = useNavigate();
     const signupClickHandler = () => {
+        if (!(recoveryState === RECOVERY_STATE_AWAIT || recoveryState === RECOVERY_STATE_ERROR)) {
+            return;
+        }
         changeAuthStatusSignup();
         navigate('/identity/signup');
     };
-    console.log(2);
+    const recoveryButtonClickHandler = () => {
+        if (!(recoveryState === RECOVERY_STATE_AWAIT || recoveryState === RECOVERY_STATE_ERROR)) {
+            return;
+        }
+        recoveryRequest();
+    };
+
+    const handleFileChange = event => {
+        setRecoveryBackupFile(event.target.files[0]);
+    };
+
+    if (recoveryState === RECOVERY_STATE_DONE) {
+        return (
+            <div className="w-full md:flex">
+                <div className="md:w-fill rounded-lg bg-slate-200 px-12 pb-16 pt-20 md:rounded-lg">
+                    <div className="font-inter_extrabold mb-8 text-center text-3xl text-slate-700">
+                        Recovery successfully completed{' '}
+                        <a href="/" className="underline">
+                            return to main page
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full md:flex">
@@ -44,8 +83,7 @@ const InitialRecovery = () => {
                             name="password"
                             type="file"
                             placeholder="a backup file"
-                            value={recoveryBackupFile}
-                            onChange={() => e => setRecoveryBackupFile(e.target.files[0])}
+                            onChange={handleFileChange}
                         />
                     </div>
                 </div>
@@ -59,7 +97,7 @@ const InitialRecovery = () => {
                             className="w-full bg-slate-300 py-2 pl-3 text-slate-800 placeholder-slate-700"
                             name="password"
                             type={hideRecoveryPassword ? 'password' : 'text'}
-                            placeholder="Password for Backup"
+                            placeholder="Backup Password"
                             value={recoveryBackupPassword ?? ''}
                             onChange={e => setRecoveryBackupPassword(e.target.value)}
                         />
@@ -81,9 +119,16 @@ const InitialRecovery = () => {
                             'font-inter_bold rounded border border-slate-700 px-10 py-2 text-center text-slate-700' +
                             ' hover:bg-slate-700 hover:text-white focus:outline-none'
                         }
-                        onClick={() => {}}>
-                        Recovery
+                        onClick={recoveryButtonClickHandler}>
+                        {recoveryState === RECOVERY_STATE_IN_PROCESS ? 'In Process' : 'Recovery'}
                     </button>
+                </div>
+
+                <div
+                    className={`mt-2 bg-red-300 p-1 text-center text-slate-700 ${
+                        recoveryError === '' ? 'hidden' : ''
+                    }`}>
+                    {recoveryError}
                 </div>
             </div>
         </div>
