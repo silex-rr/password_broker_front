@@ -1,6 +1,11 @@
 import React, {useContext, useEffect} from 'react';
 import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
-import {LOG_IN_FORM, LOGGED_IN, SIGN_UP_FORM} from '../../../src_shared/identity/constants/AuthStatus';
+import {
+    INITIAL_RECOVERY,
+    LOG_IN_FORM,
+    LOGGED_IN,
+    SIGN_UP_FORM,
+} from '../../../src_shared/identity/constants/AuthStatus';
 import {Navigate, useLocation} from 'react-router-dom';
 
 const AuthLoading = () => {
@@ -30,6 +35,8 @@ const AuthLoading = () => {
             return <Navigate to="/identity/login" replace={true} />;
         case SIGN_UP_FORM:
             return <Navigate to="/identity/signup" replace={true} />;
+        case INITIAL_RECOVERY:
+            return <Navigate to="/identity/initialRecovery" replace={true} />;
     }
 
     return (

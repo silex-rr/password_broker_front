@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {AUTH_MODE_BEARER_TOKEN, AUTH_MODE_COOKIE} from '../constants/AuthMode';
 import {AUTH_LOGIN_AWAIT, AUTH_LOGIN_IN_PROCESS} from '../constants/AuthLoginStatus';
-import {LOADING, LOG_IN_FORM, LOGGED_IN, NETWORK_ERROR, SIGN_UP_FORM} from '../constants/AuthStatus';
+import {INITIAL_RECOVERY, LOADING, LOG_IN_FORM, LOGGED_IN, NETWORK_ERROR, SIGN_UP_FORM} from '../constants/AuthStatus';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import IdentityContext from './IdentityContext';
@@ -78,6 +78,10 @@ const IdentityContextProvider = props => {
     };
     const changeAuthStatusLoggedIn = () => {
         setAuthStatus(LOGGED_IN);
+    };
+
+    const changeAuthStatusToInitialRecovery = () => {
+        setAuthStatus(INITIAL_RECOVERY);
     };
 
     const changeAuthStatusNetworkError = () => {
@@ -328,6 +332,9 @@ const IdentityContextProvider = props => {
     const getUrlSingUp = useCallback(() => {
         return hostURL + '/identity/api/registration';
     }, [hostURL]);
+    const getUrlInitialRecovery = useCallback(() => {
+        return hostURL + '/system/api/recovery';
+    }, [hostURL]);
 
     const login = () => {
         // CSRF COOKIE
@@ -565,7 +572,14 @@ const IdentityContextProvider = props => {
         let requestInterceptor = null;
         if (authStatus !== LOGGED_IN) {
             // console.log('request interceptor activated', authStatus);
-            const validUrl = [getUrlLogin(), getUrlLogout(), getUrlCsrf(), getUrlUser(), getUrlSingUp()];
+            const validUrl = [
+                getUrlLogin(),
+                getUrlLogout(),
+                getUrlCsrf(),
+                getUrlUser(),
+                getUrlSingUp(),
+                getUrlInitialRecovery(),
+            ];
 
             requestInterceptor = axios.interceptors.request.use(
                 config => {
@@ -598,6 +612,7 @@ const IdentityContextProvider = props => {
                 changeAuthStatusLoading,
                 changeAuthStatusNetworkError,
                 changeAuthStatusLoggedIn,
+                changeAuthStatusToInitialRecovery,
                 userId,
                 userName,
                 userNameInput,
@@ -631,6 +646,7 @@ const IdentityContextProvider = props => {
                 authLoginStatus,
                 authMode,
                 changeAuthMode,
+                getUrlInitialRecovery,
             }}>
             {props.children}
         </IdentityContext.Provider>

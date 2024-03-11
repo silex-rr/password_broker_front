@@ -3,3 +3,4 @@ export const SIGN_UP_FORM = 'sign up form';
 export const LOGGED_IN = 'logged_in';
 export const LOADING = 'loading';
 export const NETWORK_ERROR = 'network_error';
+export const INITIAL_RECOVERY = 'initial_recovery';

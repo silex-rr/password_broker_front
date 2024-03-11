@@ -3,8 +3,7 @@ import IdentityContext from '../../../src_shared/identity/contexts/IdentityConte
 import {MdEmail, MdOutlineKey} from 'react-icons/md';
 import {GoKey} from 'react-icons/go';
 import {IoMdPerson} from 'react-icons/io';
-import {FaRegEye} from 'react-icons/fa';
-import {FaRegEyeSlash} from 'react-icons/fa';
+import {FaRegEye, FaRegEyeSlash} from 'react-icons/fa';
 import {
     REGISTRATION_AWAIT,
     REGISTRATION_IN_PROCESS,
@@ -14,6 +13,7 @@ import {
 } from '../../../src_shared/identity/constants/RegistrationStates';
 import AuthSignupErrors from './AuthSignupErrors';
 import {ClockLoader} from 'react-spinners';
+import {useNavigate} from 'react-router-dom';
 
 const AuthSignup = () => {
     const identityContext = useContext(IdentityContext);
@@ -35,11 +35,13 @@ const AuthSignup = () => {
         registrationState,
         setRegistrationState,
         errorMessage,
+        changeAuthStatusToInitialRecovery,
     } = identityContext;
     const [hidePassword, setHidePassword] = useState(true);
     const [hideMasterPassword, setHideMasterPassword] = useState(true);
     const [signUpErrors, setSignUpErrors] = useState({});
     const [signUpWarnings, setSignUpWarnings] = useState({});
+    const navigate = useNavigate();
     const togglePassword = () => {
         setHidePassword(!hidePassword);
     };
@@ -101,10 +103,24 @@ const AuthSignup = () => {
             break;
     }
 
+    const recoveryClickHandler = () => {
+        changeAuthStatusToInitialRecovery();
+        navigate('/identity/initialRecovery');
+    };
+
     return (
         <div className="w-full md:flex">
             <div className="md:w-fill rounded-lg bg-slate-200 px-12 pb-16 pt-20 md:rounded-lg">
-                <div className="font-inter_extrabold mb-8 text-center text-4xl text-slate-700">Signup</div>
+                <div className="font-inter_extrabold mb-8 text-center text-4xl text-slate-700">
+                    Signup
+                    <span className="text-2xl text-slate-600">
+                        {' '}
+                        /{' '}
+                        <span className="cursor-pointer underline" onClick={recoveryClickHandler}>
+                            Recovery
+                        </span>
+                    </span>
+                </div>
                 {/* USER NAME */}
                 <div className="mb-4 grid w-full grid-cols-7">
                     <div className="col-span-1 bg-slate-500 pt-1">

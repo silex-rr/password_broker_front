@@ -5,6 +5,8 @@ import AuthLoading from './AuthLoading';
 // import {IdentityContext} from '../../../src_shared/identity/contexts/IdentityContext';
 import {Route, Routes} from 'react-router-dom';
 import AuthLogout from './AuthLogout';
+import InitialRecovery from './InitialRecovery';
+import RecoveryContextProvider from '../../../src_shared/identity/contexts/RecoveryContextProvider';
 
 const AuthContainer = () => {
     // const identityContext = useContext(IdentityContext);
@@ -21,6 +23,14 @@ const AuthContainer = () => {
                         <Route path="login" element={<AuthLogin option="login" />} />
                         <Route path="signup" element={<AuthSignup option="signup" />} />
                         <Route path="logout" element={<AuthLogout option="logout" />} />
+                        <Route
+                            path="initialRecovery"
+                            element={
+                                <RecoveryContextProvider>
+                                    <InitialRecovery option="initialRecovery" />
+                                </RecoveryContextProvider>
+                            }
+                        />
                     </Routes>
                 </div>
             </div>
