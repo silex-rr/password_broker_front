@@ -94,6 +94,9 @@ const Backup = () => {
 
     const handleNewTime = async (event) => {
         event.preventDefault();
+        if (selectedBackupTimes == currentBackupTime) {
+            return
+        }
         // console.log('func clicked', selectedBackupTimes.length);
         setDataToServer(true) //button text 'sending'
         setBackupSavingFailed(false) //ensure there is no msg
@@ -283,26 +286,28 @@ const Backup = () => {
                             <div className="flex justify-center px-4">
                                 <button className="px-4 my-4 w-[90%] py-2 rounded border border-blue-500 hover:bg-blue-700" onClick={() => setHideBackupBlock(!hideBackupBlock)}>{hideBackupBlock ? 'Show Backups' : 'Hide backups'}</button>
                             </div>
-                            <div className="my-4  flex justify-center w-full " hidden={hideBackupBlock}>
-                                {fetchingBackups ? (
-                                    <div className="w-full">
-                                        <AdminPanelLoading />
-                                    </div>
-                                ) : (
-                                    currentBackups ? (
-                                        <BackupTable backups={currentBackups} />
-                                    ) : (
-                                        <div>No backup data available.
-                                            Create a new one or get current backups.
+                            <div hidden={hideBackupBlock}>
+                                <div className="my-4  flex justify-center w-full " >
+                                    {fetchingBackups ? (
+                                        <div className="w-full">
+                                            <AdminPanelLoading />
                                         </div>
-                                    )
-                                )}
+                                    ) : (
+                                        currentBackups ? (
+                                            <BackupTable backups={currentBackups} />
+                                        ) : (
+                                            <div>No backup data available.
+                                                Create a new one or get current backups.
+                                            </div>
+                                        )
+                                    )}
+                                </div>
+                                <PaginationButton
+                                    currentPage={currentPage}
+                                    lastPage={lastPage}
+                                    handlePagination={handlePagination}
+                                />
                             </div>
-                            <PaginationButton
-                                currentPage={currentPage}
-                                lastPage={lastPage}
-                                handlePagination={handlePagination}
-                            />
                         </div>
                     </section>
                 </div>
