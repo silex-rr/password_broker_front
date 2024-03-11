@@ -35,6 +35,7 @@ const Backup = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [lastPage, setLastPage] = useState(1)
     //pagnation ends
+    const [requireLoading, setRequireLoading] = useState(false)
 
     const currentBackupSchedule = () => {
         getSystemBackupSettings().then(
@@ -50,15 +51,21 @@ const Backup = () => {
         );
     };
 
+    const handlePagination = page => {
+        setCurrentPage(page)
+        setRequireLoading(true)
+    }
+
     const getCurrentBackups = () => {
         setFetchingBackups(true)
-        console.log('withon current backups', fetchingBackups)
-        getBackups()
+        console.log('within current backups', fetchingBackups)
+        getBackups(currentPage)
             .then(data => {
                 console.log(data);
                 setCurrentBackups(data.data);
-                setBackupFetchingStatus(data.status)
+                setBackupFetchingStatus(data.status);
                 setFetchingBackups(false);
+                setLastPage(data.last_page);
             })
             .catch(error => {
                 console.error("Error fetching backups:", error);
@@ -67,8 +74,13 @@ const Backup = () => {
     }
 
     useEffect(() => {
+        if (requireLoading == true) {
+            getCurrentBackups(currentPage)
+            setRequireLoading(false)
+            return
+        }
         currentBackupSchedule();
-    }, []);
+    }, [requireLoading, currentPage]);
 
     const handleBackupTimeChange = (time) => {
         setBackupSavingFailed(false) //ensure there is no msg
@@ -91,7 +103,11 @@ const Backup = () => {
                 response => {
                     console.log(response),
                         setBackupSavingSuccess(true),
-                        setCurrentBackupTime(selectedBackupTimes)
+                        setCurrentBackupTime(selectedBackupTimes),
+                        setSendConfirmation(false),
+                        setBackupPassword(''),
+                        setShowPassword(false),
+                        setEmail('')
                 },
                 error => { setBackupSavingFailed(true), setErrorDB(error) }
             )
@@ -129,7 +145,7 @@ const Backup = () => {
                     </label>
                 </div>
                 <div className="" hidden={!isBackupOn}>
-                    <section className="m-auto w-[80%]" hidden={fetchingServerData}>
+                    <section className="backup_schedule m-auto w-[80%]" hidden={fetchingServerData}>
                         <div>
                             Your current backup time is {currentBackupTime.length > 0 ? currentBackupTime.join(' & ') : "not set up"}
                         </div>
@@ -258,7 +274,7 @@ const Backup = () => {
                             </div>
                         </div>
                     </section>
-                    <section className="my-4 ">
+                    <section className="backup_table my-4 ">
                         <div className="flex justify-between">
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={getCurrentBackups}>Get backups</button>
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={createBackup}>Create a new backup</button>
@@ -282,6 +298,11 @@ const Backup = () => {
                                     )
                                 )}
                             </div>
+                            <PaginationButton
+                                currentPage={currentPage}
+                                lastPage={lastPage}
+                                handlePagination={handlePagination}
+                            />
                         </div>
                     </section>
                 </div>
