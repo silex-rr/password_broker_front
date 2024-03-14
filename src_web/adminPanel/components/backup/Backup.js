@@ -176,9 +176,7 @@ const Backup = () => {
                             <div className="">
                                 <p className="p-1 my-1">Selected Backup Times: {selectedBackupTimes.join(', ')}</p>
                                 <button
-                                    className={` px-2 py-1 rounded ${isBackupOn
-                                        ? 'bg-blue-500  hover:bg-blue-700'
-                                        : 'cursor-not-allowed bg-gray-400'}`}
+                                    className={` px-2 py-1 rounded bg-blue-500  hover:bg-blue-700`}
                                     onClick={() => { setSelectedBackupTimes([]), setEmptyTime(false) }}>Reset</button>
                             </div>
                         </div>
@@ -188,7 +186,6 @@ const Backup = () => {
                                     id='setup-password'
                                     type='checkbox'
                                     checked={backupPassword}
-                                    disabled={!isBackupOn}
                                     onChange={() => setBackupPassword(!backupPassword)}
                                     className='mr-2'
                                 />
@@ -248,9 +245,7 @@ const Backup = () => {
                         </div>
                         <div className="flex mx-auto justify-center flex-col gap-7 sm:w-[80%] m:w-[50%] lg:w-[30%] text-center">
                             <button
-                                className={` px-4 py-2 rounded ${isBackupOn
-                                    ? 'bg-blue-500  hover:bg-blue-700'
-                                    : 'cursor-not-allowed bg-gray-400'}`}
+                                className={` px-4 py-2 rounded bg-blue-500  hover:bg-blue-700`}
                                 onClick={handleNewTime}
                             >
                                 {dataToServer ? "Sending..." : "Save backup time"}
