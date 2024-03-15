@@ -4,10 +4,13 @@ import AdminPanelLoading from "../AdminPanelLoading";
 import SystemContext from "../../../../src_shared/system/contexts/SystemContext";
 import BackupTable from "./BackupTable";
 import BackupSchedule from "./BackupSchedule";
+import BackupContext from "./BackupContext";
 // https://heroicons.com icons
 
 const Backup = () => {
     const { getBackups, createBackup } = useContext(SystemContext)
+    const { isBackup } = useContext(BackupContext)
+    const [isBackupOn, setIsBackupOn] = useState(false)
     //get backups starts
     const [currentBackups, setCurrentBackups] = useState(null)
     const [fetchingBackups, setFetchingBackups] = useState(false)
@@ -42,19 +45,24 @@ const Backup = () => {
     }
 
     useEffect(() => {
+        console.log(isBackup)
         if (requireLoading == true) {
             getCurrentBackups(currentPage)
             setRequireLoading(false)
             return
         }
-    }, [requireLoading, currentPage]);
+        if (isBackup != null) {
+
+            setIsBackupOn(isBackup)
+        }
+    }, [requireLoading, currentPage, isBackup]);
 
     return (
         <div className="backup-block portrait:w-full mx-auto p-4">
             <div className="">
                 <div className="" >
                     <BackupSchedule />
-                    <section className="backup_table my-4 ">
+                    <section className="backup_table my-4 " hidden={isBackupOn == false}>
                         <div className="flex justify-between">
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={getCurrentBackups}>Get backups</button>
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={createBackup}>Create a new backup</button>
