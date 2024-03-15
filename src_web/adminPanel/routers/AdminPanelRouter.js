@@ -9,7 +9,7 @@ import { AdminPanelProvider } from '../contexts/AdminPanelContext';
 import UserUpdate from '../components/user_control/UserUpdate';
 import UserApplicationContext from '../../../src_shared/identity/contexts/UserApplicationContext';
 import React from 'react';
-import Backup from '../components/backup/Backup';
+import BackupContextProvider from '../components/backup/BackupContextProvider';
 import SystemContextProvider from '../../../src_shared/system/contexts/SystemContextProvider';
 import AddNewUser from '../components/user_control/UserAddNew';
 
@@ -62,7 +62,7 @@ const AdminPanelRouter = () => {
                             path="/backup/*"
                             element={
                                 <AdminPanelContainer>
-                                    <Backup />
+                                    <BackupContextProvider />
                                 </AdminPanelContainer>
                             }
                         />
