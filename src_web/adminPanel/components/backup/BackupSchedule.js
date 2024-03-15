@@ -1,10 +1,11 @@
 import { useEffect, useState, useContext } from "react";
 import SystemContext from "../../../../src_shared/system/contexts/SystemContext";
 import AdminPanelLoading from "../AdminPanelLoading";
-
+import BackupContext from "./BackupContext";
 
 const BackupSchedule = () => {
-    const { getSystemBackupSettings, setSystemBackupSettings } = useContext(SystemContext)
+    const { setSystemBackupSettings } = useContext(SystemContext)
+    const { currentBackups } = useContext(BackupContext)
     const [currentBackupTime, setCurrentBackupTime] = useState([])
     const [fetchingServerData, setFetchingData] = useState(true)
     const [isBackupOn, setIsBackupOn] = useState(false);
@@ -24,19 +25,14 @@ const BackupSchedule = () => {
     const [dataToServer, setDataToServer] = useState(false)
     //backup save ends
 
-    const currentBackupSchedule = () => {
-        getSystemBackupSettings().then(
-            data => {
-                console.log('data within current backup time ', data)
-                setSelectedBackupTimes(data.schedule);
-                setCurrentBackupTime(data.schedule);
-                setEmail(data.email);
-                setPassword(data.archive_password);
-                setFetchingData(false);
-                setIsBackupOn(true)
-            }
-        );
-    };
+    const currentBackupSchedule = (data) => {
+        console.log('data within current backup time ', data)
+        setSelectedBackupTimes(data.schedule);
+        setCurrentBackupTime(data.schedule);
+        setEmail(data.email);
+        setPassword(data.archive_password);
+        setFetchingData(false);
+    }
 
     const handleBackupTimeChange = (time) => {
         setBackupSavingFailed(false) //ensure there is no msg
@@ -87,8 +83,9 @@ const BackupSchedule = () => {
     ];
 
     useEffect(() => {
-        currentBackupSchedule()
-    }, [])
+        console.log('schedule use effect, currentBackups: ', currentBackups)
+        if (currentBackups != null) { currentBackupSchedule(currentBackups) }
+    }, [currentBackups])
 
     return (
         <div>
