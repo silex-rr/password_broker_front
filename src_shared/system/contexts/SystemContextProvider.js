@@ -38,7 +38,7 @@ const SystemContextProvider = props => {
      * @param {string} archive_password - The password for the backup archive.
      * @returns {Promise}
      */
-    const setSystemBackupSettings = (schedule, enable, email_enable, email, archive_password) => {
+    const setSystemBackupSettings = ({ schedule, enable, email_enable, email, archive_password }) => {
         return new Promise((resolve, reject) => {
             const data = {
                 schedule: [],

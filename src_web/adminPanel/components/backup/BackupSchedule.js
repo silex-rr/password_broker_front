@@ -55,7 +55,7 @@ const BackupSchedule = () => {
         setBackupSavingFailed(false) //ensure there is no msg
         setBackupSavingSuccess(false) //ensure there is no msg
         if (selectedBackupTimes.length > 0) {
-            setSystemBackupSettings(selectedBackupTimes, isBackupOn, sendConfirmation, email, password).then(
+            setSystemBackupSettings({ schedule: selectedBackupTimes, enable: isBackupOn, email_enable: sendConfirmation, email: email, archive_password: password }).then(
                 response => {
                     console.log(response),
                         setBackupSavingSuccess(true),
@@ -161,7 +161,7 @@ const BackupSchedule = () => {
                                 <input
                                     id='show-password'
                                     type='checkbox'
-                                    disabled={!isBackupOn}
+                                    // disabled={!isBackupOn}
                                     onChange={() => setShowPassword(!showPassword)}
                                     className='w-[10%] m-0'
                                 />
@@ -182,7 +182,7 @@ const BackupSchedule = () => {
                             id="send-confirmation"
                             type="checkbox"
                             checked={sendConfirmation}
-                            disabled={!isBackupOn}
+                            // disabled={!isBackupOn}
                             onChange={() => setSendConfirmation(!sendConfirmation)}
                             className="mr-2"
                         />
