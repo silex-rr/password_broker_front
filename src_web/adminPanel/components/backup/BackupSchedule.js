@@ -92,7 +92,15 @@ const BackupSchedule = () => {
             <div className="flex justify-center bg-slate-700" hidden={!fetchingServerData}>
                 <AdminPanelLoading />
             </div>
-            <div hidden={isBackupOn} className="">
+            <div className="backup_turn-on_">
+                <div className="backup_turn-on__title flex">
+                    {isBackupOn && (
+                        <div>Your backup settings are on, check the shedule below for more information.</div>
+                    )}
+                    {!isBackupOn && (
+                        <div>Your backup settings are off, turn on if you want to schedule it.</div>
+                    )}
+                </div>
                 <label htmlFor="backup-toggle" className="flex items-center text-lg">
                     <input
                         id="backup-toggle"
@@ -101,12 +109,13 @@ const BackupSchedule = () => {
                         onChange={() => setIsBackupOn(!isBackupOn)}
                         className="mr-2"
                     />
-                    Turn on backup
+                    {isBackupOn && (<div>Turn off</div>)}
+                    {!isBackupOn && (<div>Turn on</div>)}
                 </label>
             </div>
             <section className="backup_schedule m-auto w-[80%]" hidden={fetchingServerData}>
                 <div>
-                    Your current backup time is {currentBackupTime.length > 0 ? currentBackupTime.join(' & ') : "not set up"}
+                    If turned on, backups will be saved at {currentBackupTime.length > 0 ? currentBackupTime.join(' & ') : "not set up"}
                 </div>
                 <div
                     className="text-red-500 font-bold"
@@ -182,7 +191,7 @@ const BackupSchedule = () => {
                             id="send-confirmation"
                             type="checkbox"
                             checked={sendConfirmation}
-                            disabled={!isBackupOn}
+                            // disabled={!isBackupOn}
                             onChange={() => setSendConfirmation(!sendConfirmation)}
                             className="mr-2"
                         />
