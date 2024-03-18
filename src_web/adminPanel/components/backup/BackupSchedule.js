@@ -92,7 +92,7 @@ const BackupSchedule = () => {
             <div className="flex justify-center bg-slate-700" hidden={!fetchingServerData}>
                 <AdminPanelLoading />
             </div>
-            <div className="backup_turn-on_">
+            <div className="backup_turn-on_" hidden={fetchingServerData}>
                 <div className="backup_turn-on__title flex">
                     {isBackupOn && (
                         <div>Your backup settings are on, check the shedule below for more information.</div>
