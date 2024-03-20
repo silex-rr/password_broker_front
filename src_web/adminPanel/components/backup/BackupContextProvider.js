@@ -7,12 +7,14 @@ const BackupContextProvider = (props) => {
     const { getSystemBackupSettings } = useContext(SystemContext)
     const [isBackup, setIsBackup] = useState(false);
     const [currentBackups, setCurrentBackups] = useState(null);
+    const [loading, setLoading] = useState(true)
 
     const getCurrentBackupSchedule = () => {
         getSystemBackupSettings().then(
             data => {
                 setIsBackup(data.enable);
                 setCurrentBackups(data)
+                setLoading(false)
             }
         )
     }
@@ -20,7 +22,7 @@ const BackupContextProvider = (props) => {
         getCurrentBackupSchedule()
     }, [])
     return (
-        <BackupContext.Provider value={{ isBackup, currentBackups }}>
+        <BackupContext.Provider value={{ isBackup, currentBackups, loading }}>
             <Backup />
             {/* {props.children} */}
         </BackupContext.Provider>

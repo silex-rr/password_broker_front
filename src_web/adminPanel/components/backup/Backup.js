@@ -9,8 +9,9 @@ import BackupContext from "./BackupContext";
 
 const Backup = () => {
     const { getBackups, createBackup } = useContext(SystemContext)
-    const { isBackup } = useContext(BackupContext)
-    const [isBackupOn, setIsBackupOn] = useState(false)
+    const { isBackup, loading } = useContext(BackupContext)
+    const [isBackupOn, setIsBackupOn] = useState(null)
+    const [fetchingData, setFetchingData] = useState(true)
     //get backups starts
     const [currentBackups, setCurrentBackups] = useState(null)
     const [fetchingBackups, setFetchingBackups] = useState(false)
@@ -45,24 +46,23 @@ const Backup = () => {
     }
 
     useEffect(() => {
-        console.log(isBackup)
+        console.log('use effect is backup', loading)
         if (requireLoading == true) {
             getCurrentBackups(currentPage)
             setRequireLoading(false)
             return
         }
         if (isBackup != null) {
-
             setIsBackupOn(isBackup)
         }
-    }, [requireLoading, currentPage, isBackup]);
+    }, [requireLoading, currentPage, isBackup, loading]);
 
     return (
         <div className="backup-block portrait:w-full mx-auto p-4">
             <div className="">
                 <div className="" >
                     <BackupSchedule />
-                    <section className="backup_table my-4 " hidden={isBackupOn == false}>
+                    <section className="backup_table my-4" hidden={loading}>
                         <div className="flex justify-between">
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={getCurrentBackups}>Get backups</button>
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={createBackup}>Create a new backup</button>
@@ -82,7 +82,7 @@ const Backup = () => {
                                             <BackupTable backups={currentBackups} />
                                         ) : (
                                             <div>No backup data available.
-                                                Create a new one or get current backups.
+                                                Create a new one, set up a backup schedule, or get current backups.
                                             </div>
                                         )
                                     )}
