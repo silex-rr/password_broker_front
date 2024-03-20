@@ -5,7 +5,7 @@ import BackupContext from "./BackupContext";
 
 const BackupSchedule = () => {
     const { setSystemBackupSettings } = useContext(SystemContext)
-    const { currentBackups } = useContext(BackupContext)
+    const { currentBackups, isBackup } = useContext(BackupContext)
     const [currentBackupTime, setCurrentBackupTime] = useState([])
     const [fetchingServerData, setFetchingData] = useState(true)
     const [isBackupOn, setIsBackupOn] = useState(false);
@@ -92,25 +92,25 @@ const BackupSchedule = () => {
             <div className="flex justify-center bg-slate-700" hidden={!fetchingServerData}>
                 <AdminPanelLoading />
             </div>
-            <div className="backup_turn-on_" hidden={fetchingServerData}>
+            <div className="backup_turn-on_block ml-2" hidden={fetchingServerData}>
                 <div className="backup_turn-on__title flex">
-                    {isBackupOn && (
+                    {isBackup && (
                         <div>Your backup settings are on, check the shedule below for more information.</div>
                     )}
-                    {!isBackupOn && (
+                    {!isBackup && (
                         <div>Your backup settings are off, turn on if you want to schedule it.</div>
                     )}
                 </div>
-                <label htmlFor="backup-toggle" className="flex items-center text-lg">
+                <label htmlFor="backup-toggle" className="flex items-center text-lg m-3">
+                    {isBackup && (<div>Turn off</div>)}
+                    {!isBackup && (<div>Turn on</div>)}
                     <input
                         id="backup-toggle"
                         type="checkbox"
                         checked={isBackupOn}
                         onChange={() => setIsBackupOn(!isBackupOn)}
-                        className="mr-2"
+                        className="ml-2 border"
                     />
-                    {isBackupOn && (<div>Turn off</div>)}
-                    {!isBackupOn && (<div>Turn on</div>)}
                 </label>
             </div>
             <section className="backup_schedule m-auto w-[80%]" hidden={fetchingServerData}>
