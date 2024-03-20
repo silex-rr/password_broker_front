@@ -11,29 +11,63 @@ const Backup = () => {
     const { getBackups, createBackup } = useContext(SystemContext)
     const { isBackup, loading } = useContext(BackupContext)
     const [isBackupOn, setIsBackupOn] = useState(null)
-    const [fetchingData, setFetchingData] = useState(true)
     //get backups starts
     const [currentBackups, setCurrentBackups] = useState(null)
     const [fetchingBackups, setFetchingBackups] = useState(false)
     const [hideBackupBlock, setHideBackupBlock] = useState(false)
     //get backups ends
     //pagination starts
+    const [requireLoading, setRequireLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [lastPage, setLastPage] = useState(1)
     //pagnation ends
-    const [requireLoading, setRequireLoading] = useState(false)
+    //create backup starts
+    const [createBackupButtonText, setCreateBackupButtonText] = useState('Create a new backup')
+    const [backupRequestSent, setBackupRequestSent] = useState(false)
+    const [sendingBackupRequest, setSendingBackupRequest] = useState(false)
+    //create backup ends
 
     const handlePagination = page => {
         setCurrentPage(page)
         setRequireLoading(true)
     }
 
+    const handleCreateBackup = () => {
+        const msg1 = 'Sending a backup request...'
+        const msg2 = (<div className="flex justify-center">Backup request has been sent
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 ml-2 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+            </svg>
+        </div>)
+        const errorMsg = 'Something went wrong, try again'
+        setSendingBackupRequest(true) //cursor style only
+        setBackupRequestSent(false) //ensures the blue button colour
+        const showMsg1 = setTimeout(() => {
+            setCreateBackupButtonText(msg1)
+        }, 0);
+        const showMsg2 = setTimeout(() => {
+            createBackup().then(() => {
+                setCreateBackupButtonText(msg2)
+            }).catch(error => {
+                console.log('creating backup error: ', error)
+                setCreateBackupButtonText(errorMsg)
+            });
+            setSendingBackupRequest(false);
+            setBackupRequestSent(true);
+        }, 3000);
+
+        return () => {
+            clearTimeout(showMsg1);
+            clearTimeout(showMsg2);
+        }
+    }
+
     const getCurrentBackups = () => {
         setFetchingBackups(true)
-        console.log('within current backups', fetchingBackups)
+        // console.log('within current backups', fetchingBackups)
         getBackups(currentPage)
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 setCurrentBackups(data.data);
                 // setBackupFetchingStatus(data.status);
                 setFetchingBackups(false);
@@ -47,7 +81,7 @@ const Backup = () => {
     }
 
     useEffect(() => {
-        console.log('use effect is backup', loading)
+        // console.log('use effect is backup', loading)
         if (requireLoading == true) {
             getCurrentBackups(currentPage)
             setRequireLoading(false)
@@ -65,12 +99,21 @@ const Backup = () => {
                     <BackupSchedule />
                     <section className="backup_table my-4" hidden={loading}>
                         <div className="flex justify-between">
-                            <button className={`px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700 ${fetchingBackups ? 'cursor-progress' : ''}`} onClick={getCurrentBackups}>Get backups</button>
-                            <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={createBackup}>Create a new backup</button>
+                            <button
+                                className={`px-4 w-[45%] py-2 rounded  ${fetchingBackups ? 'cursor-progress bg-gray-400 hover:bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`}
+                                onClick={getCurrentBackups}>Get backups</button>
+                            <button
+                                className={`px-4 w-[45%] py-2 rounded ${sendingBackupRequest ? 'cursor-progress' : ''} ${backupRequestSent ? 'bg-green-600 hover:bg-green-700' : "bg-blue-500 hover:bg-blue-700"}`}
+                                onClick={handleCreateBackup}
+                            >
+                                {createBackupButtonText}
+                            </button>
                         </div>
                         <div>
                             <div className="flex justify-center px-4" hidden={currentBackups == null}>
-                                <button className="px-4 my-4 w-[90%] py-2 rounded border border-blue-500 hover:bg-blue-700" onClick={() => setHideBackupBlock(!hideBackupBlock)}>{hideBackupBlock ? 'Show Backups' : 'Hide backups'}</button>
+                                <button className="px-4 my-4 w-[90%] py-2 rounded border border-blue-500 hover:bg-blue-700"
+                                    onClick={() => setHideBackupBlock(!hideBackupBlock)}
+                                >{hideBackupBlock ? 'Show Backups' : 'Hide backups'}</button>
                             </div>
                             <div hidden={hideBackupBlock}>
                                 <div className="my-4  flex justify-center w-full " >
