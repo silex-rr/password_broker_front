@@ -37,6 +37,7 @@ const Backup = () => {
                 setCurrentBackups(data.data);
                 // setBackupFetchingStatus(data.status);
                 setFetchingBackups(false);
+                setHideBackupBlock(false);
                 setLastPage(data.last_page);
             })
             .catch(error => {
@@ -64,11 +65,11 @@ const Backup = () => {
                     <BackupSchedule />
                     <section className="backup_table my-4" hidden={loading}>
                         <div className="flex justify-between">
-                            <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={getCurrentBackups}>Get backups</button>
+                            <button className={`px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700 ${fetchingBackups ? 'cursor-progress' : ''}`} onClick={getCurrentBackups}>Get backups</button>
                             <button className="px-4 w-[45%] py-2 rounded bg-blue-500 hover:bg-blue-700" onClick={createBackup}>Create a new backup</button>
                         </div>
-                        <div hidden={currentBackups == null}>
-                            <div className="flex justify-center px-4">
+                        <div>
+                            <div className="flex justify-center px-4" hidden={currentBackups == null}>
                                 <button className="px-4 my-4 w-[90%] py-2 rounded border border-blue-500 hover:bg-blue-700" onClick={() => setHideBackupBlock(!hideBackupBlock)}>{hideBackupBlock ? 'Show Backups' : 'Hide backups'}</button>
                             </div>
                             <div hidden={hideBackupBlock}>
@@ -81,8 +82,9 @@ const Backup = () => {
                                         currentBackups ? (
                                             <BackupTable backups={currentBackups} />
                                         ) : (
-                                            <div>No backup data available.
-                                                Create a new one, set up a backup schedule, or get current backups.
+                                            <div className="font-medium m-2">
+                                                <p>No backup data available.</p>
+                                                <p>Create a new one, set up a backup schedule or get current backups.</p>
                                             </div>
                                         )
                                     )}
