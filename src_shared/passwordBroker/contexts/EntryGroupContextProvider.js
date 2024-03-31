@@ -348,6 +348,7 @@ const EntryGroupContextProvider = props => {
             case FIELD_TYPE_TOTP:
                 value = (
                     <TOTP
+                        fieldId={fieldId}
                         decryptedValueVisible={decryptedValueVisible}
                         value={decryptedValue}
                         totpActivated={totpActivated}
