@@ -1,46 +1,110 @@
 import React, {useEffect, useRef} from 'react';
 
-const Countdown = ({left, seconds}) => {
-    // const [timeLeft, setTimeLeft] = useState(seconds);
-    const circleTimeLeft = useRef(undefined);
+const Countdown = ({
+    left,
+    fromUTime = null,
+    total,
+    size: s,
+    activated,
+    finisCallback = () => {},
+    color = '#2563eb',
+    secondColor = '#f87171',
+    numColor = '#2563eb',
+}) => {
+    const startedAt = fromUTime ?? Math.floor(Date.now() / 1000);
+    const timerRef = useRef(undefined);
+    const r = (s * 0.4).toFixed(3);
+    const Pir = Math.PI * r;
+    const strokeDasharray = Math.round(Pir * 3);
+    const percentage = (total - left) / total;
+    const strokeDashoffset = Math.round(Pir + 2 * Pir * percentage);
 
-    const percentage = l => ((seconds - l) / seconds) * 100;
-    const getStrokeDashoffset = p => Math.ceil(283 - (283 * p) / 100);
+    const getDigitsNum = num => {
+        if (num > 99) {
+            return 3;
+        }
+        if (num > 9) {
+            return 2;
+        }
+        return 1;
+    };
+    let digitsNum = getDigitsNum(left);
+    const countdownFn = c => {
+        timerRef.current.textContent = c;
+        const digitsNumCur = getDigitsNum(c);
+        if (digitsNumCur !== digitsNum) {
+            digitsNum = digitsNumCur;
+            timerRef.current.style.fontSize = (s * (0.7 - 0.1 * digitsNum)).toFixed(3) + 'px';
+        }
+    };
 
     useEffect(() => {
-        if (!left) {
+        if (!activated) {
             return;
         }
-
-        const intervalId = setInterval(() => {
-            if (!left) {
+        let countdown = left;
+        countdownFn(countdown);
+        const interval = setInterval(() => {
+            const curTime = Math.floor(Date.now() / 1000);
+            const timeElapsed = curTime - startedAt;
+            countdown = left - timeElapsed;
+            if (countdown <= 0) {
+                finisCallback();
                 return false;
             }
-            left -= 1;
-            circleTimeLeft.current.setAttribute('stroke-dashoffset', getStrokeDashoffset(percentage(left)));
-            console.log(left, getStrokeDashoffset(percentage(left)), circleTimeLeft.current.getAttribute('stroke-dashoffset'));
+            countdownFn(countdown);
         }, 1000);
+        return () => clearInterval(interval);
+    }, [activated, left]);
 
-        return () => clearInterval(intervalId);
-    }, []);
+    if (!activated) {
+        return '';
+    }
 
     return (
-        <svg width="1em" height="1em">
-            <circle cx="0.5em" cy="0.5em" r="0.45em" stroke="blue" strokeWidth="0.1em" fill="transparent" />
+        <svg width={s + 'px'} height={s + 'px'}>
             <circle
-                ref={circleTimeLeft}
-                cx="0.5em"
-                cy="0.5em"
-                r="0.45em"
-                stroke="orange"
-                strokeWidth="0.1em"
+                cx={(s * 0.5).toFixed(3) + 'px'}
+                cy={(s * 0.5).toFixed(3) + 'px'}
+                r={r + 'px'}
+                strokeWidth={(s * 0.1).toFixed(3) + 'px'}
+                stroke={secondColor}
                 fill="transparent"
-                strokeDasharray="283"
-                strokeDashoffset="100"
-                style={{transition: 'stroke-dashoffset 1s linear'}}
             />
+            <circle
+                cx={(s * 0.5).toFixed(3) + 'px'}
+                cy={(s * 0.5).toFixed(3) + 'px'}
+                r={r + 'px'}
+                strokeWidth={(s * 0.1).toFixed(3) + 'px'}
+                stroke={color}
+                fill="transparent"
+                strokeDasharray={strokeDasharray}
+                strokeDashoffset={strokeDashoffset}
+                // style={{transition: `stroke-dashoffset 1s linear`}}
+                style={{
+                    transform: 'rotate(-90deg)',
+                    transformBox: 'fill-box',
+                    transformOrigin: 'center',
+                }}>
+                <animate
+                    attributeName="stroke-dashoffset"
+                    begin="0s"
+                    dur={`${left}s`}
+                    from={strokeDashoffset}
+                    to={strokeDasharray}
+                    fill="freeze"
+                />
+            </circle>
+            <text
+                ref={timerRef}
+                x="50%"
+                y="55%"
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                dominantBaseline="middle"
+                style={{fontSize: (s * (0.7 - 0.1 * digitsNum)).toFixed(3) + 'px'}}
+                fill={numColor}></text>
         </svg>
     );
 };
-
 export default Countdown;

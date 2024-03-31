@@ -542,7 +542,15 @@ const IdentityContextProvider = props => {
                         navigate('/identity/login');
                     },
                 ),
-            error => console.log('getUser csrf error', error),
+            error => {
+                setAuthLoginStatus(AUTH_LOGIN_AWAIT);
+                console.log('csrf', error);
+                if (error.code === 'ERR_NETWORK') {
+                    setErrorMessage('Cannot establish connection with ' + hostURL);
+                    return;
+                }
+                setErrorMessage('Could not complete the login');
+            },
         );
     };
 
