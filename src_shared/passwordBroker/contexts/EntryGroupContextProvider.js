@@ -14,6 +14,7 @@ import {
     FIELD_TYPE_LINK,
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
+    FIELD_TYPE_TOTP,
 } from '../constants/MainBodyEntryGroupEntryFieldTypes';
 import {ROLE_CAN_EDIT} from '../constants/EntryGroupRole';
 import {
@@ -26,6 +27,7 @@ import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates
 // import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import {CryptoService} from '../../utils/native/CryptoService';
 import UserApplicationContext from '../../identity/contexts/UserApplicationContext';
+import TOTP from '../../../src_web/passwordBroker/components/MainBody/EntryGroup/EntryFieldTypes/View/TOTP';
 
 const Buffer = require('buffer/').Buffer;
 
@@ -125,6 +127,8 @@ const EntryGroupContextProvider = props => {
             setHistoryVisible,
             // trashed,
             setTrashed,
+            totpActivated,
+            setTotpActivated,
         } = states;
 
         const loadDecryptedValue = (onSucceed, button = '') => {
@@ -227,6 +231,13 @@ const EntryGroupContextProvider = props => {
             }, 'copy');
         };
 
+        const handleGenerateTotp = () => {
+            loadDecryptedValue(decoded => {
+                setDecryptedValue(decoded);
+                setTotpActivated(!totpActivated);
+            }, 'totp_gen');
+        };
+
         const handleDownload = () => {
             loadDecryptedValue(decoded => {
                 writeFile(decoded, fileName, fileMime);
@@ -294,6 +305,18 @@ const EntryGroupContextProvider = props => {
             />
         );
 
+        const totpButton = (
+            <EntryFieldButton
+                key="totpButton"
+                icon="IoTimerOutline"
+                onclick={handleGenerateTotp}
+                loading={buttonLoading === 'totp_gen'}
+                tip="genereta TOTP"
+                colour={totpActivated ? 'text-emerald-300' : iconColor}
+                disabled={disableButtons}
+            />
+        );
+
         switch (type) {
             default:
                 value = '';
@@ -320,6 +343,19 @@ const EntryGroupContextProvider = props => {
             case FIELD_TYPE_FILE:
                 value = <File fileMime={fileMime} fileName={fileName} fileSize={fileSize} />;
                 buttons.push(downloadButton);
+                break;
+
+            case FIELD_TYPE_TOTP:
+                value = (
+                    <TOTP
+                        fieldId={fieldId}
+                        decryptedValueVisible={decryptedValueVisible}
+                        value={decryptedValue}
+                        totpActivated={totpActivated}
+                    />
+                );
+                buttons.push(totpButton);
+                buttons.push(visibilityButton);
                 break;
         }
 
