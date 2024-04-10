@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import CopyToClipboard from './CopyToClipboard';
 import {TOTP as TOTPJS} from 'jsotp';
-import Countdown from './Countdown';
+import {CountdownCircle} from 'countdown-react-svg';
 
 const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated}) => {
     const [token, setToken] = useState('');
@@ -10,7 +10,6 @@ const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated}) => {
     const [reactivateCount, setReactivateCount] = useState(0);
 
     useEffect(() => {
-        console.log(reactivateCount);
         if (totpActivated && value) {
             const totp = new TOTPJS(value);
             setToken(totp.now());
@@ -31,15 +30,13 @@ const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated}) => {
                     <span className={token === '' ? 'hidden' : 'pr-3 text-slate-400'}>token: </span>
                     <span className="-mt-2 px-4 text-lg font-bold tracking-widest">{token}</span>
                     <span key={fieldId + reactivateCount} className="-mt-2 ml-2">
-                        <Countdown
-                            total={30}
-                            left={left}
-                            fromUTime={fromUTime}
+                        <CountdownCircle
+                            timeLeft={left}
+                            timeTotal={30}
                             size={24}
                             activated={totpActivated}
-                            color="#e2e8f0"
-                            numColor="#e2e8f0"
-                            finisCallback={() => {
+                            fromUTime={fromUTime}
+                            onCompleteCallback={() => {
                                 if ([30, 59].includes(new Date().getSeconds())) {
                                     setTimeout(() => {
                                         setReactivateCount(v => v + 1);
@@ -48,6 +45,8 @@ const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated}) => {
                                     setReactivateCount(v => v + 1);
                                 }
                             }}
+                            colorMain="#e2e8f0"
+                            colorNumber="#e2e8f0"
                         />
                     </span>
                 </CopyToClipboard>
