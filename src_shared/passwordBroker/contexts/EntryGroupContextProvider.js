@@ -351,10 +351,12 @@ const EntryGroupContextProvider = props => {
                         fieldId={fieldId}
                         decryptedValueVisible={decryptedValueVisible}
                         value={decryptedValue}
-                        totpActivated={totpActivated}
+                        totpActivated={!historyMode && totpActivated}
                     />
                 );
-                buttons.push(totpButton);
+                if (!historyMode) {
+                    buttons.push(totpButton);
+                }
                 buttons.push(visibilityButton);
                 break;
         }
