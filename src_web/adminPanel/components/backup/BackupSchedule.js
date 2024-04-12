@@ -32,6 +32,8 @@ const BackupSchedule = () => {
         setEmail(data.email);
         setPassword(data.archive_password);
         setFetchingData(false);
+        setSendConfirmation(data.email_enable)
+        setBackupPassword(data.archive_password.length > 0 ? true : false)
     }
 
     const handleBackupTimeChange = (time) => {
