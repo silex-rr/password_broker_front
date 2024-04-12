@@ -6,7 +6,7 @@ const BackupTable = ({ backups }) => {
 
     const currentBackups = backups
 
-    const togglePassword = () => {
+    const togglePassword = (value) => {
         return showPassword ? value : 'Show Password'
     }
 
