@@ -6,6 +6,7 @@ const BackupTable = ({ backups }) => {
 
     const currentBackups = backups
 
+
     const togglePassword = (index) => {
         if (index === showPassword) {
             setShowPassword(null);
