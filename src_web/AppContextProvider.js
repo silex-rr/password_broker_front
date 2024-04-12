@@ -3,11 +3,15 @@ import {APP_TYPE_WEB} from '../src_shared/constants/AppType';
 import AppContext from './AppContext';
 import {stringToBlob} from '../src_shared/utils/stringToBlob';
 import copy from 'copy-to-clipboard';
+import {THEME_DARK, THEME_LIGHT} from '../src_shared/constants/ThemeMode';
 
 const AppContextProvider = props => {
     const masterPasswordModalVisibilityCheckboxRef = useRef();
     const masterPasswordModalVisibilityErrorRef = useRef();
     const [masterPasswordModalIsVisible, setMasterPasswordModalIsVisible] = useState(false);
+    const [themeMode, setThemeMode] = React.useState(
+        window.matchMedia('(prefers-color-scheme: dark)') ? THEME_DARK : THEME_LIGHT,
+    );
     const showMasterPasswordModal = (errorText = '') => {
         const masterPasswordModalVisibilityCheckbox = masterPasswordModalVisibilityCheckboxRef.current;
         const masterPasswordModalVisibilityError = masterPasswordModalVisibilityErrorRef.current;
@@ -45,6 +49,18 @@ const AppContextProvider = props => {
         URL.revokeObjectURL(href);
     };
 
+    const toggleThemeMode = () => {
+        setThemeMode(curTheme => (curTheme === THEME_DARK ? THEME_LIGHT : THEME_DARK));
+    };
+
+    React.useEffect(() => {
+        if (themeMode !== THEME_DARK) {
+            setThemeMode(THEME_DARK);
+            return;
+        }
+        document.querySelector('html').setAttribute('data-themeMode', themeMode);
+    }, [themeMode]);
+
     return (
         <AppContext.Provider
             value={{
@@ -57,6 +73,8 @@ const AppContextProvider = props => {
                 masterPasswordModalIsVisible: masterPasswordModalIsVisible,
                 setMasterPasswordModalIsVisible: setMasterPasswordModalIsVisible,
                 copyToClipboard: copy,
+                themeMode: themeMode,
+                toggleThemeMode: toggleThemeMode,
 
                 writeFile: writeFile,
             }}>
