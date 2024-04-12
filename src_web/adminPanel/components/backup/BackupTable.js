@@ -2,17 +2,26 @@ import { useState } from 'react';
 import Moment from 'react-moment';
 
 const BackupTable = ({ backups }) => {
-    const [showPassword, setShowPassword] = useState(false)
+    const [showPassword, setShowPassword] = useState(null)
 
     const currentBackups = backups
 
-    const togglePassword = (value) => {
-        return showPassword ? value : 'Show Password'
-    }
 
-    const isPassword = (value) => {
-        return value == null ? "No password" : togglePassword(value)
-    }
+    const togglePassword = (index) => {
+        if (index === showPassword) {
+            setShowPassword(null);
+        } else {
+            setShowPassword(index);
+        }
+    };
+
+    const isPassword = (value, index) => {
+        const fieldText = value == null ? 'No password' : 'Show password'
+        if (value == null) {
+            return 'No password'
+        }
+        return index === showPassword ? value : fieldText;
+    };
 
     const dateMinuteFormat = (date) => {
         return <Moment format="YYYY.MM.DD HH:mm">{date}</Moment>
@@ -63,7 +72,7 @@ const BackupTable = ({ backups }) => {
                             <td>{isValueNull(line.error_message)}</td>
                             <td className='text-xs'>{isValueNull(line.file_name)}</td>
                             <td className={`w-${tableHead['Password']}/12 hover:cursor-pointer`}
-                                onClick={(() => setShowPassword(!showPassword))}>{isPassword(line.password)}
+                                onClick={(() => togglePassword(index))}>{isPassword(line.password, index)}
                             </td>
                             <td>{isValueNull(line.size)}</td>
                             <td>{isDateNull(line.updated_at)}</td>
