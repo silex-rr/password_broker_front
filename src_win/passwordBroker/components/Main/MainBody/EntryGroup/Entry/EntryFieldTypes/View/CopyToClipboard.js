@@ -8,7 +8,7 @@ const CopyToClipboard = ({value, style, children}) => {
     const {copyToClipboard} = useContext(AppContext);
     const refTarget = useRef();
     const copyClickHandler = () => {
-        if (value === '') {
+        if (typeof value !== 'string' || value === '') {
             return;
         }
         copyToClipboard(value);

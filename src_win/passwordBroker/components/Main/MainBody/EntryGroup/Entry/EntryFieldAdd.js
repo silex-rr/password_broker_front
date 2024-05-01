@@ -4,6 +4,7 @@ import {
     FIELD_TYPE_LINK,
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
+    FIELD_TYPE_TOTP,
 } from '../../../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
 
 // eslint-disable-next-line max-len
@@ -22,6 +23,7 @@ import Password from './EntryFieldTypes/Edit/Password';
 import Note from './EntryFieldTypes/Edit/Note';
 import Link from './EntryFieldTypes/Edit/Link';
 import File from './EntryFieldTypes/Edit/File';
+import TOTP from './EntryFieldTypes/Edit/TOTP';
 // import * as DocumentPicker from "react-native-document-picker";
 
 const EntryFieldAdd = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus}) => {
@@ -68,6 +70,9 @@ const EntryFieldAdd = ({entryGroupId, entryId, entryTitle, setEntryFieldsStatus}
             break;
         case FIELD_TYPE_FILE:
             value = <File entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
+            break;
+        case FIELD_TYPE_TOTP:
+            value = <TOTP entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
     }
     const sendFormHandler = () => {

@@ -18,6 +18,9 @@
 // Includes from react-native-sqlite-storage
 #include <winrt/SQLitePlugin.h>
 
+// Includes from react-native-svg
+#include <winrt/RNSVG.h>
+
 namespace winrt::Microsoft::ReactNative
 {
 
@@ -33,6 +36,8 @@ void RegisterAutolinkedNativeModulePackages(winrt::Windows::Foundation::Collecti
     packageProviders.Append(winrt::ReactNativePicker::ReactPackageProvider());
     // IReactPackageProviders from react-native-sqlite-storage
     packageProviders.Append(winrt::SQLitePlugin::ReactPackageProvider());
+    // IReactPackageProviders from react-native-svg
+    packageProviders.Append(winrt::RNSVG::ReactPackageProvider());
 }
 
 }

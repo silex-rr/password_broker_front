@@ -27,12 +27,11 @@ import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates
 // import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import {CryptoService} from '../../utils/native/CryptoService';
 import UserApplicationContext from '../../identity/contexts/UserApplicationContext';
-import TOTP from '../../../src_web/passwordBroker/components/MainBody/EntryGroup/EntryFieldTypes/View/TOTP';
 
 const Buffer = require('buffer/').Buffer;
 
 const EntryGroupContextProvider = props => {
-    const {Link, Password, Note, File} = props.entryFieldTypes;
+    const {Link, Password, Note, File, TOTP} = props.entryFieldTypes;
     const EntryFieldButton = props.EntryFieldButton;
     const copy = props.copyToClipboard;
     const writeFile = props.writeFile;
@@ -130,6 +129,11 @@ const EntryGroupContextProvider = props => {
             totpActivated,
             setTotpActivated,
         } = states;
+
+        const colorGreen = '#6ee7b7';
+        const colorYellow = '#eab308';
+        const colorBlue = '#93c5fd';
+        const colorRed = '#f87171';
 
         const loadDecryptedValue = (onSucceed, button = '') => {
             if (decryptedValue !== '') {
@@ -270,6 +274,7 @@ const EntryGroupContextProvider = props => {
                 onclick={handleValueVisibility}
                 loading={buttonLoading === 'show'}
                 tip={decryptedValueVisible ? 'hide' : 'show'}
+                colour={decryptedValueVisible ? colorGreen : iconColor}
             />
         );
 
@@ -300,7 +305,7 @@ const EntryGroupContextProvider = props => {
                 onclick={handleHistoryButton}
                 loading={buttonLoading === 'history'}
                 tip="history"
-                colour={historyVisible ? 'text-yellow-500' : iconColor}
+                colour={historyVisible ? colorYellow : iconColor}
                 disabled={disableButtons}
             />
         );
@@ -312,7 +317,7 @@ const EntryGroupContextProvider = props => {
                 onclick={handleGenerateTotp}
                 loading={buttonLoading === 'totp_gen'}
                 tip="genereta TOTP"
-                colour={totpActivated ? 'text-emerald-300' : iconColor}
+                colour={totpActivated ? colorGreen : iconColor}
                 disabled={disableButtons}
             />
         );
@@ -426,7 +431,7 @@ const EntryGroupContextProvider = props => {
                     onclick={handleEdit}
                     loading={buttonLoading === 'edit'}
                     tip="edit"
-                    colour={historyVisible ? 'text-blue-300' : iconColor}
+                    colour={colorBlue}
                     disabled={disableButtons}
                 />,
             );
@@ -438,7 +443,7 @@ const EntryGroupContextProvider = props => {
                     onclick={handleDelete}
                     loading={buttonLoading === 'delete'}
                     tip="delete"
-                    colour={historyVisible ? 'text-red-400' : iconColor}
+                    colour={colorRed}
                     disabled={disableButtons}
                 />,
             );

@@ -4,7 +4,7 @@
   <ItemGroup>
     <!-- Projects from @dr.pogodin/react-native-fs -->
     <ProjectReference Include="$(ProjectDir)..\..\node_modules\@dr.pogodin\react-native-fs\windows\ReactNativeFs\ReactNativeFs.vcxproj">
-      <Project>{48df99f7-56c6-4e01-9ad8-4f1e91da79c6}</Project>
+      <Project>{f912ebdd-f19a-48c7-a32c-49d2956fce22}</Project>
     </ProjectReference>
     <!-- Projects from @react-native-async-storage/async-storage -->
     <ProjectReference Include="$(ProjectDir)..\..\node_modules\@react-native-async-storage\async-storage\windows\ReactNativeAsyncStorage\ReactNativeAsyncStorage.vcxproj">
@@ -21,6 +21,10 @@
     <!-- Projects from react-native-sqlite-storage -->
     <ProjectReference Include="$(ProjectDir)..\..\node_modules\react-native-sqlite-storage\platforms\windows\SQLitePlugin\SQLitePlugin.vcxproj">
       <Project>{a09b9a47-e2b9-4294-9746-ac55213fc642}</Project>
+    </ProjectReference>
+    <!-- Projects from react-native-svg -->
+    <ProjectReference Include="$(ProjectDir)..\..\node_modules\react-native-svg\windows\RNSVG\RNSVG.vcxproj">
+      <Project>{7acf84ec-efba-4043-8e14-40b159508902}</Project>
     </ProjectReference>
   </ItemGroup>
 </Project>

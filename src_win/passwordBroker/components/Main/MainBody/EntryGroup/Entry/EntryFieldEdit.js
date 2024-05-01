@@ -4,6 +4,7 @@ import {
     FIELD_TYPE_LINK,
     FIELD_TYPE_NOTE,
     FIELD_TYPE_PASSWORD,
+    FIELD_TYPE_TOTP,
 } from '../../../../../../../src_shared/passwordBroker/constants/MainBodyEntryGroupEntryFieldTypes';
 import PasswordBrokerContext from '../../../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 
@@ -15,6 +16,7 @@ import EntryFieldContext from '../../../../../../../src_shared/passwordBroker/co
 import Password from './EntryFieldTypes/Edit/Password';
 import Note from './EntryFieldTypes/Edit/Note';
 import Link from './EntryFieldTypes/Edit/Link';
+import TOTP from './EntryFieldTypes/Edit/TOTP';
 import {ActivityIndicator, Pressable, Text, TextInput, View} from 'react-native-windows';
 import tw from 'twrnc';
 import AppContext from '../../../../../../AppContext';
@@ -59,6 +61,9 @@ const EntryFieldEdit = ({setEntryFieldsStatus, entryGroupId, entryId, entryTitle
             value = <Link entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
         case FIELD_TYPE_FILE:
+            break;
+        case FIELD_TYPE_TOTP:
+            value = <TOTP entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
     }
 

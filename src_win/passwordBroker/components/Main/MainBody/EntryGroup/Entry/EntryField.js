@@ -18,6 +18,7 @@ const EntryField = props => {
     const [buttonLoading, setButtonLoading] = useState('');
     const [historyVisible, setHistoryVisible] = useState(false);
     const [trashed, setTrashed] = useState(false);
+    const [totpActivated, setTotpActivated] = useState(false);
 
     //,
 
@@ -26,7 +27,6 @@ const EntryField = props => {
 
     const entryGroupContext = useContext(EntryGroupContext);
     const {loadEntryFieldValueAndButtons} = entryGroupContext;
-
     const {value, buttons} = loadEntryFieldValueAndButtons(
         baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields/' + fieldId,
         {
@@ -40,12 +40,13 @@ const EntryField = props => {
             setHistoryVisible,
             trashed,
             setTrashed,
+            totpActivated,
+            setTotpActivated,
         },
         props,
         hideEdit,
     );
     //hover:bg-slate-600
-
     return (
         <View>
             <View style={tw`flex flex-row w-full px-2 bg-slate-500 items-baseline ${trashed ? 'hidden' : ''}`}>
