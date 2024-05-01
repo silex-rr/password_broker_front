@@ -4,6 +4,7 @@ import Link from '../components/MainBody/EntryGroup/EntryFieldTypes/View/Link';
 import Password from '../components/MainBody/EntryGroup/EntryFieldTypes/View/Password';
 import Note from '../components/MainBody/EntryGroup/EntryFieldTypes/View/Note';
 import File from '../components/MainBody/EntryGroup/EntryFieldTypes/View/File';
+import TOTP from '../components/MainBody/EntryGroup/EntryFieldTypes/View/TOTP';
 import EntryFieldButton from '../components/MainBody/EntryGroup/EntryFieldButton';
 import AppContext from '../../AppContext';
 import copy from 'copy-to-clipboard';
@@ -23,6 +24,7 @@ const PasswordBrokerRouter = () => {
                     Password: Password,
                     Note: Note,
                     File: File,
+                    TOTP: TOTP,
                 }}
                 EntryFieldButton={EntryFieldButton}
                 copyToClipboard={copy}

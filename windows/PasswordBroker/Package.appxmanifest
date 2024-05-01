@@ -9,7 +9,7 @@
   <Identity
     Name="3923BLSV.PasswordBroker"
     Publisher="CN=4B70D734-7250-4059-83B6-180962EC40C5"
-    Version="1.0.39.0" />
+    Version="1.1.41.0" />
 
   <mp:PhoneIdentity PhoneProductId="5d8eb865-9c41-4f19-b8a8-1d84a0851ce2" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

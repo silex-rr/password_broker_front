@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import CopyToClipboard from './CopyToClipboard';
 import {TOTP as TOTPJS} from 'jsotp';
-import {CountdownCircle} from 'countdown-react-svg';
+import {CountdownCircle} from 'react-countdowns-svg';
 
 const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated}) => {
     const [token, setToken] = useState('');

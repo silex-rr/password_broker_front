@@ -40,6 +40,9 @@ const EntryFieldButton = ({
         case 'FaTrashAlt':
             iconElement = <MaterialCommunityIcons name="trash-can" size={iconSize} color={iconColor} />;
             break;
+        case 'IoTimerOutline':
+            iconElement = <MaterialCommunityIcons name="av-timer" size={iconSize} color={iconColor} />;
+            break;
     }
 
     if (loading) {

@@ -10,7 +10,6 @@ import GlobalContextProvider from '../src_shared/common/contexts/GlobalContextPr
 
 const AppRouter = () => {
     const {hostURL, getClientId, offlineDatabaseService, appTokensService} = useContext(AppContext);
-
     return (
         <NativeRouter>
             <GlobalContextProvider>

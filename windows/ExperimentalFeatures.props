@@ -11,10 +11,10 @@
   <PropertyGroup Label="Microsoft.ReactNative Experimental Features">
     <!--
       Enables default usage of Hermes.
-
+      
       See https://microsoft.github.io/react-native-windows/docs/hermes
     -->
-    <UseHermes>false</UseHermes>
+    <UseHermes>true</UseHermes>
 
     <!--
       Changes compilation to assume use of WinUI 3 instead of System XAML.
@@ -34,10 +34,9 @@
     <UseExperimentalNuget>false</UseExperimentalNuget>
 
     <ReactExperimentalFeaturesSet>true</ReactExperimentalFeaturesSet>
-      <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
-      <WindowsTargetPlatformMinVersion>10.0.22621.0</WindowsTargetPlatformMinVersion>
-      <TargetPlatformMinVersion>10.0.22621.0</TargetPlatformMinVersion>
-      <UseHermes>true</UseHermes>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.22621.0</WindowsTargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.22621.0</TargetPlatformMinVersion>
 
   </PropertyGroup>
 
