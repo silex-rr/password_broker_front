@@ -95,6 +95,12 @@ const UserControl = () => {
                                 name={`Add new user`}
                             />
                         </div>
+                        <div className="btn btn-ghost">
+                            <UserControlNavigation
+                                path={`/admin/user_control/invite`}
+                                name={`Invite new user`}
+                            />
+                        </div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="table table-xs p-3">

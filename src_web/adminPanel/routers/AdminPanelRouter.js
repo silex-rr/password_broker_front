@@ -12,6 +12,7 @@ import React from 'react';
 import BackupContextProvider from '../components/backup/BackupContextProvider';
 import SystemContextProvider from '../../../src_shared/system/contexts/SystemContextProvider';
 import AddNewUser from '../components/user_control/UserAddNew';
+import UserInvite from '../components/user_control/UserIntive';
 
 const AdminPanelRouter = () => {
     return (
@@ -32,6 +33,12 @@ const AdminPanelRouter = () => {
                             path="/user_control/add"
                             element={<AdminPanelContainer>
                                 <AddNewUser />
+                            </AdminPanelContainer>}
+                        />
+                        <Route
+                            path='/user_control/invite'
+                            element={<AdminPanelContainer>
+                                <UserInvite />
                             </AdminPanelContainer>}
                         />
                         <Route
