@@ -15,6 +15,8 @@ const UserInvite = () => {
 
     const handleIntiveUser = async (event) => {
         event.preventDefault();
+        setServerResponse(null);
+        setLink('')
 
         // Validate email
         if (!validateEmail(email)) {
@@ -25,20 +27,19 @@ const UserInvite = () => {
         try {
             setSending(true);
             const formData = { email: email, username: username || null };
-            console.log(formData);
+            // console.log(formData);
             const response = await axios.post(hostURL + `/identity/api/invite`, { user: formData });
             setServerResponse(200)
             setLink(response.data.inviteLinkUrl)
-            console.log('response.status: ', response);
+            setEmail("");
+            setUsername("");
+            // console.log('response.status: ', response);
         } catch (error) {
             // console.log(error)
             setServerResponse(error.response.data.message);
         }
-
-        setEmail("");
-        setUsername("");
         setSending(false);
-        console.log('Send button clicked');
+        // console.log('Send button clicked');
     }
 
     const validateEmail = (email) => {
@@ -47,10 +48,10 @@ const UserInvite = () => {
     }
 
     return (
-        <div className="w-[90%] border border-blue-500 flex flex-col m-3">
+        <div className="w-[90%] flex flex-col m-3">
             <div>
-                <div>Fill in the fields below to invite a new user.</div>
-                <div className="flex flex-col gap-3 m-3 w-[50%]">
+                <div className="font-semibold text-xl">Fill in the fields below to invite a new user.</div>
+                <div className="flex flex-col gap-3 mt-3 w-[50%]">
                     <label htmlFor='invite-new-user_email'>Email: (required)</label>
                     <input
                         value={email}
@@ -71,20 +72,23 @@ const UserInvite = () => {
                         id="intive-new-user_username"
                     />
                     <button
-                        className={`px-4 py-2 rounded bg-blue-500 hover:bg-blue-700`}
+                        className={`px-4 py-2 rounded bg-blue-500 hover:bg-blue-700 ${sending ? 'cursor-progress' : ''}`}
                         onClick={handleIntiveUser}
                     >
                         {sending ? "The data is being sent" : "Send an invitation"}
                     </button>
                 </div>
             </div>
-            <div className="flex border border-gray-300 m-3 p-3 flex-col" hidden={link.length === 0}>
+            <div className="flex border border-green-700 mt-3 p-3 w-[70%] flex-col" hidden={link.length === 0}>
                 The invitation link has been sent to email, either click on the one in the letter, or use the link below to register.
-                <div className="flex gap-1" >{link}
+                <div className="flex gap-1 my-3  font-bold" >
+                    <p className="bg-black shadow-lg shadow-emerald-700/90">{link}</p>
                     <button onClick={() => copyToClipboard(link)} disabled={sending}><FaRegCopy /></button>
                 </div>
             </div>
-            <div>{serverResponse == 200 ? "" : serverResponse}</div>
+            <div className="flex border border-red-500 mt-3 p-3 w-[50%] flex-col" hidden={serverResponse == 200 || serverResponse == null}>
+                {serverResponse}
+            </div>
         </div>
     );
 }
