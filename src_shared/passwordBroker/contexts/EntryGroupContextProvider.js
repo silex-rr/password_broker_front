@@ -274,7 +274,7 @@ const EntryGroupContextProvider = props => {
                 onclick={handleValueVisibility}
                 loading={buttonLoading === 'show'}
                 tip={decryptedValueVisible ? 'hide' : 'show'}
-                colour={decryptedValueVisible ? colorGreen : iconColor}
+                colour={decryptedValueVisible ? colorGreen : ''}
             />
         );
 
@@ -431,7 +431,7 @@ const EntryGroupContextProvider = props => {
                     onclick={handleEdit}
                     loading={buttonLoading === 'edit'}
                     tip="edit"
-                    colour={colorBlue}
+                    colour={disableButtons ? iconColor : colorBlue}
                     disabled={disableButtons}
                 />,
             );
@@ -443,7 +443,7 @@ const EntryGroupContextProvider = props => {
                     onclick={handleDelete}
                     loading={buttonLoading === 'delete'}
                     tip="delete"
-                    colour={colorRed}
+                    colour={disableButtons ? iconColor : colorRed}
                     disabled={disableButtons}
                 />,
             );

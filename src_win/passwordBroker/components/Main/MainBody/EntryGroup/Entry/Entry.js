@@ -50,7 +50,6 @@ const Entry = props => {
                 return;
             }
             axios.get(baseUrl + '/entryGroups/' + entryGroupId + '/entries/' + entryId + '/fields').then(response => {
-                console.log(response.data);
                 setEntryFieldsData(response.data);
                 setEntryFieldsStatus(ENTRY_GROUP_ENTRY_FIELDS_LOADED);
             });
