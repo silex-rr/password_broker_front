@@ -9,7 +9,6 @@ const ActivityLog = () => {
     const [showFull, setShowFull] = useState(false);
     const handleShowFull = () => {
         setShowFull(!showFull);
-        console.log(showFull);
     };
     const lastMessage = activityLog.length
         ? activityLog[0]
