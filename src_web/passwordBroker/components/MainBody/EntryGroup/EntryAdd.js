@@ -93,7 +93,9 @@ const EntryAdd = props => {
             />
             <label htmlFor={addEntryKey + entryGroupId} className="modal cursor-pointer">
                 <label className="modal-box relative w-1/3 max-w-none bg-slate-700" htmlFor="">
-                    <h3 className="text-lg font-bold">Adding new Entry to the Entry Group "{entryGroupTitle}"</h3>
+                    <h3 className="text-lg font-bold">
+                        Adding new Entry to the Entry Group &quot;{entryGroupTitle}&quot;
+                    </h3>
                     <div className="py-4">
                         <div className="flex flex-row items-center py-1.5">
                             <label
@@ -108,7 +110,7 @@ const EntryAdd = props => {
                                 onChange={changeTitle}
                                 placeholder="type title for new field"
                                 className={
-                                    'input-bordered input-sm basis-2/3 bg-slate-800' +
+                                    'input-sm input-bordered basis-2/3 bg-slate-800' +
                                     ' text-slate-200 placeholder-slate-300'
                                 }
                             />
@@ -126,7 +128,7 @@ const EntryAdd = props => {
 
                             <label
                                 htmlFor={addEntryKey + entryGroupId}
-                                className="btn btn-error btn-outline btn-sm right-0 basis-1/3">
+                                className="btn btn-outline btn-error btn-sm right-0 basis-1/3">
                                 close
                             </label>
                         </div>

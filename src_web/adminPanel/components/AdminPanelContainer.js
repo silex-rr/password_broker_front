@@ -1,3 +1,4 @@
+import React from 'react';
 import Container from '../../common/Container';
 import AdminPanelMainBody from './AdminPanelMainBody';
 const AdminPanelContainer = props => {

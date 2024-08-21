@@ -91,7 +91,7 @@ const EntryGroupUsers = () => {
                 return (
                     <span
                         key={'add_as_admin_' + user_id}
-                        className="btn btn-warning btn-outline btn-xs mx-1"
+                        className="btn btn-outline btn-warning btn-xs mx-1"
                         onClick={onClick}>
                         add as Admin
                     </span>
@@ -104,7 +104,7 @@ const EntryGroupUsers = () => {
                 return (
                     <span
                         key={'add_as_moderator_' + user_id}
-                        className="btn btn-info btn-outline btn-xs mx-1"
+                        className="btn btn-outline btn-info btn-xs mx-1"
                         onClick={onClick}>
                         add as Moderator
                     </span>
@@ -117,7 +117,7 @@ const EntryGroupUsers = () => {
                 return (
                     <span
                         key={'add_as_member_' + user_id}
-                        className="btn btn-success btn-outline btn-xs mx-1"
+                        className="btn btn-outline btn-success btn-xs mx-1"
                         onClick={onClick}>
                         add as Member
                     </span>

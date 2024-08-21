@@ -31,7 +31,7 @@ const EntryGroupUser = props => {
         if (user.user_id !== userId && user.role !== ROLE_ADMIN) {
             remove_td = (
                 <td>
-                    <span className="btn btn-error btn-outline btn-xs" onClick={removeClickHandler}>
+                    <span className="btn btn-outline btn-error btn-xs" onClick={removeClickHandler}>
                         remove
                     </span>
                 </td>

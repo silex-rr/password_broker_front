@@ -1,5 +1,5 @@
-import { createContext } from "react";
+import {createContext} from 'react';
 
 const BackupContext = createContext(null);
 
-export default BackupContext
+export default BackupContext;

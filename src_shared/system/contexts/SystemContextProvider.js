@@ -1,12 +1,11 @@
 import React from 'react';
 import SystemContext from './SystemContext';
 import axios from 'axios';
-import { useContext } from 'react';
+import {useContext} from 'react';
 import IdentityContext from '../../identity/contexts/IdentityContext';
-import { resolve } from 'uri-js';
 
 const SystemContextProvider = props => {
-    const { hostURL } = useContext(IdentityContext);
+    const {hostURL} = useContext(IdentityContext);
     const baseUrl = hostURL + '/system/api';
     /**
      * Retrieves the system backup settings.
@@ -38,7 +37,7 @@ const SystemContextProvider = props => {
      * @param {string} archive_password - The password for the backup archive.
      * @returns {Promise}
      */
-    const setSystemBackupSettings = ({ schedule, enable, email_enable, email, archive_password }) => {
+    const setSystemBackupSettings = ({schedule, enable, email_enable, email, archive_password}) => {
         return new Promise((resolve, reject) => {
             const data = {
                 schedule: [],
@@ -78,13 +77,13 @@ const SystemContextProvider = props => {
     };
 
     const createBackup = () => {
-        const url = baseUrl + '/backups'
+        const url = baseUrl + '/backups';
         return new Promise((resolve, reject) => {
             axios.post(url).then(response => {
                 resolve();
-            }, reject)
-        })
-    }
+            }, reject);
+        });
+    };
 
     return (
         <SystemContext.Provider

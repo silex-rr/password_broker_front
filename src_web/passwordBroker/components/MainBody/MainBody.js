@@ -107,7 +107,7 @@ const MainBody = () => {
                             id={ENTRY_GROUP_MENU_SETTINGS}
                             key={ENTRY_GROUP_MENU_SETTINGS}
                             onClick={menuClickHandler}
-                            className={'tab tab-lifted ' + selected}>
+                            className={'tab-lifted tab ' + selected}>
                             Settings
                         </span>,
                     );
@@ -126,7 +126,7 @@ const MainBody = () => {
                             id={ENTRY_GROUP_MENU_USERS}
                             key={ENTRY_GROUP_MENU_USERS}
                             onClick={menuClickHandler}
-                            className={'tab tab-lifted ' + selected}>
+                            className={'tab-lifted tab ' + selected}>
                             Users
                         </span>,
                     );
@@ -141,7 +141,7 @@ const MainBody = () => {
                             id={ENTRY_GROUP_MENU_HISTORY}
                             key={ENTRY_GROUP_MENU_HISTORY}
                             onClick={menuClickHandler}
-                            className={'tab tab-lifted ' + selected}>
+                            className={'tab-lifted tab ' + selected}>
                             History
                         </span>,
                     );
@@ -156,7 +156,7 @@ const MainBody = () => {
                             id={ENTRY_GROUP_MENU_MAIN}
                             key={ENTRY_GROUP_MENU_MAIN}
                             onClick={menuClickHandler}
-                            className={'tab tab-lifted ' + selected}>
+                            className={'tab-lifted tab ' + selected}>
                             Entries
                         </span>,
                     );

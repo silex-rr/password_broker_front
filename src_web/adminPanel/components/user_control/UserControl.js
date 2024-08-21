@@ -1,5 +1,6 @@
+import React from 'react';
 import Moment from 'react-moment';
-import { useContext, useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import IdentityContext from '../../../../src_shared/identity/contexts/IdentityContext';
 import {
     USER_CONTROL_REQUIRE_LOADING,
@@ -8,7 +9,7 @@ import {
     USER_CONTROL_LOADING,
 } from './UserControlStatus';
 import AdminPanelLoading from '../AdminPanelLoading';
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import {FaEdit, FaTrashAlt} from 'react-icons/fa';
 import PaginationButton from '../../../common/Pagination';
 import SearchField from '../SearchField';
 import UserControlNavigation from './UserControlNagivation';
@@ -16,7 +17,7 @@ import AppContext from '../../../AppContext';
 import axios from 'axios';
 
 const UserControl = () => {
-    const { getUsers } = useContext(IdentityContext);
+    const {getUsers} = useContext(IdentityContext);
 
     const [userControlStatus, setUserControlStatus] = useState(USER_CONTROL_REQUIRE_LOADING);
     const [userControlData, setUserControlData] = useState([]);
@@ -24,7 +25,7 @@ const UserControl = () => {
     const [lastPage, setLastPage] = useState();
     const [searchRequest, setSearchRequest] = useState('');
     const [usersPerPage, setUsersPerPage] = useState(20);
-    const { hostURL } = useContext(AppContext);
+    const {hostURL} = useContext(AppContext);
 
     const getUsersPerPage = () => {
         setUserControlStatus(USER_CONTROL_LOADING);
@@ -49,20 +50,20 @@ const UserControl = () => {
     };
 
     const handleDelete = async (e, user) => {
-        e.preventDefault()
-        console.log('delete handler was triggered', user)
+        e.preventDefault();
+        console.log('delete handler was triggered', user);
         if (confirm(`Are you sure you want to delete ${user.name}`) == true) {
-            console.log('confirmed', user.user_id)
+            console.log('confirmed', user.user_id);
             try {
-                await axios.delete(hostURL + `/identity/api/user/${user.user_id}`)
-                alert('The user has been deleted successfully')
-                setUserControlStatus(USER_CONTROL_REQUIRE_LOADING)
+                await axios.delete(hostURL + `/identity/api/user/${user.user_id}`);
+                alert('The user has been deleted successfully');
+                setUserControlStatus(USER_CONTROL_REQUIRE_LOADING);
             } catch (error) {
-                console.log(error)
-                alert("There has been an error. Try again later")
+                console.log(error);
+                alert('There has been an error. Try again later');
             }
         }
-    }
+    };
 
     useEffect(() => {
         if (userControlStatus === USER_CONTROL_LOADED || userControlStatus === USER_CONTROL_LOADING) {
@@ -83,23 +84,17 @@ const UserControl = () => {
             {userControlStatus != USER_CONTROL_LOADED && <AdminPanelLoading />}
             {userControlStatus === USER_CONTROL_LOADED && (
                 <div className="mx-auto overflow-x-auto">
-                    <div className="navbar bg-base-100 gap-4">
+                    <div className="navbar gap-4 bg-base-100">
                         <SearchField
                             handleSearch={handleSearch}
                             searchRequest={searchRequest}
                             setSearchRequest={setSearchRequest}
                         />
                         <div className="btn btn-ghost">
-                            <UserControlNavigation
-                                path={`/admin/user_control/add`}
-                                name={`Add new user`}
-                            />
+                            <UserControlNavigation path={`/admin/user_control/add`} name={`Add new user`} />
                         </div>
                         <div className="btn btn-ghost">
-                            <UserControlNavigation
-                                path={`/admin/user_control/invite`}
-                                name={`Invite new user`}
-                            />
+                            <UserControlNavigation path={`/admin/user_control/invite`} name={`Invite new user`} />
                         </div>
                     </div>
                     <div className="overflow-x-auto">
@@ -130,7 +125,7 @@ const UserControl = () => {
                                             />
                                         </td>
                                         <td>
-                                            <button onClick={(e) => handleDelete(e, user)}>
+                                            <button onClick={e => handleDelete(e, user)}>
                                                 <FaTrashAlt />
                                             </button>
                                         </td>
@@ -144,7 +139,6 @@ const UserControl = () => {
                             handlePagination={handlePagination}
                         />
                     </div>
-
                 </div>
             )}
         </div>
