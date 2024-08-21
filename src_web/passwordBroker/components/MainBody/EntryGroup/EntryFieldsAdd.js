@@ -131,7 +131,7 @@ const EntryFieldsAdd = props => {
                     value={masterPasswordInput}
                     onChange={e => changeMasterPassword(e.target.value)}
                     placeholder="type your master password"
-                    className="input-bordered input-sm basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
+                    className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
                 />
             </div>
         );
@@ -169,7 +169,7 @@ const EntryFieldsAdd = props => {
                                 onChange={e => changeTitle(e.target.value)}
                                 placeholder="type title for new field"
                                 className={
-                                    'input-bordered input-sm basis-2/3 bg-slate-800 ' +
+                                    'input-sm input-bordered basis-2/3 bg-slate-800 ' +
                                     'text-slate-200 placeholder-slate-300'
                                 }
                             />

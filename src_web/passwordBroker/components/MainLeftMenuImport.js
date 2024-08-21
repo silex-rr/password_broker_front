@@ -121,7 +121,7 @@ const MainLeftMenuImport = ({menuButtonSize}) => {
                                 {loading ? '' : 'import'}
                             </Button>
 
-                            <label htmlFor="importData" className="btn btn-error btn-outline btn-sm right-0 basis-1/3">
+                            <label htmlFor="importData" className="btn btn-outline btn-error btn-sm right-0 basis-1/3">
                                 close
                             </label>
                         </div>

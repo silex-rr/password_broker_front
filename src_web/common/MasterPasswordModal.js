@@ -69,7 +69,7 @@ const MasterPasswordModal = () => {
                             onChange={handleMasterPasswordField}
                             placeholder="type your MasterPassword"
                             className={
-                                'input-bordered input-sm w-full basis-2/3 bg-slate-800' +
+                                'input-sm input-bordered w-full basis-2/3 bg-slate-800' +
                                 ' text-slate-200 placeholder-slate-300'
                             }
                             onKeyUp={event => {
@@ -86,7 +86,7 @@ const MasterPasswordModal = () => {
 
                         <label
                             htmlFor="masterPasswordModal"
-                            className="btn btn-error btn-outline btn-sm right-0 basis-1/3">
+                            className="btn btn-outline btn-error btn-sm right-0 basis-1/3">
                             close
                         </label>
                     </div>

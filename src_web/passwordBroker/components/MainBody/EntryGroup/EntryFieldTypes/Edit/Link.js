@@ -9,7 +9,7 @@ const Link = ({entryId, fieldValue, changeValue}) => {
             </label>
             <Input
                 id={'add-field-for-' + entryId + '-value'}
-                className="input-bordered input-sm basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
+                className="input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 placeholder-slate-300"
                 onChange={e => changeValue(e.target.value)}
                 placeholder="put new link"
                 type="text"

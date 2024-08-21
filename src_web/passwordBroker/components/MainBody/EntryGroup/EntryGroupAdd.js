@@ -68,7 +68,7 @@ const EntryGroupAdd = props => {
                                 onChange={changeTitle}
                                 placeholder="type title for new field"
                                 className={
-                                    'input-bordered input-sm basis-2/3 bg-slate-800 text-slate-200' +
+                                    'input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200' +
                                     ' placeholder-slate-300'
                                 }
                             />
@@ -86,7 +86,7 @@ const EntryGroupAdd = props => {
 
                             <label
                                 htmlFor={addEntryKey + entryGroupId}
-                                className="btn btn-error btn-outline btn-sm right-0 basis-1/3">
+                                className="btn btn-outline btn-error btn-sm right-0 basis-1/3">
                                 close
                             </label>
                         </div>

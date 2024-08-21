@@ -172,7 +172,7 @@ const EntryFieldsEdit = props => {
                                 onChange={e => changeTitle(e.target.value)}
                                 placeholder={fieldTitleDefault}
                                 className={
-                                    'input-bordered input-sm basis-2/3 bg-slate-800 text-slate-200 ' +
+                                    'input-sm input-bordered basis-2/3 bg-slate-800 text-slate-200 ' +
                                     'placeholder-slate-300'
                                 }
                             />

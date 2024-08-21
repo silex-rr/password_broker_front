@@ -14,7 +14,7 @@ const UserSearch = ({suggestionOnClick = () => {}, buttons = []}) => {
             <input
                 id="UserSearch"
                 type="text"
-                className="input input-bordered input-xs w-full max-w-xs text-slate-800"
+                className="input input-xs input-bordered w-full max-w-xs text-slate-800"
                 onChange={handleSearchTermChange}
                 value={searchTerm}
             />

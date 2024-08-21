@@ -1,13 +1,14 @@
+import React from 'react';
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import {useContext, useEffect, useState} from 'react';
+import {useParams} from 'react-router-dom';
 import AppContext from '../../../AppContext';
 import AdminPanelLoading from '../AdminPanelLoading';
-import { FaCheck, FaXmark } from 'react-icons/fa6'
+import {FaCheck, FaXmark} from 'react-icons/fa6';
 
 const UserUpdate = props => {
-    const { userID, userIDparam } = useParams();
-    const { hostURL } = useContext(AppContext);
+    const {userID, userIDparam} = useParams();
+    const {hostURL} = useContext(AppContext);
     const [user, setUser] = useState('');
     const [userRequiresLoading, setUserRequiresLoading] = useState(true);
     const [formData, setFormData] = useState({
@@ -19,23 +20,23 @@ const UserUpdate = props => {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        setIsLoading(true)
+        setIsLoading(true);
         // console.log(e);
         try {
             console.log('putting', userID, formData);
             await axios.put(hostURL + `/identity/api/user/${userID}`, formData);
-            setUpdateStatus('updated')
+            setUpdateStatus('updated');
         } catch (error) {
             // console.log('error', error);
-            setUpdateStatus('error')
+            setUpdateStatus('error');
         }
-        setIsLoading(false)
+        setIsLoading(false);
     };
 
     const handleNameChange = event => {
         setFormData(prevData => ({
             ...prevData,
-            'username': event.target.value,
+            username: event.target.value,
         }));
     };
 
@@ -43,14 +44,14 @@ const UserUpdate = props => {
         // console.log(event);
         setFormData(prevData => ({
             ...prevData,
-            'email': event.target.value,
+            email: event.target.value,
         }));
     };
 
     const handleClear = () => {
         setFormData(() => ({
-            'username': user.name,
-            'email': user.email,
+            username: user.name,
+            email: user.email,
         }));
     };
 
@@ -61,7 +62,7 @@ const UserUpdate = props => {
                 if (userRequiresLoading === true) {
                     setUserRequiresLoading(false);
                     setUser(user.data);
-                    setFormData({ 'username': user.data.name, 'email': user.data.email })
+                    setFormData({username: user.data.name, email: user.data.email});
                 }
             },
             error => {
@@ -79,7 +80,7 @@ const UserUpdate = props => {
             {userRequiresLoading === false && (
                 <div className="flex flex-col justify-evenly space-y-4">
                     <span>{user.name}</span>
-                    <div className="min-h-12 h-full basis-2/4">
+                    <div className="h-full min-h-12 basis-2/4">
                         <input
                             type="text"
                             className="user-name-edit h-full w-2/4 text-xl"
@@ -102,25 +103,33 @@ const UserUpdate = props => {
                             placeholder="Modify the email"
                         />
                     </div>
-                    {updateStatus === 'error' &&
-                        <p className='flex flex-row justify-center'> <FaXmark /> An error occured, try again</p>}
-                    {updateStatus === 'updated' &&
-                        <p className='flex flex-row justify-center'> <FaCheck /> The User was successfully updated</p>}
+                    {updateStatus === 'error' && (
+                        <p className="flex flex-row justify-center">
+                            {' '}
+                            <FaXmark /> An error occured, try again
+                        </p>
+                    )}
+                    {updateStatus === 'updated' && (
+                        <p className="flex flex-row justify-center">
+                            {' '}
+                            <FaCheck /> The User was successfully updated
+                        </p>
+                    )}
                     <button
                         type="submit"
-                        className={`submit-button m-3 bg-green-500 p-2 font-bold text-black hover:bg-green-600 hover:font-extrabold ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
+                        className={
+                            `submit-button m-3 bg-green-500 p-2 font-bold text-black hover:bg-green-600` +
+                            ` hover:font-extrabold ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`
+                        }
                         disabled={isLoading}
-                        onClick={handleSubmit}
-                    >
+                        onClick={handleSubmit}>
                         {isLoading ? (
-                            <div className="flex flex-row justify-center items-center">
+                            <div className="flex flex-row items-center justify-center">
                                 <svg
-                                    className="animate-spin h-5 w-5 mr-3"
+                                    className="mr-3 h-5 w-5 animate-spin"
                                     viewBox="0 0 24 24"
                                     fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
+                                    xmlns="http://www.w3.org/2000/svg">
                                     <circle
                                         className="opacity-25"
                                         cx="12"
@@ -143,11 +152,9 @@ const UserUpdate = props => {
                     </button>
                     <button
                         className={`clear-button m-3 bg-red-400 p-2 font-bold text-black 
-                            hover:bg-red-500 hover:font-extrabold ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                            }`}
+                            hover:bg-red-500 hover:font-extrabold ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}
                         onClick={handleClear}
-                        disabled={isLoading}
-                    >
+                        disabled={isLoading}>
                         Clear changes
                     </button>
                 </div>
