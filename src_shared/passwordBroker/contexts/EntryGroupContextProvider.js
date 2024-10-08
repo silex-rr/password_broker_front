@@ -27,6 +27,7 @@ import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates
 // import {OfflineDatabaseService} from '../../utils/native/OfflineDatabaseService';
 import {CryptoService} from '../../utils/native/CryptoService';
 import UserApplicationContext from '../../identity/contexts/UserApplicationContext';
+import GlobalContext from '../../common/contexts/GlobalContext';
 
 const Buffer = require('buffer/').Buffer;
 
@@ -58,6 +59,7 @@ const EntryGroupContextProvider = props => {
         entryGroupData,
         databaseMode,
     } = passwordBrokerContext;
+    const {logActivityManual} = useContext(GlobalContext);
 
     /**
      * @type {OfflineDatabaseService}
@@ -109,6 +111,7 @@ const EntryGroupContextProvider = props => {
         );
     };
     const loadEntryFieldValueAndButtons = (url, states, fieldProps, historyMode = false) => {
+        const title = fieldProps.title ?? '';
         const fieldId = fieldProps.field_id;
         const type = fieldProps.type;
         const fileMime = fieldProps.file_mime ?? '';
@@ -232,6 +235,7 @@ const EntryGroupContextProvider = props => {
             loadDecryptedValue(decoded => {
                 setDecryptedValue(decoded);
                 copy(decoded);
+                logActivityManual(`Value for field "${title}" copied`);
             }, 'copy');
         };
 
@@ -328,25 +332,25 @@ const EntryGroupContextProvider = props => {
                 break;
 
             case FIELD_TYPE_LINK:
-                value = <Link value={decryptedValueVisible ? decryptedValue : ''} />;
+                value = <Link value={decryptedValueVisible ? decryptedValue : ''} title={title} />;
                 buttons.push(copyButton);
                 buttons.push(visibilityButton);
                 break;
 
             case FIELD_TYPE_PASSWORD:
-                value = <Password value={decryptedValueVisible ? decryptedValue : ''} login={login} />;
+                value = <Password value={decryptedValueVisible ? decryptedValue : ''} login={login} title={title} />;
                 buttons.push(copyButton);
                 buttons.push(visibilityButton);
                 break;
 
             case FIELD_TYPE_NOTE:
-                value = <Note value={decryptedValueVisible ? decryptedValue : ''} />;
+                value = <Note value={decryptedValueVisible ? decryptedValue : ''} title={title} />;
                 buttons.push(copyButton);
                 buttons.push(visibilityButton);
                 break;
 
             case FIELD_TYPE_FILE:
-                value = <File fileMime={fileMime} fileName={fileName} fileSize={fileSize} />;
+                value = <File fileMime={fileMime} fileName={fileName} fileSize={fileSize} title={title} />;
                 buttons.push(downloadButton);
                 break;
 
@@ -357,6 +361,7 @@ const EntryGroupContextProvider = props => {
                         decryptedValueVisible={decryptedValueVisible}
                         value={decryptedValue}
                         totpActivated={!historyMode && totpActivated}
+                        title={title}
                     />
                 );
                 if (!historyMode) {
@@ -384,6 +389,7 @@ const EntryGroupContextProvider = props => {
                             setMasterPasswordState(MASTER_PASSWORD_VALIDATED);
                             setTrashed(true);
                             setButtonLoading('');
+                            logActivityManual(`Field "${title}" deleted`);
                         },
                         error => {
                             if (error.response.data.errors.master_password) {

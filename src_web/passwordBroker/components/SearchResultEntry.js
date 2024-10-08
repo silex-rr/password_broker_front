@@ -16,6 +16,7 @@ const SearchResultEntry = ({
     notes,
     files,
     entry_group,
+    t_o_t_ps,
 }) => {
     const {selectEntryGroup} = useContext(PasswordBrokerContext);
     const [entryFieldsIsVisible, setEntryFieldsIsVisible] = useState(false);
@@ -27,7 +28,7 @@ const SearchResultEntry = ({
         selectEntryGroup(entry_group_id);
     };
 
-    const fields = [...passwords, ...links, ...notes, ...files];
+    const fields = [...passwords, ...links, ...notes, ...files, ...t_o_t_ps];
 
     return (
         <React.Fragment>

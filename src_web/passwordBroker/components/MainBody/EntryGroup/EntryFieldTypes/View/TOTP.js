@@ -3,7 +3,7 @@ import CopyToClipboard from './CopyToClipboard';
 import {TOTP as TOTPJS} from 'jsotp';
 import {CountdownCircle} from 'react-countdowns-svg';
 
-const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated}) => {
+const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated, title = ''}) => {
     const [token, setToken] = useState('');
     const [left, setLeft] = useState(0);
     const [fromUTime, setFromUTime] = useState(null);
@@ -26,7 +26,7 @@ const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated}) => {
     return (
         <React.Fragment>
             <div className="basis-1/4">
-                <CopyToClipboard className="basis-1/4 px-2" value={token}>
+                <CopyToClipboard className="basis-1/4 px-2" value={token} message={`TOTP for "${title}" copied`}>
                     <span className={token === '' ? 'hidden' : 'pr-3 text-slate-400'}>token: </span>
                     <span className="-mt-2 px-4 text-lg font-bold tracking-widest">{token}</span>
                     <span key={fieldId + reactivateCount} className="-mt-2 ml-2">
@@ -52,7 +52,7 @@ const TOTP = ({fieldId, value, decryptedValueVisible, totpActivated}) => {
                 </CopyToClipboard>
             </div>
             <div className="basis-1/4">
-                <CopyToClipboard value={decryptedValueVisible ? value : ''}>
+                <CopyToClipboard value={decryptedValueVisible ? value : ''} message={`Key for TOTP "${title}" copied`}>
                     <span className={decryptedValueVisible ? 'pr-3 text-slate-400' : 'hidden'}>key: </span>
                     <div className="whitespace-pre-line">{decryptedValueVisible ? value : ''}</div>
                 </CopyToClipboard>
