@@ -70,7 +70,7 @@ const SearchResult = () => {
     return (
         <div className="grid grid-rows-3">
             <div className="row-span-3 bg-slate-200 p-1 text-2xl text-slate-700">
-                Search results for: "{searchQuery}"
+                Search results for: &quot;{searchQuery}&quot;
             </div>
             <div className="row-span-3 p-5">{data}</div>
         </div>

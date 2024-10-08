@@ -286,10 +286,10 @@ const UserApplicationContextProvider = props => {
             response => {
                 offlineDatabaseService.saveDatabaseByToken(AppToken, response.data.data, response.data.timestamp).then(
                     () => {
-                        logActivityManual('offline DB updated');
+                        logActivityManual('Offline DB updated');
                     },
                     error => {
-                        logActivityManual('offline DB update failed ' + error);
+                        logActivityManual('Offline DB update failed ' + error);
                     },
                 );
             },

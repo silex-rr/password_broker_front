@@ -1,15 +1,19 @@
 import React, {useContext, useRef} from 'react';
 import AppContext from '../../../../../../AppContext';
+import GlobalContext from '../../../../../../../src_shared/common/contexts/GlobalContext';
 
-const CopyToClipboard = ({value, style, children}) => {
+const CopyToClipboard = ({value, style, children, message = undefined}) => {
     const {copyToClipboard} = useContext(AppContext);
+    const {logActivityManual} = useContext(GlobalContext);
     const refTarget = useRef();
     const copyClickHandler = () => {
         if (value === '' || value === undefined) {
             return;
         }
-        console.log('copied', value);
         copyToClipboard(value);
+        if (message) {
+            logActivityManual(message);
+        }
         const classList = refTarget.current.classList;
         classList.remove('opacity-0');
         setTimeout(() => {
