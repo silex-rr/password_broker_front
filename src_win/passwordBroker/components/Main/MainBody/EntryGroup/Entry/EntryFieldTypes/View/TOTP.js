@@ -4,6 +4,10 @@ import CopyToClipboard from './CopyToClipboard';
 import CountdownCircle from './CountdownCircle';
 import tw from 'twrnc';
 import {Text, View} from 'react-native-windows';
+/**
+ * @TODO replace jsotp with generateTOTP
+ */
+// import generateTOTP from "../../../../../../../../../src_shared/utils/TOTP";
 import {TOTP as TOTPJS} from 'jsotp';
 
 const TOTP = ({value, decryptedValueVisible, totpActivated}) => {
@@ -24,7 +28,7 @@ const TOTP = ({value, decryptedValueVisible, totpActivated}) => {
         if (token !== '') {
             setToken('');
         }
-    }, [value, totpActivated, reactivateId]);
+    }, [value, totpActivated, reactivateId, token]);
 
     return (
         <View style={tw`flex flex-row flex-wrap p-0 m-0`}>

@@ -21,6 +21,7 @@ import {
     FIELD_EDITING_MODAL_SHOULD_BE_CLOSE,
 } from '../constants/EntryGroupEntryFieldEditingStates';
 import {ENTRY_GROUP_ENTRY_FIELDS_REQUIRED_LOADING} from '../constants/EntryGroupEntryFieldsStatus';
+import {ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT} from '../constants/EntryGroupEntryFieldTOTPAlgorithms';
 
 const EntryFieldContextProvider = props => {
     const {
@@ -34,6 +35,8 @@ const EntryFieldContextProvider = props => {
         passwordGenerator,
     } = useContext(PasswordBrokerContext);
 
+    const TOTP_DEFAULT_TIMEOUT = 30;
+
     const {appType} = useContext(AppContext);
 
     const [addingFieldState, setAddingFieldState] = useState(FIELD_ADDING_AWAIT);
@@ -41,6 +44,10 @@ const EntryFieldContextProvider = props => {
     const [addingFieldType, setAddingFieldType] = useState(FIELD_TYPE_PASSWORD);
     const [addingFieldValue, setAddingFieldValue] = useState('');
     const [addingFieldLogin, setAddingFieldLogin] = useState('');
+    const [addingFieldTOTPAlgorithm, setAddingFieldTOTPAlgorithm] = useState(
+        ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT,
+    );
+    const [addingFieldTOTPTimeout, setAddingFieldTOTPTimeout] = useState(TOTP_DEFAULT_TIMEOUT);
     const [addingFieldFile, setAddingFieldFile] = useState(null);
     const [addingFieldTitle, setAddingFieldTitle] = useState('');
     const [masterPasswordInput, setMasterPasswordInput] = useState('');
@@ -71,7 +78,11 @@ const EntryFieldContextProvider = props => {
             // eslint-disable-next-line no-fallthrough
             case FIELD_TYPE_LINK:
             case FIELD_TYPE_NOTE:
+                data.append('value', addingFieldValue);
+                break;
             case FIELD_TYPE_TOTP:
+                data.append('totp_hash_algorithm', addingFieldTOTPAlgorithm);
+                data.append('totp_timeout', addingFieldTOTPTimeout);
                 data.append('value', addingFieldValue);
                 break;
             case FIELD_TYPE_FILE:
@@ -123,7 +134,7 @@ const EntryFieldContextProvider = props => {
         });
     };
 
-    const updateField = (entryGroupId, entryId, entryGroupFieldForEditId, setEntryFieldsStatus) => {
+    const updateField = (entryGroupId, entryId, entryGroupFieldForEditId, setEntryFieldsStatus, type) => {
         if (entryGroupFieldForEditState !== FIELD_EDITING_EDITING) {
             return;
         }
@@ -138,7 +149,7 @@ const EntryFieldContextProvider = props => {
         let data = new FormData();
         data.append('title', addingFieldTitle);
         data.append('master_password', masterPasswordForm);
-        switch (addingFieldType) {
+        switch (type) {
             default:
                 break;
             case FIELD_TYPE_PASSWORD:
@@ -148,8 +159,12 @@ const EntryFieldContextProvider = props => {
             case FIELD_TYPE_NOTE:
                 data.append('value', addingFieldValue);
                 break;
-
             case FIELD_TYPE_FILE:
+                break;
+            case FIELD_TYPE_TOTP:
+                data.append('totp_hash_algorithm', addingFieldTOTPAlgorithm);
+                data.append('totp_timeout', addingFieldTOTPTimeout);
+                data.append('value', addingFieldValue);
                 break;
         }
         data.append('_method', 'put');
@@ -220,11 +235,21 @@ const EntryFieldContextProvider = props => {
         setAddingFieldValue(value);
         setAddingFieldFile(file);
     };
+
     const changeTitle = value => {
         setAddingFieldTitle(value);
     };
+
     const changeLogin = value => {
         setAddingFieldLogin(value);
+    };
+
+    const changeTOTPAlgorithm = value => {
+        setAddingFieldTOTPAlgorithm(value);
+    };
+
+    const changeTOTPTimeout = value => {
+        setAddingFieldTOTPTimeout(value);
     };
 
     const changeMasterPassword = value => {
@@ -251,6 +276,10 @@ const EntryFieldContextProvider = props => {
                 addingFieldType: addingFieldType,
                 changeLogin: changeLogin,
                 addingFieldLogin: addingFieldLogin,
+                addingFieldTOTPAlgorithm: addingFieldTOTPAlgorithm,
+                changeTOTPAlgorithm: changeTOTPAlgorithm,
+                addingFieldTOTPTimeout: addingFieldTOTPTimeout,
+                changeTOTPTimeout: changeTOTPTimeout,
                 changeValue: changeValue,
                 addingFieldValue: addingFieldValue,
                 masterPasswordInput: masterPasswordInput,

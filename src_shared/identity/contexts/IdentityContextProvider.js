@@ -521,7 +521,7 @@ const IdentityContextProvider = props => {
             () =>
                 axios.get(getUrlUser()).then(
                     response => {
-                        console.log('getUser', response);
+                        // console.log('getUser', response);
                         switch (response.data.message) {
                             default:
                             case 'guest':
