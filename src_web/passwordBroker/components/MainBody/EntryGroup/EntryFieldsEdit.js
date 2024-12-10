@@ -18,6 +18,8 @@ import Password from './EntryFieldTypes/Edit/Password';
 import Note from './EntryFieldTypes/Edit/Note';
 import Link from './EntryFieldTypes/Edit/Link';
 import TOTP from './EntryFieldTypes/Edit/TOTP';
+// eslint-disable-next-line max-len
+import {ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT} from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldTOTPAlgorithms';
 
 const EntryFieldsEdit = props => {
     const passwordBrokerContext = useContext(PasswordBrokerContext);
@@ -33,6 +35,10 @@ const EntryFieldsEdit = props => {
         addingFieldType,
         changeLogin,
         addingFieldLogin,
+        addingFieldTOTPAlgorithm,
+        changeTOTPAlgorithm,
+        addingFieldTOTPTimeout,
+        changeTOTPTimeout,
         changeValue,
         addingFieldValue,
         addingFieldTitle,
@@ -62,6 +68,9 @@ const EntryFieldsEdit = props => {
     const fieldTitleDefault = field === null ? '' : field.title;
     const fieldLoginDefault = field === null || fieldTypeDefault !== FIELD_TYPE_PASSWORD ? '' : field.login;
     const fieldValueDefault = entryGroupFieldForEditDecryptedValue;
+    const fieldTOTPAlgorithmDefault =
+        field === null ? ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT : field.totp_hash_algorithm;
+    const fieldTOTPTimeoutDefault = field === null ? 30 : field.totp_timeout;
 
     useEffect(() => {
         const modalVisibilityCheckbox = modalVisibilityRef.current;
@@ -86,6 +95,8 @@ const EntryFieldsEdit = props => {
             changeValue(fieldValueDefault);
             changeTitle(fieldTitleDefault);
             changeLogin(fieldLoginDefault);
+            changeTOTPAlgorithm(fieldTOTPAlgorithmDefault);
+            changeTOTPTimeout(fieldTOTPTimeoutDefault);
             modalVisibilityCheckbox.click();
         }
     }, [
@@ -127,12 +138,22 @@ const EntryFieldsEdit = props => {
         case FIELD_TYPE_FILE:
             break;
         case FIELD_TYPE_TOTP:
-            value = <TOTP entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
+            value = (
+                <TOTP
+                    entryId={entryId}
+                    fieldValue={addingFieldValue}
+                    changeValue={changeValue}
+                    addingFieldTOTPAlgorithm={addingFieldTOTPAlgorithm}
+                    changeTOTPAlgorithm={changeTOTPAlgorithm}
+                    addingFieldTOTPTimeout={addingFieldTOTPTimeout}
+                    changeTOTPTimeout={changeTOTPTimeout}
+                />
+            );
             break;
     }
 
     const saveClickHandler = () => {
-        updateField(entryGroupId, entryId, entryGroupFieldForEditId, setEntryFieldsStatus);
+        updateField(entryGroupId, entryId, entryGroupFieldForEditId, setEntryFieldsStatus, fieldTypeDefault);
     };
     const openModal = e => {
         if (e.target.checked) {

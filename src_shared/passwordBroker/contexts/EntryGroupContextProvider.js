@@ -28,6 +28,7 @@ import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates
 import {CryptoService} from '../../utils/native/CryptoService';
 import UserApplicationContext from '../../identity/contexts/UserApplicationContext';
 import GlobalContext from '../../common/contexts/GlobalContext';
+import {ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT} from "../constants/EntryGroupEntryFieldTOTPAlgorithms";
 
 const Buffer = require('buffer/').Buffer;
 
@@ -117,6 +118,8 @@ const EntryGroupContextProvider = props => {
         const fileMime = fieldProps.file_mime ?? '';
         const fileName = fieldProps.file_name ?? '';
         const login = fieldProps.login ?? '';
+        const totpHashAlgorithm = fieldProps.totp_hash_algorithm ?? ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT;
+        const totpTimeout = fieldProps.totp_timeout ?? 0;
         const fileSize = fieldProps.file_size ? parseInt(fieldProps.file_size, 10) : 0;
         const {
             decryptedValue,
@@ -361,6 +364,8 @@ const EntryGroupContextProvider = props => {
                         decryptedValueVisible={decryptedValueVisible}
                         value={decryptedValue}
                         totpActivated={!historyMode && totpActivated}
+                        totpHashAlgorithm={totpHashAlgorithm}
+                        totpTimeout={totpTimeout}
                         title={title}
                     />
                 );

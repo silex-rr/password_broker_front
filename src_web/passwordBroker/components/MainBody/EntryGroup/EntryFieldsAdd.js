@@ -27,6 +27,10 @@ const EntryFieldsAdd = props => {
         beforeModalOpen,
         changeLogin,
         addingFieldLogin,
+        addingFieldTOTPAlgorithm,
+        changeTOTPAlgorithm,
+        addingFieldTOTPTimeout,
+        changeTOTPTimeout,
         changeValue,
         addingFieldValue,
         masterPasswordInput,
@@ -100,7 +104,17 @@ const EntryFieldsAdd = props => {
             value = <File entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
             break;
         case FIELD_TYPE_TOTP:
-            value = <TOTP entryId={entryId} fieldValue={addingFieldValue} changeValue={changeValue} />;
+            value = (
+                <TOTP
+                    entryId={entryId}
+                    fieldValue={addingFieldValue}
+                    changeValue={changeValue}
+                    addingFieldTOTPAlgorithm={addingFieldTOTPAlgorithm}
+                    changeTOTPAlgorithm={changeTOTPAlgorithm}
+                    addingFieldTOTPTimeout={addingFieldTOTPTimeout}
+                    changeTOTPTimeout={changeTOTPTimeout}
+                />
+            );
             break;
     }
 
