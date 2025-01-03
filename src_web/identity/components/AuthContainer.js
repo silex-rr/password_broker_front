@@ -31,6 +31,7 @@ const AuthContainer = () => {
                                 </RecoveryContextProvider>
                             }
                         />
+                        <Route path="invite/:inviteCode" element={<AuthSignup option="invite" />} />
                     </Routes>
                 </div>
             </div>

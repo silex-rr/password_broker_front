@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import IdentityContext from '../../../src_shared/identity/contexts/IdentityContext';
 import {MdEmail, MdOutlineKey} from 'react-icons/md';
 import {GoKey} from 'react-icons/go';
@@ -13,9 +13,15 @@ import {
 } from '../../../src_shared/identity/constants/RegistrationStates';
 import AuthSignupErrors from './AuthSignupErrors';
 import {ClockLoader} from 'react-spinners';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
+import {
+    INVITE_INFO_AWAIT,
+    INVITE_INFO_DONE,
+    INVITE_INFO_ERROR,
+    INVITE_INFO_IN_PROCESS,
+} from '../../../src_shared/identity/constants/AuthInviteInfoStatus';
 
-const AuthSignup = () => {
+const AuthSignup = ({option}) => {
     const identityContext = useContext(IdentityContext);
     const {
         userNameInput,
@@ -36,11 +42,14 @@ const AuthSignup = () => {
         setRegistrationState,
         errorMessage,
         changeAuthStatusToInitialRecovery,
+        inviteInfo,
     } = identityContext;
     const [hidePassword, setHidePassword] = useState(true);
     const [hideMasterPassword, setHideMasterPassword] = useState(true);
     const [signUpErrors, setSignUpErrors] = useState({});
     const [signUpWarnings, setSignUpWarnings] = useState({});
+    const [inviteInfoState, setInviteInfoState] = useState(INVITE_INFO_AWAIT);
+    const {inviteCode} = useParams();
     const navigate = useNavigate();
     const togglePassword = () => {
         setHidePassword(!hidePassword);
@@ -65,7 +74,7 @@ const AuthSignup = () => {
                     setRegistrationState(REGISTRATION_VALIDATION_RETURNED_WARNINGS);
                     break;
                 }
-                signup();
+                signup(option === 'invite' ? inviteCode : null);
                 break;
             default:
             case REGISTRATION_VALIDATING:
@@ -74,53 +83,90 @@ const AuthSignup = () => {
         }
     };
 
-    let signupButtonContent = '';
-    switch (registrationState) {
-        case REGISTRATION_VALIDATION_RETURNED_WARNINGS:
-        case REGISTRATION_VALIDATION_RETURNED_ERRORS:
-            signupButtonContent = 'Check and signup';
-            break;
-        default:
-        case REGISTRATION_AWAIT:
-            signupButtonContent = 'Signup';
-            break;
-        case REGISTRATION_VALIDATING:
-        case REGISTRATION_IN_PROCESS:
-            signupButtonContent = (
-                <span className="flex items-center justify-center">
-                    <span className="px-2">
-                        <ClockLoader
-                            color="#a4acb5"
-                            size={18}
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
-                            speedMultiplier={1}
-                        />
-                    </span>
-                    loading...
-                </span>
-            );
-            break;
-    }
+    const loadingIndicator = (
+        <span className="flex items-center justify-center">
+            <span className="px-2">
+                <ClockLoader
+                    color="#a4acb5"
+                    size={18}
+                    aria-label="Loading Spinner"
+                    data-testid="loader"
+                    speedMultiplier={1}
+                />
+            </span>
+            loading...
+        </span>
+    );
+
+    const signupButtonContent = useMemo(() => {
+        switch (registrationState) {
+            case REGISTRATION_VALIDATION_RETURNED_WARNINGS:
+            case REGISTRATION_VALIDATION_RETURNED_ERRORS:
+                return 'Check and signup';
+            default:
+            case REGISTRATION_AWAIT:
+                if (option === 'signup') {
+                    return 'Signup';
+                }
+                if (inviteInfoState === INVITE_INFO_ERROR) {
+                    return 'INVITE ERROR';
+                }
+                if (inviteInfoState === INVITE_INFO_DONE) {
+                    return 'Signup';
+                }
+                return loadingIndicator;
+
+            case REGISTRATION_VALIDATING:
+            case REGISTRATION_IN_PROCESS:
+                return loadingIndicator;
+        }
+    }, [registrationState, signUpErrors, signUpWarnings, inviteInfoState, option]);
 
     const recoveryClickHandler = () => {
         changeAuthStatusToInitialRecovery();
         navigate('/identity/initialRecovery');
     };
 
+    useEffect(() => {
+        if (option !== 'invite' || inviteInfoState !== INVITE_INFO_AWAIT) {
+            return;
+        }
+        setInviteInfoState(INVITE_INFO_IN_PROCESS);
+        inviteInfo(inviteCode)
+            .then(r => {
+                if (!r.data) {
+                    setInviteInfoState(INVITE_INFO_ERROR);
+                    return;
+                }
+                const {email, name} = r.data;
+                handleUserEmail(email);
+                handleUserNameInput(name);
+                setInviteInfoState(INVITE_INFO_DONE);
+            })
+            .catch(() => {
+                setInviteInfoState(INVITE_INFO_ERROR);
+            });
+    }, [inviteCode, option, inviteInfoState, setInviteInfoState, handleUserEmail, handleUserNameInput]);
+
     return (
         <div className="w-full md:flex">
             <div className="md:w-fill rounded-lg bg-slate-200 px-12 pb-16 pt-20 md:rounded-lg">
-                <div className="font-inter_extrabold mb-8 text-center text-4xl text-slate-700">
-                    Signup
-                    <span className="text-2xl text-slate-600">
-                        {' '}
-                        /{' '}
-                        <span className="cursor-pointer underline" onClick={recoveryClickHandler}>
-                            Recovery
+                {option === 'signup' && (
+                    <div className="font-inter_extrabold mb-8 text-center text-4xl text-slate-700">
+                        Signup
+                        <span className="text-2xl text-slate-600">
+                            {' '}
+                            /{' '}
+                            <span className="cursor-pointer underline" onClick={recoveryClickHandler}>
+                                Recovery
+                            </span>
                         </span>
-                    </span>
-                </div>
+                    </div>
+                )}
+                {option === 'invite' && (
+                    <div className="font-inter_extrabold mb-8 text-center text-4xl text-slate-700">Invite</div>
+                )}
+
                 {/* USER NAME */}
                 <div className="mb-4 grid w-full grid-cols-7">
                     <div className="col-span-1 bg-slate-500 pt-1">
@@ -134,6 +180,7 @@ const AuthSignup = () => {
                             placeholder="User Name"
                             value={userNameInput}
                             onChange={changeEvent => handleUserNameInput(changeEvent.target.value)}
+                            disabled={option === 'invite' && inviteInfoState !== INVITE_INFO_DONE}
                         />
                     </div>
                     <div className={'col-span-7'}>
@@ -153,6 +200,7 @@ const AuthSignup = () => {
                             placeholder="Email"
                             value={userEmail}
                             onChange={changeEvent => handleUserEmail(changeEvent.target.value)}
+                            disabled={option === 'invite'}
                         />
                     </div>
                     <div className={'col-span-7'}>
