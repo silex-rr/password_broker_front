@@ -144,7 +144,7 @@ const IdentityContextProvider = props => {
             signUpWarnings: signUpWarnings,
         };
     };
-    const signup = () => {
+    const signup = (inviteKey = null) => {
         // CSRF COOKIE
         // axios.get(hostURL + "/sanctum/csrf-cookie")
         if (registrationState === REGISTRATION_IN_PROCESS) {
@@ -153,9 +153,10 @@ const IdentityContextProvider = props => {
         setRegistrationState(REGISTRATION_IN_PROCESS);
         CSRF().then(
             () => {
+                const urlSingUp = inviteKey ? getUrlInvite(inviteKey) : getUrlSingUp();
                 axios
                     .post(
-                        getUrlSingUp(),
+                        urlSingUp,
                         {
                             user: {
                                 username: userNameInput,
@@ -335,6 +336,17 @@ const IdentityContextProvider = props => {
     const getUrlInitialRecovery = useCallback(() => {
         return hostURL + '/system/api/recovery';
     }, [hostURL]);
+    const getUrlInvite = useCallback(
+        key => {
+            return hostURL + `/identity/api/invite/${key}`;
+        },
+        [hostURL],
+    );
+
+    const inviteInfo = async key => {
+        await CSRF();
+        return await axios.get(getUrlInvite(key));
+    };
 
     const login = () => {
         // CSRF COOKIE
@@ -589,9 +601,11 @@ const IdentityContextProvider = props => {
                 getUrlInitialRecovery(),
             ];
 
+            const validUrlStarts = [getUrlInvite('')];
+
             requestInterceptor = axios.interceptors.request.use(
                 config => {
-                    if (validUrl.includes(config.url)) {
+                    if (validUrl.includes(config.url) || validUrlStarts.some(url => config.url.startsWith(url))) {
                         return config;
                     }
                     console.log('user is logout', config);
@@ -655,6 +669,7 @@ const IdentityContextProvider = props => {
                 authMode,
                 changeAuthMode,
                 getUrlInitialRecovery,
+                inviteInfo,
             }}>
             {props.children}
         </IdentityContext.Provider>
