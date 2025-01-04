@@ -23,6 +23,7 @@ import {
 import EntryGroupUsers from './EntryGroup/EntryGroupUsers';
 import EntryGroupHistory from './EntryGroup/EntryGroupHistory';
 import {useParams} from 'react-router-dom';
+import EntryGroupSettings from './EntryGroup/EntryGroupSettings';
 
 const MainBody = () => {
     const passwordBrokerContext = useContext(PasswordBrokerContext);
@@ -166,7 +167,7 @@ const MainBody = () => {
             head = (
                 <div className="flex h-full w-full justify-between">
                     <div className="px-5 py-3 ">{entryGroupData.entryGroup.name}</div>
-                    <div className="tabs pr-5 text-slate-800">{menu}</div>
+                    <div className="tabs pr-5 text-slate-800">{menu.map(item => item)}</div>
                 </div>
             );
             switch (entryGroupMenu) {
@@ -193,7 +194,7 @@ const MainBody = () => {
                     }
                     break;
                 case ENTRY_GROUP_MENU_SETTINGS:
-                    body = 'settings';
+                    body = <EntryGroupSettings />;
                     break;
             }
 

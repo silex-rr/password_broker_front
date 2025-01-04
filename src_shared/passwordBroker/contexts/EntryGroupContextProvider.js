@@ -28,7 +28,9 @@ import {DATABASE_MODE_OFFLINE} from '../../identity/constants/DatabaseModeStates
 import {CryptoService} from '../../utils/native/CryptoService';
 import UserApplicationContext from '../../identity/contexts/UserApplicationContext';
 import GlobalContext from '../../common/contexts/GlobalContext';
-import {ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT} from "../constants/EntryGroupEntryFieldTOTPAlgorithms";
+import {ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT} from '../constants/EntryGroupEntryFieldTOTPAlgorithms';
+import {ENTRY_GROUP_EDITING_AWAIT, ENTRY_GROUP_EDITING_IN_PROGRESS} from '../constants/EntryGroupEditingStates';
+import {ENTRY_GROUP_DELETING_AWAIT, ENTRY_GROUP_DELETING_IN_PROGRESS} from '../constants/EntryGroupDeletingStates';
 
 const Buffer = require('buffer/').Buffer;
 
@@ -40,6 +42,8 @@ const EntryGroupContextProvider = props => {
     const {iconDisableColor} = useContext(UserApplicationContext);
     const passwordBrokerContext = useContext(PasswordBrokerContext);
     const {
+        unselectEntryGroup,
+
         masterPassword,
         masterPasswordState,
         setMasterPassword,
@@ -58,6 +62,7 @@ const EntryGroupContextProvider = props => {
         setEntryGroupTreesOpened,
 
         entryGroupData,
+        setEntryGroupData,
         databaseMode,
     } = passwordBrokerContext;
     const {logActivityManual} = useContext(GlobalContext);
@@ -68,6 +73,8 @@ const EntryGroupContextProvider = props => {
     const offlineDatabaseService = passwordBrokerContext.offlineDatabaseService;
 
     const [addingEntryGroupState, setAddingEntryGroupState] = useState(ENTRY_GROUP_ADDING_AWAIT);
+    const [editingEntryGroupState, setEditingEntryGroupState] = useState(ENTRY_GROUP_EDITING_AWAIT);
+    const [deletingEntryGroupState, setDeletingEntryGroupState] = useState(ENTRY_GROUP_DELETING_AWAIT);
     const [addingEntryGroupTitle, setAddingEntryGroupTitle] = useState('');
     const [addingEntryGroupErrorMessage, setAddingEntryGroupErrorMessage] = useState('');
     const cryptoService = new CryptoService();
@@ -111,6 +118,65 @@ const EntryGroupContextProvider = props => {
             },
         );
     };
+
+    const updateEntryGroup = (entryGroupId, data) => {
+        if (editingEntryGroupState !== ENTRY_GROUP_EDITING_AWAIT) {
+            return;
+        }
+
+        setEditingEntryGroupState(ENTRY_GROUP_EDITING_IN_PROGRESS);
+        axios
+            .put(baseUrl + '/entryGroups/' + entryGroupId, data)
+            .then(
+                () => {
+                    setEntryGroupTreesStatus(ENTRY_GROUP_TREES_REQUIRED_LOADING);
+                    const structuredCloneNew = structuredClone(entryGroupData);
+                    structuredCloneNew.entryGroup.name = data.name;
+                    setEntryGroupData(structuredCloneNew);
+                    logActivityManual(`Entry group "${entryGroupData.entryGroup.name}" updated`);
+                },
+                error => {
+                    console.log(error);
+                    if (error.response && error.response?.data?.errors?.name[0]) {
+                        logActivityManual(error.response.data.errors.name[0]);
+                    } else {
+                        logActivityManual(error.message);
+                    }
+                },
+            )
+            .finally(() => {
+                setEditingEntryGroupState(ENTRY_GROUP_EDITING_AWAIT);
+            });
+    };
+
+    const deleteEntryGroup = entryGroupId => {
+        if (deletingEntryGroupState !== ENTRY_GROUP_DELETING_AWAIT) {
+            return;
+        }
+
+        setDeletingEntryGroupState(ENTRY_GROUP_DELETING_IN_PROGRESS);
+        axios
+            .delete(baseUrl + '/entryGroups/' + entryGroupId)
+            .then(
+                () => {
+                    setEntryGroupTreesStatus(ENTRY_GROUP_TREES_REQUIRED_LOADING);
+                    unselectEntryGroup();
+                    logActivityManual(`Entry group "${entryGroupData?.entryGroup?.name ?? 'undefined'}" deleted`);
+                },
+                error => {
+                    console.log(error);
+                    if (error.response && error.response?.data?.errors?.name[0]) {
+                        logActivityManual(error.response.data.errors.name[0]);
+                    } else {
+                        logActivityManual(error.message);
+                    }
+                },
+            )
+            .finally(() => {
+                setDeletingEntryGroupState(ENTRY_GROUP_EDITING_AWAIT);
+            });
+    };
+
     const loadEntryFieldValueAndButtons = (url, states, fieldProps, historyMode = false) => {
         const title = fieldProps.title ?? '';
         const fieldId = fieldProps.field_id;
@@ -469,12 +535,18 @@ const EntryGroupContextProvider = props => {
                 loadEntryFieldValueAndButtons: loadEntryFieldValueAndButtons,
 
                 addNewEntryGroup: addNewEntryGroup,
+                updateEntryGroup: updateEntryGroup,
+                deleteEntryGroup: deleteEntryGroup,
                 addingEntryGroupState: addingEntryGroupState,
                 setAddingEntryGroupState: setAddingEntryGroupState,
                 addingEntryGroupTitle: addingEntryGroupTitle,
                 setAddingEntryGroupTitle: setAddingEntryGroupTitle,
                 addingEntryGroupErrorMessage: addingEntryGroupErrorMessage,
                 setAddingEntryGroupErrorMessage: setAddingEntryGroupErrorMessage,
+
+                deletingEntryGroupState: deletingEntryGroupState,
+                editingEntryGroupState: editingEntryGroupState,
+                setEditingEntryGroupState: setEditingEntryGroupState,
             }}>
             {props.children}
         </EntryGroupContext.Provider>

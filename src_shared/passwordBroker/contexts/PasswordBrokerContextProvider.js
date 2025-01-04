@@ -205,6 +205,23 @@ const PasswordBrokerContextProvider = props => {
         ],
     );
 
+    const unselectEntryGroup = () => {
+        if (loadEntryGroupAbortController) {
+            loadEntryGroupAbortController.abort();
+        }
+        if (loadEntryGroupUsersAbortController) {
+            loadEntryGroupUsersAbortController.abort();
+        }
+        setEntryGroupId('');
+        setEntryGroupUsers([]);
+        setEntryGroupUsersStatus(ENTRY_GROUP_USERS_NOT_SELECTED);
+        setEntryGroupStatus(ENTRY_GROUP_NOT_SELECTED);
+        setEntryGroupMenu(ENTRY_GROUP_MENU_MAIN);
+        setEntryGroupData(null);
+
+        navigate('/');
+    };
+
     const loadEntryGroup = entryGroupIdForLoading => {
         const loadedGroupProcessor = data => {
             const materialized_path = data.entryGroup.materialized_path;
@@ -406,6 +423,7 @@ const PasswordBrokerContextProvider = props => {
                 loadEntryGroupUsers: loadEntryGroupUsers,
 
                 selectEntryGroup: selectEntryGroup,
+                unselectEntryGroup: unselectEntryGroup,
                 entryGroupMenu: entryGroupMenu,
                 setEntryGroupMenu: setEntryGroupMenu,
                 hostURL: hostURL,
