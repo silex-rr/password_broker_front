@@ -4,12 +4,22 @@ import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/cont
 import {ENTRY_GROUP_LOADED} from '../../../../../src_shared/passwordBroker/constants/EntryGroupStatus';
 import {ENTRY_GROUP_EDITING_AWAIT} from '../../../../../src_shared/passwordBroker/constants/EntryGroupEditingStates';
 import EntryGroupContext from '../../../../../src_shared/passwordBroker/contexts/EntryGroupContext';
-import {ENTRY_GROUP_DELETING_AWAIT} from '../../../../../src_shared/passwordBroker/constants/EntryGroupDeletingStates';
+import {
+    ENTRY_GROUP_DELETING_AWAIT,
+    ENTRY_GROUP_DELETING_CONFIRMATION,
+    ENTRY_GROUP_DELETING_IN_PROGRESS,
+} from '../../../../../src_shared/passwordBroker/constants/EntryGroupDeletingStates';
+import Confirmation from '../../../../common/Confirmation';
 
 const EntryGroupSettings = () => {
     const {entryGroupId, entryGroupData, entryGroupStatus} = useContext(PasswordBrokerContext);
-    const {updateEntryGroup, deleteEntryGroup, editingEntryGroupState, deletingEntryGroupState} =
-        useContext(EntryGroupContext);
+    const {
+        updateEntryGroup,
+        deleteEntryGroup,
+        editingEntryGroupState,
+        deletingEntryGroupState,
+        setDeletingEntryGroupState,
+    } = useContext(EntryGroupContext);
     const [name, setName] = useState('');
 
     if (entryGroupStatus !== ENTRY_GROUP_LOADED) {
@@ -39,7 +49,15 @@ const EntryGroupSettings = () => {
             return;
         }
 
+        setDeletingEntryGroupState(ENTRY_GROUP_DELETING_CONFIRMATION);
+    };
+
+    const onDeleteConfirmation = () => {
         deleteEntryGroup(entryGroupId);
+    };
+
+    const onDeleteCansel = () => {
+        setDeletingEntryGroupState(ENTRY_GROUP_DELETING_AWAIT);
     };
 
     return (
@@ -91,15 +109,23 @@ const EntryGroupSettings = () => {
                                 <span
                                     className={
                                         'loading loading-spinner' +
-                                        (deletingEntryGroupState === ENTRY_GROUP_DELETING_AWAIT ? ' hidden' : ' ')
+                                        (deletingEntryGroupState !== ENTRY_GROUP_DELETING_IN_PROGRESS ? ' hidden' : ' ')
                                     }
                                 />
-                                {deletingEntryGroupState === ENTRY_GROUP_DELETING_AWAIT ? 'delete' : 'deleting'}
+                                {deletingEntryGroupState !== ENTRY_GROUP_DELETING_IN_PROGRESS ? 'delete' : 'deleting'}
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
+            <Confirmation
+                id={`confirmationDeleteEntryGroup-${entryGroupId}`}
+                show={deletingEntryGroupState === ENTRY_GROUP_DELETING_CONFIRMATION}
+                title="Delete Entry Group"
+                message={`Are you sure you want to delete ${entryGroupData.name} entry group?`}
+                onConfirm={onDeleteConfirmation}
+                onCancel={onDeleteCansel}
+            />
         </React.Fragment>
     );
 };

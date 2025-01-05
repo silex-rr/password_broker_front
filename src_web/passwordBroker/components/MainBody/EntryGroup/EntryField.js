@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 import EntryFieldHistory from './EntryFieldHistory';
 import EntryGroupContext from '../../../../../src_shared/passwordBroker/contexts/EntryGroupContext';
@@ -17,6 +17,7 @@ const EntryField = props => {
     const [historyVisible, setHistoryVisible] = useState(false);
     const [trashed, setTrashed] = useState(false);
     const [totpActivated, setTotpActivated] = useState(false);
+    const deleteFieldModalRef = useRef(undefined);
 
     //,
 
@@ -41,6 +42,7 @@ const EntryField = props => {
             setTrashed,
             totpActivated,
             setTotpActivated,
+            deleteFieldModalRef,
         },
         props,
         hideEdit,

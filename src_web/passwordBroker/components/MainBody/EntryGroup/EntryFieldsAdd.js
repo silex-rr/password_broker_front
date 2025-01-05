@@ -233,7 +233,9 @@ const EntryFieldsAdd = props => {
                             ''
                         ) : (
                             <div className="mt-8 w-full bg-red-700 py-1.5 text-center text-slate-100">
-                                {errorMessage}
+                                {errorMessage.map((error, index) => (
+                                    <div key={`error-${index}`}>{error}</div>
+                                ))}
                             </div>
                         )}
                     </div>
