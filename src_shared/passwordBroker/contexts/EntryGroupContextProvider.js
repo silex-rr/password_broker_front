@@ -30,7 +30,12 @@ import UserApplicationContext from '../../identity/contexts/UserApplicationConte
 import GlobalContext from '../../common/contexts/GlobalContext';
 import {ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT} from '../constants/EntryGroupEntryFieldTOTPAlgorithms';
 import {ENTRY_GROUP_EDITING_AWAIT, ENTRY_GROUP_EDITING_IN_PROGRESS} from '../constants/EntryGroupEditingStates';
-import {ENTRY_GROUP_DELETING_AWAIT, ENTRY_GROUP_DELETING_IN_PROGRESS} from '../constants/EntryGroupDeletingStates';
+import {
+    ENTRY_GROUP_DELETING_AWAIT,
+    ENTRY_GROUP_DELETING_CONFIRMATION,
+    ENTRY_GROUP_DELETING_IN_PROGRESS,
+} from '../constants/EntryGroupDeletingStates';
+import Confirmation from '../../../src_web/common/Confirmation';
 
 const Buffer = require('buffer/').Buffer;
 
@@ -150,7 +155,7 @@ const EntryGroupContextProvider = props => {
     };
 
     const deleteEntryGroup = entryGroupId => {
-        if (deletingEntryGroupState !== ENTRY_GROUP_DELETING_AWAIT) {
+        if (deletingEntryGroupState !== ENTRY_GROUP_DELETING_CONFIRMATION) {
             return;
         }
 
@@ -200,6 +205,7 @@ const EntryGroupContextProvider = props => {
             setTrashed,
             totpActivated,
             setTotpActivated,
+            deleteFieldModalRef,
         } = states;
 
         const colorGreen = '#6ee7b7';
@@ -447,6 +453,12 @@ const EntryGroupContextProvider = props => {
         }
 
         if (!historyMode && ROLE_CAN_EDIT.includes(entryGroupRole)) {
+            const deleteFieldConfirmationId = 'deleteFieldConfirmation-' + fieldId;
+
+            const handleDeleteConfirmation = () => {
+                deleteFieldModalRef.current?.click();
+            };
+
             const handleDelete = () => {
                 const deleteField = masterPasswordNew => {
                     setButtonLoading('delete');
@@ -514,15 +526,26 @@ const EntryGroupContextProvider = props => {
             );
 
             buttons.push(
-                <EntryFieldButton
-                    key="deleteButton"
-                    icon="FaTrashAlt"
-                    onclick={handleDelete}
-                    loading={buttonLoading === 'delete'}
-                    tip="delete"
-                    colour={disableButtons ? iconColor : colorRed}
-                    disabled={disableButtons}
-                />,
+                <React.Fragment key="deleteButton">
+                    <EntryFieldButton
+                        key="deleteButton"
+                        icon="FaTrashAlt"
+                        onclick={handleDeleteConfirmation}
+                        loading={buttonLoading === 'delete'}
+                        tip="delete"
+                        colour={disableButtons ? iconColor : colorRed}
+                        disabled={disableButtons}
+                    />
+                    <Confirmation
+                        id={deleteFieldConfirmationId}
+                        confirmRef={deleteFieldModalRef}
+                        onConfirm={handleDelete}
+                        title="Delete field"
+                        message={`Are you sure you want to delete "${title === '' ? 'this' : title}" field?`}
+                        confirmText="Delete"
+                        cancelText="Cancel"
+                    />
+                </React.Fragment>,
             );
         }
 
@@ -545,6 +568,7 @@ const EntryGroupContextProvider = props => {
                 setAddingEntryGroupErrorMessage: setAddingEntryGroupErrorMessage,
 
                 deletingEntryGroupState: deletingEntryGroupState,
+                setDeletingEntryGroupState: setDeletingEntryGroupState,
                 editingEntryGroupState: editingEntryGroupState,
                 setEditingEntryGroupState: setEditingEntryGroupState,
             }}>

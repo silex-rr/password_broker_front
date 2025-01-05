@@ -114,11 +114,23 @@ const EntryFieldContextProvider = props => {
                             setMasterPasswordState(MASTER_PASSWORD_INVALID);
                             setMasterPassword('');
                         }
-                        if (error.response.data.errors.value) {
-                            errMsg.push('Field Value is missing');
-                        }
-                        if (error.response.data.errors.title) {
-                            errMsg.push(error.response.data.errors.title[0]);
+                        if (error.response.data?.errors) {
+                            Object.keys(error.response.data.errors).forEach(err => {
+                                if (['value_encrypted', 'initialization_vector', 'master_password'].includes(err)) {
+                                    return;
+                                }
+                                if (err === 'value') {
+                                    errMsg.push('Field Value is missing');
+                                    return;
+                                }
+                                if (err === 'file') {
+                                    if (addingFieldType === FIELD_TYPE_FILE) {
+                                        errMsg.push('Field File is missing');
+                                    }
+                                    return;
+                                }
+                                errMsg.push(error.response.data.errors[err][0]);
+                            });
                         }
                     }
 
