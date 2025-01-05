@@ -71,6 +71,20 @@ const EntryFieldsEdit = props => {
     const fieldTOTPAlgorithmDefault =
         field === null ? ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT : field.totp_hash_algorithm;
     const fieldTOTPTimeoutDefault = field === null ? 30 : field.totp_timeout;
+    const passwordHolder = useRef();
+    const passwordEyeOpenHolder = useRef();
+    const passwordEyeCloseHolder = useRef();
+    const togglePassword = (e, hideForce = false) => {
+        if (passwordHolder.current.type === 'text' || hideForce) {
+            passwordHolder.current.type = 'password';
+            passwordEyeCloseHolder.current.classList.add('hidden');
+            passwordEyeOpenHolder.current.classList.remove('hidden');
+        } else {
+            passwordHolder.current.type = 'text';
+            passwordEyeOpenHolder.current.classList.add('hidden');
+            passwordEyeCloseHolder.current.classList.remove('hidden');
+        }
+    };
 
     useEffect(() => {
         const modalVisibilityCheckbox = modalVisibilityRef.current;
@@ -126,6 +140,10 @@ const EntryFieldsEdit = props => {
                     fieldValue={addingFieldValue}
                     changeLogin={changeLogin}
                     changeValue={changeValue}
+                    passwordHolder={passwordHolder}
+                    passwordEyeOpenHolder={passwordEyeOpenHolder}
+                    passwordEyeCloseHolder={passwordEyeCloseHolder}
+                    togglePassword={togglePassword}
                 />
             );
             break;
@@ -162,6 +180,16 @@ const EntryFieldsEdit = props => {
         } else {
             // console.log('editing is closed');
             setEntryGroupFieldForEditState(FIELD_EDITING_AWAIT);
+            changeValue('');
+            changeTitle('');
+            changeLogin('');
+            changeTOTPAlgorithm(ENTRY_GROUP_ENTRY_FIELD_TOTP_ALGORITHM_DEFAULT);
+            changeTOTPTimeout(30);
+            if (fieldTypeDefault === FIELD_TYPE_PASSWORD) {
+                (passwordHolder.current?.type ?? false) && (passwordHolder.current.type = 'password');
+                passwordEyeCloseHolder.current.classList.add('hidden');
+                passwordEyeOpenHolder.current.classList.remove('hidden');
+            }
         }
     };
 
