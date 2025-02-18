@@ -6,7 +6,7 @@ import {
     ENTRY_GROUP_NOT_SELECTED,
     ENTRY_GROUP_REQUIRED_LOADING,
 } from '../../../../src_shared/passwordBroker/constants/EntryGroupStatus';
-import EntryGroup from './EntryGroup/EntryGroup';
+import EntryGroupEntries from './EntryGroup/EntryGroupEntries';
 import {ROLE_ADMIN, ROLE_MEMBER, ROLE_MODERATOR} from '../../../../src_shared/passwordBroker/constants/EntryGroupRole';
 import {
     ENTRY_GROUP_MENU_HISTORY,
@@ -24,6 +24,7 @@ import EntryGroupUsers from './EntryGroup/EntryGroupUsers';
 import EntryGroupHistory from './EntryGroup/EntryGroupHistory';
 import {useParams} from 'react-router-dom';
 import EntryGroupSettings from './EntryGroup/EntryGroupSettings';
+import EntryBulkEditContextProvider from '../../../../src_shared/passwordBroker/contexts/EntryBulkEditContextProvider';
 
 const MainBody = () => {
     const passwordBrokerContext = useContext(PasswordBrokerContext);
@@ -173,7 +174,11 @@ const MainBody = () => {
             switch (entryGroupMenu) {
                 default:
                 case ENTRY_GROUP_MENU_MAIN:
-                    body = <EntryGroup {...entryGroupData} />;
+                    body = (
+                        <EntryBulkEditContextProvider>
+                            <EntryGroupEntries {...entryGroupData} />
+                        </EntryBulkEditContextProvider>
+                    );
                     break;
                 case ENTRY_GROUP_MENU_HISTORY:
                     body = <EntryGroupHistory />;

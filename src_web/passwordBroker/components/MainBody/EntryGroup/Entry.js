@@ -1,6 +1,6 @@
 import Moment from 'react-moment';
 import axios from 'axios';
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 import {
     ENTRY_GROUP_ENTRY_FIELDS_LOADED,
@@ -14,14 +14,12 @@ import {
     FIELD_EDITING_AWAIT,
     FIELD_EDITING_MODAL_SHOULD_BE_CLOSE,
 } from '../../../../../src_shared/passwordBroker/constants/EntryGroupEntryFieldEditingStates';
+import EntryBulkEditContext from '../../../../../src_shared/passwordBroker/contexts/EntryBulkEditContext';
 
 const Entry = props => {
     const entryGroupId = props.entry_group_id;
     const entryId = props.entry_id;
-
     const {baseUrl, entryGroupFieldForEditState, setEntryGroupFieldForEditState} = useContext(PasswordBrokerContext);
-
-    const entryContext = useContext(EntryContext);
 
     const {
         entryFieldsStatus,
@@ -30,7 +28,9 @@ const Entry = props => {
         setEntryFieldsData,
         entryFieldsIsVisible,
         setEntryFieldVisible,
-    } = entryContext;
+    } = useContext(EntryContext);
+    const {checkedEntries, setCheckedEntries} = useContext(EntryBulkEditContext);
+    const [isChecked, setChecked] = useState(checkedEntries.includes(entryId));
 
     useEffect(() => {
         if (entryGroupFieldForEditState === FIELD_EDITING_MODAL_SHOULD_BE_CLOSE) {
@@ -61,6 +61,19 @@ const Entry = props => {
         setEntryFieldVisible(!entryFieldsIsVisible);
     };
 
+    const bulkEditChangeHandler = e => {
+        const checked = e.target.checked;
+
+        if (checked) {
+            if (!checkedEntries.includes(entryId)) {
+                setCheckedEntries([...checkedEntries, entryId]);
+            }
+        } else {
+            checkedEntries.splice(checkedEntries.indexOf(entryId), 1);
+            setCheckedEntries([...checkedEntries]);
+        }
+    };
+
     let entryFields = '';
 
     switch (entryFieldsStatus) {
@@ -85,9 +98,26 @@ const Entry = props => {
             break;
     }
 
+    useEffect(() => {
+        const checked = checkedEntries.includes(entryId);
+        if (checked !== isChecked) {
+            setChecked(checked);
+        }
+    }, [checkedEntries]);
+
     return (
         <React.Fragment>
             <tr key={entryId + '_main'}>
+                <td className="bg-slate-700 text-slate-100">
+                    <label className="label cursor-pointer">
+                        <input
+                            type="checkbox"
+                            className="checkbox"
+                            checked={isChecked}
+                            onChange={bulkEditChangeHandler}
+                        />
+                    </label>
+                </td>
                 <td className="cursor-pointer bg-slate-700 text-slate-100" onClick={EntryFieldsVisibility}>
                     {props.title}
                 </td>

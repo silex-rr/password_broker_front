@@ -80,7 +80,7 @@ const EntryAdd = props => {
         <div className="inline-block px-2 pb-2">
             <label
                 htmlFor={addEntryKey + entryGroupId}
-                className="btn btn-sm bg-slate-800 text-slate-100 hover:text-slate-800">
+                className="btn btn-xs bg-slate-800 px-12 text-slate-100 hover:text-slate-800">
                 add new Entry
             </label>
 
@@ -136,7 +136,7 @@ const EntryAdd = props => {
                             ''
                         ) : (
                             <div className="mt-8 w-full bg-red-700 py-1.5 text-center text-slate-100">
-                                {errorMessage}
+                                {errorMessage.map(err => err)}
                             </div>
                         )}
                     </div>
