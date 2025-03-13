@@ -21,7 +21,7 @@ const EntriesDelete = () => {
             <div>
                 Are you sure you want to delete {entriesNum} Entries?
                 <button
-                    className="btn btn-xs ml-2 bg-slate-800 px-12 text-slate-100 hover:text-slate-800"
+                    className="btn btn-xs ml-2 bg-slate-800 px-12 text-slate-100 hover:text-slate-200"
                     onClick={deleteEntries}
                     disabled={entriesNum === 0}>
                     Delete
