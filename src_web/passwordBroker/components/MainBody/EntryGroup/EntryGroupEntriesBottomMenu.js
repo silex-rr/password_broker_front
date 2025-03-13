@@ -3,6 +3,7 @@ import EntryAdd from './EntryAdd';
 import EntryGroupAdd from './EntryGroupAdd';
 import PasswordBrokerContext from '../../../../../src_shared/passwordBroker/contexts/PasswordBrokerContext';
 import EntriesDelete from './BottomMenuBulkActions/EntriesDelete';
+import EntriesMove from "./BottomMenuBulkActions/EntriesMove";
 
 const OPTION_DEFAULT = 'default';
 const OPTION_MOVE_ENTRIES = 'move-entries';
@@ -24,7 +25,7 @@ const EntryGroupEntriesBottomMenu = ({entryGroup}) => {
 
     switch (bulkEditSelected) {
         case OPTION_MOVE_ENTRIES:
-            bulkEditBody = 'move entries';
+            bulkEditBody = <EntriesMove />;
             break;
         case OPTION_DELETE_ENTRIES:
             bulkEditBody = <EntriesDelete />;
